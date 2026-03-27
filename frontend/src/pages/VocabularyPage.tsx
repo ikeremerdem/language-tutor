@@ -36,7 +36,6 @@ export default function VocabularyPage() {
   const currentPage = Math.min(page, totalPages)
   const paged = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
 
-  // Reset to page 1 when filters change
   useEffect(() => { setPage(1) }, [search, typeFilter])
 
   const handleAdd = async (data: WordCreate) => {
@@ -56,24 +55,25 @@ export default function VocabularyPage() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">Vocabulary</h2>
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Vocabulary</h2>
       <WordForm words={words} onSubmit={handleAdd} />
 
-      <div className="flex flex-wrap items-center gap-4 mb-3">
-        <div className="text-sm text-gray-500">
+      <div className="flex flex-wrap items-center gap-4 mb-4">
+        <div className="text-sm text-gray-400 font-medium">
           {filtered.length} word{filtered.length !== 1 ? 's' : ''}
           {filtered.length !== words.length && ` (of ${words.length} total)`}
         </div>
+        <div className="flex-1" />
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="border rounded px-3 py-1.5 text-sm flex-1 min-w-[200px]"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-64"
           placeholder="Search English or Greek..."
         />
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value as WordType | '')}
-          className="border rounded px-3 py-1.5 text-sm"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
         >
           <option value="">All types</option>
           {['verb', 'noun', 'adjective', 'adverb', 'preposition', 'other'].map((t) => (
@@ -85,21 +85,21 @@ export default function VocabularyPage() {
       <WordTable words={paged} onUpdate={handleUpdate} onDelete={handleDelete} />
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-4">
+        <div className="flex items-center justify-center gap-3 mt-5">
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            className="px-3 py-1 border rounded text-sm disabled:opacity-40"
+            className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-30 transition shadow-sm"
           >
             Previous
           </button>
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-gray-400">
             Page {currentPage} of {totalPages}
           </span>
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
-            className="px-3 py-1 border rounded text-sm disabled:opacity-40"
+            className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-30 transition shadow-sm"
           >
             Next
           </button>

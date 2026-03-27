@@ -1,5 +1,22 @@
 @import "tailwindcss";
 
+@theme {
+  --color-greek-blue: #0D5EAF;
+  --color-greek-blue-dark: #0A4A8A;
+  --color-greek-blue-light: #1a6fc2;
+  --color-greek-sky: #EBF3FA;
+  --color-greek-accent: #F4CE4B;
+}
+
 body {
-  @apply bg-gray-50 text-gray-900;
+  @apply bg-greek-sky text-gray-800 antialiased;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+input, select, textarea {
+  @apply border-gray-300 focus:border-greek-blue focus:ring-1 focus:ring-greek-blue/30 outline-none transition;
+}
+
+::selection {
+  @apply bg-greek-blue/20;
 }

@@ -47,11 +47,14 @@ def generate_sentence(words: list[Word], source_language: str, previous_sentence
     shuffled = list(words)
     random.shuffle(shuffled)
     word_list = "\n".join(
-        f"- {w.english} = {w.greek} (id: {w.id})" for w in shuffled
+        f"- {w.english} = {w.greek}" for w in shuffled
     )
 
     # Assign a random noun from the vocabulary to random_subject
     nouns = [w for w in shuffled if w.word_type == "noun"]
+    verbs = [w for w in shuffled if w.word_type == "verb"]
+    adjectives = [w for w in shuffled if w.word_type == "adjective"]
+
     subject = random.choice(nouns) if nouns else None
     subject_count = "singular" if random.random() < 0.5 else "plural"
     object_count = "singular" if random.random() < 0.5 else "plural"
@@ -74,7 +77,7 @@ The sentence should be 3-7 words long and use basic grammar. The subject selecti
 Select a verb ONLY from the vocabulary words provided.
 If you decide to use an object, select a noun ONLY from the vocabulary words provided and it should be {object_count}.
 You can use adjectives after the verb "to be", but select them ONLY from the vocabulary words provided.
-You can use personal pronouns, demonstrative pronouns, articles, prepositions, conjunctions, etc. 
+You can use personal pronouns (he, she, you, etc.), demonstrative pronouns (this, that, etc.), articles, prepositions (in, into, from, etc.), conjunctions, etc. 
 When I say use ONLY from the vocabulary words provided, I mean do not use a word that is not in the vocabulary.
 The sentences should make sense, not just random words brought together. {avoid_block}
 

@@ -77,16 +77,16 @@ export default function WordForm({ words, onSubmit }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6 mb-6">
-      <h2 className="text-lg font-semibold mb-4">Add New Word</h2>
+    <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+      <h2 className="text-lg font-semibold mb-4 text-gray-700">Add New Word</h2>
       <div className="flex gap-3 mb-4">
         <div className="flex-1">
-          <label className="block text-sm font-medium mb-1">English</label>
+          <label className="block text-sm font-medium text-gray-600 mb-1">English</label>
           <input
             value={english}
             onChange={(e) => { setEnglish(e.target.value); setDuplicate(null); setError('') }}
             onKeyDown={handleKeyDown}
-            className="w-full border rounded px-3 py-2"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2.5"
             placeholder="Type an English word and press Lookup"
           />
         </div>
@@ -95,24 +95,24 @@ export default function WordForm({ words, onSubmit }: Props) {
             type="button"
             onClick={handleLookup}
             disabled={lookingUp || !english.trim()}
-            className="bg-green-600 text-white px-5 py-2 rounded font-medium hover:bg-green-700 disabled:opacity-50"
+            className="bg-greek-blue text-white px-5 py-2.5 rounded-lg font-medium hover:bg-greek-blue-dark disabled:opacity-40 transition shadow-sm"
           >
             {lookingUp ? 'Looking up...' : 'Lookup'}
           </button>
         </div>
       </div>
       {duplicate && (
-        <div className="mb-4 bg-yellow-50 border border-yellow-300 text-yellow-800 rounded px-4 py-2 text-sm">
-          This word already exists in your vocabulary: <strong>{duplicate.english}</strong> = <strong>{duplicate.greek}</strong> ({duplicate.word_type}{duplicate.notes ? `, ${duplicate.notes}` : ''})
+        <div className="mb-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-4 py-3 text-sm">
+          This word already exists: <strong>{duplicate.english}</strong> = <strong>{duplicate.greek}</strong> ({duplicate.word_type}{duplicate.notes ? `, ${duplicate.notes}` : ''})
         </div>
       )}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Type</label>
+          <label className="block text-sm font-medium text-gray-600 mb-1">Type</label>
           <select
             value={wordType}
             onChange={(e) => setWordType(e.target.value as WordType)}
-            className="w-full border rounded px-3 py-2"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2.5"
           >
             {WORD_TYPES.map((t) => (
               <option key={t} value={t}>{t}</option>
@@ -120,20 +120,20 @@ export default function WordForm({ words, onSubmit }: Props) {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Greek</label>
+          <label className="block text-sm font-medium text-gray-600 mb-1">Greek</label>
           <input
             value={greek}
             onChange={(e) => setGreek(e.target.value)}
-            className="w-full border rounded px-3 py-2"
-            placeholder="γεια"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2.5"
+            placeholder="auto-filled by lookup"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Notes</label>
+          <label className="block text-sm font-medium text-gray-600 mb-1">Notes</label>
           <input
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="w-full border rounded px-3 py-2"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2.5"
             placeholder="article, verb type, etc."
           />
         </div>
@@ -142,7 +142,7 @@ export default function WordForm({ words, onSubmit }: Props) {
       <button
         type="submit"
         disabled={loading || !english.trim() || !greek.trim()}
-        className="mt-4 bg-blue-600 text-white px-6 py-2 rounded font-medium hover:bg-blue-700 disabled:opacity-50"
+        className="mt-5 bg-green-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-green-700 disabled:opacity-40 transition shadow-sm"
       >
         {loading ? 'Adding...' : 'Add Word'}
       </button>
