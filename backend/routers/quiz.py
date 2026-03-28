@@ -37,3 +37,5 @@ def end_quiz(session_id: str):
         return quiz_service.end_session(session_id)
     except ValueError as e:
         raise HTTPException(400, str(e))
+
+

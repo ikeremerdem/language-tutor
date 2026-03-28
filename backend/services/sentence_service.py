@@ -170,8 +170,14 @@ The student's answer should convey the same meaning. Be lenient with:
 - Article differences
 - Equivalent synonyms
 
+If the answer is correct, give a brief encouraging note (1 sentence).
+
+If the answer is incorrect:
+- If the answer is completely unrelated or nonsensical, set explanation to: "You are totally off this time :("
+- Otherwise, explain in 2-3 sentences what specifically went wrong. Point out the incorrect words or grammar and explain the correct form. Be helpful and encouraging.
+
 Respond with ONLY valid JSON (no markdown):
-{{"correct": true/false, "explanation": "<brief explanation>"}}"""
+{{"correct": true/false, "explanation": "<explanation as described above>"}}"""
 
     text = _chat(prompt)
     return json.loads(text)
