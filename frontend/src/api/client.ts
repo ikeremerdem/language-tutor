@@ -49,3 +49,4 @@ export const endQuiz = (sessionId: string) =>
 
 // Stats
 export const getDashboard = () => request<DashboardStats>('/stats/dashboard')
+export const resetStats = () => request<void>('/stats/reset', { method: 'DELETE' })

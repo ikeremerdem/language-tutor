@@ -1,6 +1,7 @@
 import csv
 import json
 import random
+from re import sub
 import litellm  # pyright: ignore[reportMissingImports]
 from config import settings
 from models.vocabulary import Word
@@ -8,6 +9,23 @@ from models.vocabulary import Word
 # Load sentence structures (with optional weights) once at startup
 _sentence_structure_entries: list[tuple[str, float]] = []
 _structures_path = settings.data_dir / "sentence_structures.csv"
+
+# List of English subject pronouns, singular and plural
+SUBJECTS = [
+    "I",
+    "you",
+    "he",
+    "she",
+    "it",
+    "we",
+    "they",
+    "you (formal)",
+    "in the form [article] + [noun]",
+    "in the form [indefinite article] + [noun]",
+    "in the form [demonstrative] + [noun]",
+]
+
+
 if _structures_path.exists():
     with open(_structures_path, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
@@ -30,6 +48,14 @@ def _pick_sentence_structure() -> str:
     structs, weights = zip(*_sentence_structure_entries, strict=True)
     return random.choices(structs, weights=weights, k=1)[0]
 
+def _random_singular_or_plural() -> str:
+    return "singular" if random.random() < 0.5 else "plural"
+
+def _random_seed () -> str:
+    return "verb" if random.random() < 0.5 else "subject"
+
+def _random_subject () -> str:
+    return random.choice(SUBJECTS) + " and " + _random_singular_or_plural()
 
 def _chat(prompt: str, temperature: float = 0.7) -> str:
     kwargs: dict = {
@@ -79,15 +105,20 @@ def generate_sentence(words: list[Word], source_language: str, previous_sentence
     # Assign a random noun from the vocabulary to random_subject
     nouns = [w for w in shuffled if w.word_type == "noun"]
     verbs = [w for w in shuffled if w.word_type == "verb"]
-    adjectives = [w for w in shuffled if w.word_type == "adjective"]
+    # adjectives = [w for w in shuffled if w.word_type == "adjective"]
 
-    subject = random.choice(nouns) if nouns else None
-    subject_count = "singular" if random.random() < 0.5 else "plural"
-    object_count = "singular" if random.random() < 0.5 else "plural"
-    if subject:
-        subject_selection = f"The subject is {subject.english} ({subject.greek}) and is {subject_count}."
+    sentence_structure = _pick_sentence_structure()
+
+    seed_type = _random_seed()
+    subject_form = _random_subject()
+    if seed_type == "verb":
+        verb = random.choice(verbs) if verbs else None
+        seed_constraint = f"Use this verb: {verb.english} ({verb.greek}), the subject should be {subject_form}. If needed pick a noun ONLY from the vocabulary provided. "
     else:
-        subject_selection = "The subject is a random noun."
+        subject = random.choice(nouns) if nouns else None
+        seed_constraint = f"The subject shuold be {subject_form}. The noun it depicts is {subject.english} ({subject.greek})."
+
+    object_count = _random_singular_or_plural()
 
     avoid_block = ""
     if previous_sentences:
@@ -95,26 +126,26 @@ def generate_sentence(words: list[Word], source_language: str, previous_sentence
             f"- {s}" for s in previous_sentences
         )
     
-    sentence_structure = _pick_sentence_structure()
 
     target_language = "english" if source_language == "greek" else "greek"
+    tense_constraint = "Only use present tense."
 
     prompt = f"""I want you to generate a sentence for a language quiz.
-Generate a short, simple {source_language} sentence using one or more of these vocabulary words. 
-The sentence should be up to 10 words long and use basic grammar and create a sentence with the structure {sentence_structure}
-The subject selection: {subject_selection}
-Select a verb ONLY from the vocabulary words provided.
-If you decide to use an object, select a noun ONLY from the vocabulary words provided and it should be {object_count}.
-You can use adjectives after the verb "to be", but select them ONLY from the vocabulary words provided.
-You can use personal pronouns (he, she, you, etc.), demonstrative pronouns (this, that, etc.), indefinite articles (a, an), prepositions (in, into, from, etc.), conjunctions. They would add variety to the sentences. 
-When I say use ONLY from the vocabulary words provided, I mean do not use a word that is not in the vocabulary.
-The sentences should make sense, not just random words brought together. {avoid_block}
+        Generate a short, simple {source_language} sentence using basic grammar. 
+        The sentence structure should be {sentence_structure}.
+        {seed_constraint}. {tense_constraint}
+        Select a verb ONLY from the vocabulary words provided.
+        If you decide to use an object, select a noun ONLY from the vocabulary words provided and it should be {object_count}.
+        You can use adjectives, but select them ONLY from the vocabulary words provided.
+        You can use personal pronouns (he, she, you, etc.), demonstrative pronouns (this, that, etc.), indefinite articles (a, an), prepositions (in, into, from, etc.), conjunctions. They would add variety to the sentences. 
+        When I say use ONLY from the vocabulary words provided, I mean do not use a word that is not in the vocabulary.
+        The sentences should follow common sense, should be realistic, not just random words brought together. Do not bring any verbs and subjects together, that are not realistic, if possible. {avoid_block}
 
-Vocabulary:
-{word_list}
+        Vocabulary:
+        {word_list}
 
-Respond with ONLY valid JSON (no markdown):
-{{"sentence": "<{source_language} sentence>", "translation": "<{target_language} translation>", "word_id": "<id of the main word used>"}}"""
+        Respond with ONLY valid JSON (no markdown):
+        {{"sentence": "<{source_language} sentence>", "translation": "<{target_language} translation>", "word_id": "<id of the main word used>"}}"""
 
     print(prompt)
     text = _chat(prompt, temperature=1.0)

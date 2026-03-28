@@ -78,6 +78,7 @@ export interface QuizDetailItem {
 export interface DashboardStats {
   total_words: number
   total_sessions: number
+  total_questions: number
   average_score: number
   best_score: number
   recent_sessions: RecentSession[]
@@ -96,5 +97,6 @@ export interface RecentSession {
 export interface WeeklyActivity {
   date: string
   sessions: number
+  questions: number
   avg_score: number
 }

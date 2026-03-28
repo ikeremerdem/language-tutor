@@ -26,7 +26,7 @@ export default function StatsChart({ data }: Props) {
             <Tooltip
               contentStyle={{ borderRadius: '12px', border: '1px solid #e5e7eb', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
             />
-            <Bar yAxisId="left" dataKey="sessions" fill="#0D5EAF" name="Sessions" radius={[6, 6, 0, 0]} />
+            <Bar yAxisId="left" dataKey="questions" fill="#0D5EAF" name="Questions" radius={[6, 6, 0, 0]} />
             <Bar yAxisId="right" dataKey="avg_score" fill="#10b981" name="Avg Score %" radius={[6, 6, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>

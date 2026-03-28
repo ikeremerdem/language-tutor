@@ -13,12 +13,14 @@ class RecentSession(BaseModel):
 class WeeklyActivity(BaseModel):
     date: str
     sessions: int
+    questions: int
     avg_score: float
 
 
 class DashboardStats(BaseModel):
     total_words: int
     total_sessions: int
+    total_questions: int
     average_score: float
     best_score: float
     recent_sessions: list[RecentSession]

@@ -6,11 +6,17 @@ from services import vocabulary_service
 from services.quiz_service import get_session_store
 
 
+def reset_stats() -> None:
+    store = get_session_store()
+    store._write_all([])
+
+
 def get_dashboard() -> DashboardStats:
     words = vocabulary_service.list_words()
     sessions = get_session_store().read_all()
 
     total_sessions = len(sessions)
+    total_questions = sum(int(s.get("total_questions", 0)) for s in sessions)
     scores = [float(s["score_percent"]) for s in sessions]
     average_score = round(sum(scores) / len(scores), 1) if scores else 0
     best_score = max(scores) if scores else 0
@@ -33,6 +39,7 @@ def get_dashboard() -> DashboardStats:
     return DashboardStats(
         total_words=len(words),
         total_sessions=total_sessions,
+        total_questions=total_questions,
         average_score=average_score,
         best_score=best_score,
         recent_sessions=recent_sessions,
@@ -44,7 +51,7 @@ def _compute_weekly_activity(sessions: list[dict]) -> list[WeeklyActivity]:
     today = datetime.now(timezone.utc).date()
     start_date = today - timedelta(days=6)
 
-    by_date: dict[str, list[float]] = defaultdict(list)
+    by_date: dict[str, list[dict]] = defaultdict(list)
     for s in sessions:
         ended = s.get("ended_at", "")
         if not ended:
@@ -54,15 +61,18 @@ def _compute_weekly_activity(sessions: list[dict]) -> list[WeeklyActivity]:
         except ValueError:
             continue
         if start_date <= d <= today:
-            by_date[d.isoformat()].append(float(s["score_percent"]))
+            by_date[d.isoformat()].append(s)
 
     result = []
     for i in range(7):
         d = (start_date + timedelta(days=i)).isoformat()
-        scores = by_date.get(d, [])
+        day_sessions = by_date.get(d, [])
+        scores = [float(s["score_percent"]) for s in day_sessions]
+        questions = sum(int(s.get("total_questions", 0)) for s in day_sessions)
         result.append(WeeklyActivity(
             date=d,
-            sessions=len(scores),
+            sessions=len(day_sessions),
+            questions=questions,
             avg_score=round(sum(scores) / len(scores), 1) if scores else 0,
         ))
     return result
