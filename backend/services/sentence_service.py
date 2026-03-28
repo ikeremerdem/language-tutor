@@ -1,7 +1,34 @@
+import csv
 import json
+import random
 import litellm  # pyright: ignore[reportMissingImports]
 from config import settings
 from models.vocabulary import Word
+
+# Load sentence structures (with optional weights) once at startup
+_sentence_structure_entries: list[tuple[str, float]] = []
+_structures_path = settings.data_dir / "sentence_structures.csv"
+if _structures_path.exists():
+    with open(_structures_path, "r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            s = (row.get("structure") or "").strip()
+            if not s:
+                continue
+            try:
+                w = float((row.get("weight") or "1").strip() or "1")
+            except ValueError:
+                w = 1.0
+            if w <= 0:
+                w = 1.0
+            _sentence_structure_entries.append((s, w))
+
+
+def _pick_sentence_structure() -> str:
+    if not _sentence_structure_entries:
+        return "[subject] + [verb] + [object]"
+    structs, weights = zip(*_sentence_structure_entries, strict=True)
+    return random.choices(structs, weights=weights, k=1)[0]
 
 
 def _chat(prompt: str, temperature: float = 0.7) -> str:
@@ -43,7 +70,6 @@ def generate_sentence(words: list[Word], source_language: str, previous_sentence
     """Generate a sentence using a subset of vocabulary words.
     Returns {"sentence": str, "translation": str, "word_id": str}
     """
-    import random
     shuffled = list(words)
     random.shuffle(shuffled)
     word_list = "\n".join(
@@ -69,7 +95,7 @@ def generate_sentence(words: list[Word], source_language: str, previous_sentence
             f"- {s}" for s in previous_sentences
         )
     
-    sentence_structure = "[subject] + [verb] + [object] | e.g. The man drinks water."
+    sentence_structure = _pick_sentence_structure()
 
     target_language = "english" if source_language == "greek" else "greek"
 
