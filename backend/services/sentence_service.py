@@ -18,6 +18,7 @@ SUBJECTS = [
     "she",
     "it",
     "we",
+    "you (plural)"
     "they",
     "you (formal)",
     "in the form [article] + [noun]",
@@ -116,7 +117,7 @@ def generate_sentence(words: list[Word], source_language: str, previous_sentence
         seed_constraint = f"Use this verb: {verb.english} ({verb.greek}), the subject should be {subject_form}. If needed pick a noun ONLY from the vocabulary provided. "
     else:
         subject = random.choice(nouns) if nouns else None
-        seed_constraint = f"The subject shuold be {subject_form}. The noun it depicts is {subject.english} ({subject.greek})."
+        seed_constraint = f"The subject shuold be {subject_form}. The noun it depicts is {subject.english} ({subject.greek}). If the subject is 'you', give in paranthesis if it is singular, formal or plural."
 
     object_count = _random_singular_or_plural()
 

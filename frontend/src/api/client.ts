@@ -9,6 +9,8 @@ import type {
   QuizAnswerResult,
   QuizSummary,
   DashboardStats,
+  RecentSession,
+  QuizType,
 } from '../types'
 
 const BASE = '/api'
@@ -49,4 +51,6 @@ export const endQuiz = (sessionId: string) =>
 
 // Stats
 export const getDashboard = () => request<DashboardStats>('/stats/dashboard')
+export const getSessionsByType = (quizType: QuizType) =>
+  request<RecentSession[]>(`/stats/sessions/${quizType}`)
 export const resetStats = () => request<void>('/stats/reset', { method: 'DELETE' })

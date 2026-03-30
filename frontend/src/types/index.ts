@@ -7,6 +7,9 @@ export interface Word {
   greek: string
   notes: string
   created_at: string
+  times_asked: number
+  times_correct: number
+  last_asked: string
 }
 
 export interface WordCreate {
@@ -75,6 +78,15 @@ export interface QuizDetailItem {
   correct: boolean
 }
 
+export interface DifficultWord {
+  id: string
+  english: string
+  greek: string
+  times_asked: number
+  times_correct: number
+  success_percent: number
+}
+
 export interface DashboardStats {
   total_words: number
   total_sessions: number
@@ -83,6 +95,7 @@ export interface DashboardStats {
   best_score: number
   recent_sessions: RecentSession[]
   weekly_activity: WeeklyActivity[]
+  difficult_words: DifficultWord[]
 }
 
 export interface RecentSession {

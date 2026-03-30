@@ -33,3 +33,6 @@ class Word(BaseModel):
     greek: str
     notes: str
     created_at: str
+    times_asked: int = 0
+    times_correct: int = 0
+    last_asked: str = ""

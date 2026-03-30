@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import GreekFlag from './GreekFlag'
+import FilosLogo from './FilosLogo'
 
 const links = [
   { to: '/dashboard', label: 'Dashboard' },
@@ -10,14 +10,14 @@ const links = [
 
 export default function Layout() {
   return (
-    <div className="min-h-screen bg-greek-sky">
-      <header className="bg-gradient-to-r from-greek-blue to-greek-blue-light text-white shadow-lg">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div className="min-h-screen bg-filos-marble">
+      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm">
+        <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <GreekFlag className="w-10 h-7 rounded shadow-sm" />
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">Greek Tutor</h1>
-              <p className="text-blue-200 text-xs tracking-wide">Learn Modern Greek</p>
+            <FilosLogo size={38} />
+            <div className="leading-tight">
+              <h1 className="text-xl font-bold tracking-tight text-filos-primary font-headline">Filos</h1>
+              <p className="text-filos-accent text-xs italic">Your Greek companion</p>
             </div>
           </div>
           <nav className="flex gap-1">
@@ -28,8 +28,8 @@ export default function Layout() {
                 className={({ isActive }) =>
                   `px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     isActive
-                      ? 'bg-white/20 shadow-inner'
-                      : 'hover:bg-white/10'
+                      ? 'text-filos-primary bg-filos-marble font-semibold'
+                      : 'text-gray-500 hover:text-filos-primary hover:bg-filos-marble'
                   }`
                 }
               >
@@ -43,7 +43,7 @@ export default function Layout() {
         <Outlet />
       </main>
       <footer className="text-center text-xs text-gray-400 py-6">
-        Greek Tutor &middot; Powered by AI
+        Filos &middot; Your Greek companion &middot; Powered by AI
       </footer>
     </div>
   )

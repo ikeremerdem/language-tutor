@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dashboard | Filos</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary": "#ffffff",
+              "on-surface": "#171c1f",
+              "on-error-container": "#93000a",
+              "on-tertiary-fixed": "#321300",
+              "secondary-fixed": "#d5e3ff",
+              "on-primary-fixed": "#001b3c",
+              "secondary": "#4b5f80",
+              "surface": "#f6fafe",
+              "on-background": "#171c1f",
+              "tertiary": "#743400",
+              "surface-container-low": "#f0f4f8",
+              "surface-tint": "#0e5eaf",
+              "on-secondary-container": "#4a5e7f",
+              "primary": "#004688",
+              "on-tertiary-container": "#ffceb2",
+              "on-secondary-fixed": "#031c39",
+              "on-primary-container": "#c4d9ff",
+              "background": "#f6fafe",
+              "tertiary-container": "#984700",
+              "outline-variant": "#c2c6d3",
+              "error-container": "#ffdad6",
+              "tertiary-fixed-dim": "#ffb68b",
+              "inverse-surface": "#2c3134",
+              "on-primary-fixed-variant": "#004788",
+              "inverse-on-surface": "#edf1f5",
+              "surface-bright": "#f6fafe",
+              "primary-fixed": "#d5e3ff",
+              "surface-container-lowest": "#ffffff",
+              "secondary-fixed-dim": "#b3c7ed",
+              "on-tertiary-fixed-variant": "#743400",
+              "on-tertiary": "#ffffff",
+              "error": "#ba1a1a",
+              "primary-fixed-dim": "#a7c8ff",
+              "surface-variant": "#dfe3e7",
+              "on-error": "#ffffff",
+              "primary-container": "#0d5eaf",
+              "surface-container-high": "#e4e9ed",
+              "surface-dim": "#d6dade",
+              "on-primary": "#ffffff",
+              "on-secondary-fixed-variant": "#334767",
+              "on-surface-variant": "#424751",
+              "surface-container-highest": "#dfe3e7",
+              "tertiary-fixed": "#ffdbc8",
+              "inverse-primary": "#a7c8ff",
+              "outline": "#727783",
+              "secondary-container": "#c3d8ff",
+              "surface-container": "#eaeef2"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-nav {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f6fafe;
+            color: #171c1f;
+        }
+        h1, h2, h3 {
+            font-family: 'Manrope', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- TopNavBar Shell -->
+<header class="fixed top-0 w-full z-50 bg-white/85 backdrop-blur-xl shadow-sm">
+<div class="flex justify-between items-center h-20 px-8 max-w-7xl mx-auto">
+<div class="flex flex-col leading-tight">
+  <span class="text-2xl font-black tracking-tighter font-headline" style="color:#004688">Filos</span>
+  <span class="text-xs font-medium italic" style="color:#C15A1A">Your Greek companion</span>
+</div>
+<nav class="hidden md:flex items-center space-x-8">
+<a class="text-blue-900 border-b-2 border-blue-900 pb-1 font-bold" href="#">Dashboard</a>
+<a class="text-slate-500 font-medium hover:text-blue-700 transition-all duration-300" href="#">Vocabulary</a>
+<a class="text-slate-500 font-medium hover:text-blue-700 transition-all duration-300" href="#">Sentence Quiz</a>
+</nav>
+<div class="flex items-center space-x-6">
+<div class="hidden lg:flex items-center bg-surface-container px-4 py-2 rounded-lg text-slate-500">
+<span class="material-symbols-outlined mr-2">search</span>
+<span class="text-sm">Search lessons...</span>
+</div>
+<div class="flex items-center space-x-4">
+<button class="material-symbols-outlined text-slate-500 hover:bg-slate-50 p-2 rounded-full transition-all">settings</button>
+<button class="material-symbols-outlined text-slate-500 hover:bg-slate-50 p-2 rounded-full transition-all">account_circle</button>
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-bold text-sm hover:opacity-90 active:scale-95 transition-all">Start Quiz</button>
+</div>
+</div>
+</div>
+</header>
+<main class="pt-32 pb-20 px-8 max-w-7xl mx-auto space-y-12">
+<!-- Hero Welcome -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<span class="label-md uppercase tracking-[0.1em] text-primary font-bold text-xs">Learning Progress</span>
+<h1 class="text-4xl font-extrabold text-on-surface mt-2 tracking-tight">Kalispera, Alex.</h1>
+<p class="text-on-surface-variant mt-2 text-lg">Your linguistic journey through the Aegean continues.</p>
+</div>
+<div class="flex gap-3">
+<div class="bg-surface-container-lowest p-4 rounded-xl flex items-center space-x-4">
+<div class="bg-secondary-container p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+</div>
+<div>
+<p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Current Streak</p>
+<p class="font-bold text-lg text-on-surface">12 Days</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Statistics Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<!-- Large Card: Total Words -->
+<div class="md:col-span-2 bg-surface-container-lowest p-8 rounded-xl flex flex-col justify-between min-h-[220px]">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-primary text-3xl">menu_book</span>
+<span class="text-xs font-bold text-primary bg-primary-fixed px-3 py-1 rounded-full">+4 this week</span>
+</div>
+<div>
+<h3 class="text-6xl font-black text-on-surface tracking-tighter">93</h3>
+<p class="text-sm font-bold uppercase tracking-[0.05em] text-slate-500 mt-2">Total Vocabulary Mastery</p>
+</div>
+</div>
+<!-- Stats Stack -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-primary/20">
+<p class="text-xs font-bold uppercase tracking-[0.05em] text-slate-500">Sessions / Questions</p>
+<div class="mt-4 flex items-baseline gap-2">
+<span class="text-4xl font-bold text-on-surface">30</span>
+<span class="text-slate-400 font-medium">/ 300</span>
+</div>
+<div class="mt-6 h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[75%] rounded-full"></div>
+</div>
+<p class="text-[10px] text-slate-400 mt-2">75% of monthly goal reached</p>
+</div>
+<div class="bg-primary text-on-primary p-6 rounded-xl flex flex-col justify-between relative overflow-hidden">
+<div class="relative z-10">
+<p class="text-xs font-bold uppercase tracking-[0.05em] opacity-80">Average Score</p>
+<h3 class="text-4xl font-bold mt-2">66.3%</h3>
+</div>
+<div class="relative z-10">
+<p class="text-xs font-bold uppercase tracking-[0.05em] opacity-80">Best Performance</p>
+<p class="text-xl font-bold">100%</p>
+</div>
+<!-- Decorative Graphic -->
+<div class="absolute -right-4 -bottom-4 opacity-10">
+<span class="material-symbols-outlined text-[120px]">equalizer</span>
+</div>
+</div>
+</section>
+<!-- Chart Section -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-2 bg-surface-container-lowest p-8 rounded-xl">
+<div class="flex justify-between items-center mb-10">
+<h3 class="text-xl font-bold text-on-surface">Weekly Activity</h3>
+<div class="flex space-x-2">
+<button class="px-3 py-1 rounded text-xs font-bold bg-surface-container-low text-slate-500">Words</button>
+<button class="px-3 py-1 rounded text-xs font-bold bg-primary text-on-primary">Accuracy</button>
+</div>
+</div>
+<div class="flex items-end justify-between h-48 gap-4 px-2">
+<!-- Monday -->
+<div class="flex-1 flex flex-col items-center gap-4 group">
+<div class="w-full bg-surface-container-low rounded-lg h-24 group-hover:bg-primary/10 transition-colors relative">
+<div class="absolute bottom-0 w-full bg-primary/40 rounded-lg h-12"></div>
+</div>
+<span class="text-xs font-bold text-slate-400">MON</span>
+</div>
+<!-- Tuesday -->
+<div class="flex-1 flex flex-col items-center gap-4 group">
+<div class="w-full bg-surface-container-low rounded-lg h-32 group-hover:bg-primary/10 transition-colors relative">
+<div class="absolute bottom-0 w-full bg-primary/60 rounded-lg h-20"></div>
+</div>
+<span class="text-xs font-bold text-slate-400">TUE</span>
+</div>
+<!-- Wednesday -->
+<div class="flex-1 flex flex-col items-center gap-4 group">
+<div class="w-full bg-surface-container-low rounded-lg h-40 group-hover:bg-primary/10 transition-colors relative">
+<div class="absolute bottom-0 w-full bg-primary rounded-lg h-32"></div>
+</div>
+<span class="text-xs font-bold text-slate-400">WED</span>
+</div>
+<!-- Thursday -->
+<div class="flex-1 flex flex-col items-center gap-4 group">
+<div class="w-full bg-surface-container-low rounded-lg h-28 group-hover:bg-primary/10 transition-colors relative">
+<div class="absolute bottom-0 w-full bg-primary/50 rounded-lg h-16"></div>
+</div>
+<span class="text-xs font-bold text-slate-400">THU</span>
+</div>
+<!-- Friday -->
+<div class="flex-1 flex flex-col items-center gap-4 group">
+<div class="w-full bg-surface-container-low rounded-lg h-44 group-hover:bg-primary/10 transition-colors relative">
+<div class="absolute bottom-0 w-full bg-primary rounded-lg h-38"></div>
+</div>
+<span class="text-xs font-bold text-slate-400">FRI</span>
+</div>
+<!-- Saturday -->
+<div class="flex-1 flex flex-col items-center gap-4 group">
+<div class="w-full bg-surface-container-low rounded-lg h-20 group-hover:bg-primary/10 transition-colors relative">
+<div class="absolute bottom-0 w-full bg-primary/20 rounded-lg h-8"></div>
+</div>
+<span class="text-xs font-bold text-slate-400">SAT</span>
+</div>
+<!-- Sunday -->
+<div class="flex-1 flex flex-col items-center gap-4 group">
+<div class="w-full bg-surface-container-low rounded-lg h-36 group-hover:bg-primary/10 transition-colors relative">
+<div class="absolute bottom-0 w-full bg-primary/70 rounded-lg h-24"></div>
+</div>
+<span class="text-xs font-bold text-slate-400">SUN</span>
+</div>
+</div>
+</div>
+<!-- Focus Module -->
+<div class="bg-surface-container-lowest p-8 rounded-xl flex flex-col justify-between">
+<div>
+<h3 class="text-xl font-bold text-on-surface">Weekly Target</h3>
+<p class="text-sm text-slate-500 mt-1">Focusing on modern phrases</p>
+</div>
+<div class="mt-8 relative flex justify-center">
+<div class="w-32 h-32 rounded-full border-[12px] border-surface-container-low flex items-center justify-center">
+<div class="absolute w-32 h-32 rounded-full border-[12px] border-primary border-t-transparent border-r-transparent -rotate-45"></div>
+<span class="text-2xl font-black text-primary">65%</span>
+</div>
+</div>
+<div class="mt-8 space-y-4">
+<div class="flex items-center justify-between text-sm">
+<span class="text-slate-600">Daily Goal Met</span>
+<span class="material-symbols-outlined text-tertiary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex items-center justify-between text-sm">
+<span class="text-slate-600">Vocabulary Expansion</span>
+<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Recent Sessions Table -->
+<section class="space-y-6">
+<div class="flex justify-between items-end">
+<h2 class="text-2xl font-extrabold tracking-tight">Recent Sessions</h2>
+<a class="text-sm font-bold text-primary hover:underline underline-offset-4" href="#">View All History</a>
+</div>
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-container-low text-[10px] font-black uppercase tracking-widest text-slate-500">
+<tr>
+<th class="px-8 py-4">Date &amp; Time</th>
+<th class="px-8 py-4">Session Type</th>
+<th class="px-8 py-4">Accuracy</th>
+<th class="px-8 py-4">Duration</th>
+<th class="px-8 py-4 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<tr class="hover:bg-slate-50/50 transition-colors">
+<td class="px-8 py-6">
+<div class="flex flex-col">
+<span class="font-bold text-on-surface">Oct 24, 2024</span>
+<span class="text-xs text-slate-400">14:30 PM</span>
+</div>
+</td>
+<td class="px-8 py-6">
+<span class="px-3 py-1 bg-primary/5 text-primary text-xs font-bold rounded-lg uppercase tracking-wider">Sentence Quiz</span>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<div class="w-24 h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[88%]"></div>
+</div>
+<span class="text-sm font-bold">88%</span>
+</div>
+</td>
+<td class="px-8 py-6 text-sm text-slate-500 italic">12 min 45s</td>
+<td class="px-8 py-6 text-right">
+<button class="material-symbols-outlined text-slate-400 hover:text-primary transition-colors">more_horiz</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50/50 transition-colors">
+<td class="px-8 py-6">
+<div class="flex flex-col">
+<span class="font-bold text-on-surface">Oct 23, 2024</span>
+<span class="text-xs text-slate-400">09:15 AM</span>
+</div>
+</td>
+<td class="px-8 py-6">
+<span class="px-3 py-1 bg-secondary-container text-secondary text-xs font-bold rounded-lg uppercase tracking-wider">Vocabulary Review</span>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<div class="w-24 h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[100%]"></div>
+</div>
+<span class="text-sm font-bold">100%</span>
+</div>
+</td>
+<td class="px-8 py-6 text-sm text-slate-500 italic">05 min 10s</td>
+<td class="px-8 py-6 text-right">
+<button class="material-symbols-outlined text-slate-400 hover:text-primary transition-colors">more_horiz</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50/50 transition-colors">
+<td class="px-8 py-6">
+<div class="flex flex-col">
+<span class="font-bold text-on-surface">Oct 21, 2024</span>
+<span class="text-xs text-slate-400">18:45 PM</span>
+</div>
+</td>
+<td class="px-8 py-6">
+<span class="px-3 py-1 bg-tertiary-fixed text-tertiary-fixed-dim text-xs font-bold rounded-lg uppercase tracking-wider">Challenge Mode</span>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<div class="w-24 h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-error w-[45%]"></div>
+</div>
+<span class="text-sm font-bold text-error">45%</span>
+</div>
+</td>
+<td class="px-8 py-6 text-sm text-slate-500 italic">22 min 12s</td>
+<td class="px-8 py-6 text-right">
+<button class="material-symbols-outlined text-slate-400 hover:text-primary transition-colors">more_horiz</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Shell -->
+<footer class="w-full py-12 border-t border-slate-200 bg-slate-50">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto gap-4">
+<div class="font-headline font-bold" style="color:#004688">Filos <span style="color:#C15A1A;font-style:italic;font-size:0.85em">· Your Greek companion</span></div>
+<div class="flex space-x-8">
+<a class="text-slate-500 text-sm hover:text-blue-600 underline underline-offset-4 transition-colors duration-200" href="#">About</a>
+<a class="text-slate-500 text-sm hover:text-blue-600 underline underline-offset-4 transition-colors duration-200" href="#">Methodology</a>
+<a class="text-slate-500 text-sm hover:text-blue-600 underline underline-offset-4 transition-colors duration-200" href="#">Privacy</a>
+<a class="text-slate-500 text-sm hover:text-blue-600 underline underline-offset-4 transition-colors duration-200" href="#">Support</a>
+</div>
+<div class="text-slate-500 text-sm tracking-wide">© 2026 Filos · Your Greek companion · Powered by AI</div>
+</div>
+</footer>
+</body></html>

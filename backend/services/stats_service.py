@@ -1,7 +1,7 @@
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 
-from models.stats import DashboardStats, RecentSession, WeeklyActivity
+from models.stats import DashboardStats, DifficultWord, RecentSession, WeeklyActivity
 from services import vocabulary_service
 from services.quiz_service import get_session_store
 
@@ -35,6 +35,7 @@ def get_dashboard() -> DashboardStats:
     ]
 
     weekly_activity = _compute_weekly_activity(sessions)
+    difficult_words = _compute_difficult_words(words)
 
     return DashboardStats(
         total_words=len(words),
@@ -44,7 +45,41 @@ def get_dashboard() -> DashboardStats:
         best_score=best_score,
         recent_sessions=recent_sessions,
         weekly_activity=weekly_activity,
+        difficult_words=difficult_words,
     )
+
+
+def get_sessions_by_type(quiz_type: str) -> list[RecentSession]:
+    sessions = get_session_store().read_all()
+    filtered = [s for s in sessions if s.get("quiz_type") == quiz_type]
+    recent = sorted(filtered, key=lambda s: s.get("ended_at", ""), reverse=True)[:10]
+    return [
+        RecentSession(
+            id=s["id"],
+            quiz_type=s["quiz_type"],
+            score_percent=float(s["score_percent"]),
+            total_questions=int(s["total_questions"]),
+            correct_answers=int(s["correct_answers"]),
+            ended_at=s.get("ended_at", ""),
+        )
+        for s in recent
+    ]
+
+
+def _compute_difficult_words(words) -> list[DifficultWord]:
+    asked_words = [w for w in words if w.times_asked > 0]
+    sorted_words = sorted(asked_words, key=lambda w: w.times_correct / w.times_asked)
+    return [
+        DifficultWord(
+            id=w.id,
+            english=w.english,
+            greek=w.greek,
+            times_asked=w.times_asked,
+            times_correct=w.times_correct,
+            success_percent=round(w.times_correct / w.times_asked * 100, 1),
+        )
+        for w in sorted_words[:10]
+    ]
 
 
 def _compute_weekly_activity(sessions: list[dict]) -> list[WeeklyActivity]:

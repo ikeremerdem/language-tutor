@@ -77,8 +77,8 @@ export default function WordForm({ words, onSubmit }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-      <h2 className="text-lg font-semibold mb-4 text-gray-700">Add New Word</h2>
+    <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm p-6 mb-6">
+      <h2 className="text-lg font-semibold mb-4 text-filos-primary font-headline">Add New Word</h2>
       <div className="flex gap-3 mb-4">
         <div className="flex-1">
           <label className="block text-sm font-medium text-gray-600 mb-1">English</label>
@@ -95,7 +95,7 @@ export default function WordForm({ words, onSubmit }: Props) {
             type="button"
             onClick={handleLookup}
             disabled={lookingUp || !english.trim()}
-            className="bg-greek-blue text-white px-5 py-2.5 rounded-lg font-medium hover:bg-greek-blue-dark disabled:opacity-40 transition shadow-sm"
+            className="bg-filos-primary text-white px-5 py-2.5 rounded-xl font-medium hover:bg-filos-primary-dark disabled:opacity-40 transition shadow-sm"
           >
             {lookingUp ? 'Looking up...' : 'Lookup'}
           </button>

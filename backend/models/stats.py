@@ -17,6 +17,15 @@ class WeeklyActivity(BaseModel):
     avg_score: float
 
 
+class DifficultWord(BaseModel):
+    id: str
+    english: str
+    greek: str
+    times_asked: int
+    times_correct: int
+    success_percent: float
+
+
 class DashboardStats(BaseModel):
     total_words: int
     total_sessions: int
@@ -25,3 +34,4 @@ class DashboardStats(BaseModel):
     best_score: float
     recent_sessions: list[RecentSession]
     weekly_activity: list[WeeklyActivity]
+    difficult_words: list[DifficultWord]

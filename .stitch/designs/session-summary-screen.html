@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Quiz Summary | Filos</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style type="text/tailwindcss">
+        :root {
+            --sapphire: #0f172a;
+            --midnight: #020617;
+            --terracotta: #cc5500;
+            --terracotta-light: #ff7f50;
+            --correct-green: #10b981;
+            --incorrect-red: #ef4444;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .font-headline {
+            font-family: 'Manrope', sans-serif;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, var(--sapphire) 0%, var(--midnight) 100%);
+        }
+        .score-ring {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: conic-gradient(var(--terracotta) 0% 80%, rgba(255,255,255,0.1) 80% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .score-ring::after {
+            content: "";
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: var(--midnight);
+            border-radius: 50%;
+        }
+        .score-content {
+            position: relative;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+<header class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-slate-100">
+<div class="flex justify-between items-center h-16 px-6 max-w-7xl mx-auto">
+<div class="flex items-baseline space-x-2">
+<span class="text-2xl font-black text-[#0f172a] tracking-tight font-headline">Filos</span>
+<span class="text-xs font-medium text-slate-400">Your Greek companion</span>
+</div>
+<div class="flex items-center space-x-4">
+<button class="text-slate-500 hover:text-slate-800 transition-colors">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<main class="pt-16 flex-grow">
+<section class="hero-gradient text-white py-16 px-6">
+<div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-center gap-12">
+<div class="flex flex-col items-center">
+<div class="score-ring">
+<div class="score-content text-center">
+<div class="text-4xl font-extrabold font-headline">8/10</div>
+</div>
+</div>
+<p class="mt-4 text-slate-400 font-bold uppercase tracking-widest text-sm">Score</p>
+</div>
+<div class="text-center md:text-left space-y-4">
+<span class="inline-block px-4 py-1.5 bg-[var(--terracotta)] text-white text-sm font-bold rounded-full">
+                        Great job! 🎉
+                    </span>
+<h1 class="text-5xl font-extrabold font-headline tracking-tight">Quiz Complete!</h1>
+<p class="text-xl text-slate-300 font-medium">8 of 10 correct</p>
+</div>
+</div>
+</section>
+<section class="max-w-5xl mx-auto px-6 -mt-10 mb-12">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
+<p class="text-[10px] font-black tracking-widest text-slate-400 mb-1">CORRECT</p>
+<p class="text-2xl font-bold text-[var(--correct-green)]">8</p>
+</div>
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
+<p class="text-[10px] font-black tracking-widest text-slate-400 mb-1">INCORRECT</p>
+<p class="text-2xl font-bold text-[var(--incorrect-red)]">2</p>
+</div>
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
+<p class="text-[10px] font-black tracking-widest text-slate-400 mb-1">TIME</p>
+<p class="text-2xl font-bold text-[var(--sapphire)]">4:32</p>
+</div>
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
+<p class="text-[10px] font-black tracking-widest text-slate-400 mb-1">ACCURACY</p>
+<p class="text-2xl font-bold text-[var(--sapphire)]">73%</p>
+</div>
+</div>
+</section>
+<section class="max-w-5xl mx-auto px-6 mb-16">
+<div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+<div class="p-8 border-b border-slate-100">
+<h2 class="text-xl font-bold text-slate-900">Review Your Answers</h2>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-slate-50 text-[10px] font-black uppercase tracking-widest text-slate-500">
+<th class="px-8 py-4">Question</th>
+<th class="px-8 py-4">Your Answer</th>
+<th class="px-8 py-4">Correct Answer</th>
+<th class="px-8 py-4">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100">
+<tr>
+<td class="px-8 py-5 text-sm font-medium text-slate-700">How do you say "Good Morning"?</td>
+<td class="px-8 py-5 text-sm text-slate-600">Kalimera</td>
+<td class="px-8 py-5 text-sm text-slate-600">Kalimera</td>
+<td class="px-8 py-5">
+<span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded-full uppercase">Correct</span>
+</td>
+</tr>
+<tr>
+<td class="px-8 py-5 text-sm font-medium text-slate-700">Translate "Friend"</td>
+<td class="px-8 py-5 text-sm text-slate-600">Filos</td>
+<td class="px-8 py-5 text-sm text-slate-600">Filos</td>
+<td class="px-8 py-5">
+<span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded-full uppercase">Correct</span>
+</td>
+</tr>
+<tr>
+<td class="px-8 py-5 text-sm font-medium text-slate-700">What is the Greek word for "Water"?</td>
+<td class="px-8 py-5 text-sm text-slate-600">Krasi</td>
+<td class="px-8 py-5 text-sm text-slate-600">Nero</td>
+<td class="px-8 py-5">
+<span class="px-2.5 py-1 bg-red-100 text-red-700 text-[10px] font-bold rounded-full uppercase">Incorrect</span>
+</td>
+</tr>
+<tr>
+<td class="px-8 py-5 text-sm font-medium text-slate-700">Meaning of "Efcharisto"?</td>
+<td class="px-8 py-5 text-sm text-slate-600">Thank you</td>
+<td class="px-8 py-5 text-sm text-slate-600">Thank you</td>
+<td class="px-8 py-5">
+<span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded-full uppercase">Correct</span>
+</td>
+</tr>
+<tr>
+<td class="px-8 py-5 text-sm font-medium text-slate-700">The word for "Sun" is...</td>
+<td class="px-8 py-5 text-sm text-slate-600">Asteri</td>
+<td class="px-8 py-5 text-sm text-slate-600">Ilios</td>
+<td class="px-8 py-5">
+<span class="px-2.5 py-1 bg-red-100 text-red-700 text-[10px] font-bold rounded-full uppercase">Incorrect</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section class="max-w-5xl mx-auto px-6 mb-24 flex flex-col items-center gap-8">
+<div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
+<button class="bg-[var(--sapphire)] text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-slate-800 transition-all flex-1 max-w-xs text-center shadow-lg">Try Again</button>
+<button class="bg-[var(--terracotta)] text-white px-10 py-4 rounded-xl font-bold text-lg hover:opacity-90 transition-all flex-1 max-w-xs text-center shadow-lg">New Quiz</button>
+</div>
+<a class="flex items-center text-slate-400 font-bold hover:text-[var(--sapphire)] transition-colors group" href="#">
+                Browse Vocabulary <span class="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+</a>
+</section>
+</main>
+<footer class="w-full py-10 bg-slate-100">
+<div class="max-w-7xl mx-auto px-6 text-center text-slate-500 text-sm font-medium">
+            Filos · Your Greek companion · Powered by AI
+        </div>
+</footer>
+
+</body></html>

@@ -12,6 +12,8 @@ interface QuizState {
   summary: QuizSummary | null
   loading: boolean
   error: string | null
+  correctCount: number
+  wrongCount: number
 }
 
 export function useQuiz(quizType: QuizType) {
@@ -23,6 +25,8 @@ export function useQuiz(quizType: QuizType) {
     summary: null,
     loading: false,
     error: null,
+    correctCount: 0,
+    wrongCount: 0,
   })
 
   const start = useCallback(async (sourceLang: SourceLanguage, numQuestions: number) => {
@@ -42,6 +46,8 @@ export function useQuiz(quizType: QuizType) {
         summary: null,
         loading: false,
         error: null,
+        correctCount: 0,
+        wrongCount: 0,
       })
     } catch (e) {
       setState((s) => ({ ...s, loading: false, error: (e as Error).message }))
@@ -53,7 +59,14 @@ export function useQuiz(quizType: QuizType) {
     setState((s) => ({ ...s, loading: true }))
     try {
       const result = await submitAnswer(state.sessionId, { answer: text })
-      setState((s) => ({ ...s, phase: 'result', result, loading: false }))
+      setState((s) => ({
+        ...s,
+        phase: 'result',
+        result,
+        loading: false,
+        correctCount: result.correct ? s.correctCount + 1 : s.correctCount,
+        wrongCount: result.correct ? s.wrongCount : s.wrongCount + 1,
+      }))
     } catch (e) {
       setState((s) => ({ ...s, loading: false, error: (e as Error).message }))
     }
@@ -81,6 +94,8 @@ export function useQuiz(quizType: QuizType) {
       summary: null,
       loading: false,
       error: null,
+      correctCount: 0,
+      wrongCount: 0,
     })
   }, [])
 

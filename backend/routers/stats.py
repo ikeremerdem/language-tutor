@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi.responses import Response
 
-from models.stats import DashboardStats
+from models.stats import DashboardStats, RecentSession
 from services import stats_service
 
 router = APIRouter(prefix="/api/stats", tags=["stats"])
@@ -10,6 +10,11 @@ router = APIRouter(prefix="/api/stats", tags=["stats"])
 @router.get("/dashboard", response_model=DashboardStats)
 def dashboard():
     return stats_service.get_dashboard()
+
+
+@router.get("/sessions/{quiz_type}", response_model=list[RecentSession])
+def sessions_by_type(quiz_type: str):
+    return stats_service.get_sessions_by_type(quiz_type)
 
 
 @router.delete("/reset", status_code=204)

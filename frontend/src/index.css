@@ -1,22 +1,32 @@
 @import "tailwindcss";
 
 @theme {
-  --color-greek-blue: #0D5EAF;
-  --color-greek-blue-dark: #0A4A8A;
-  --color-greek-blue-light: #1a6fc2;
-  --color-greek-sky: #EBF3FA;
-  --color-greek-accent: #F4CE4B;
+  --color-filos-primary: #004688;
+  --color-filos-primary-dark: #003366;
+  --color-filos-accent: #C15A1A;
+  --color-filos-accent-dark: #A04A14;
+  --color-filos-marble: #F8F6F2;
+  --color-filos-midnight: #0A2540;
+  --color-filos-surface: #F0EDE8;
 }
 
 body {
-  @apply bg-greek-sky text-gray-800 antialiased;
+  @apply bg-filos-marble text-gray-800 antialiased;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Manrope', system-ui, sans-serif;
+}
+
+.font-headline {
+  font-family: 'Manrope', system-ui, sans-serif;
+}
+
 input, select, textarea {
-  @apply border-gray-300 focus:border-greek-blue focus:ring-1 focus:ring-greek-blue/30 outline-none transition;
+  @apply border-gray-300 focus:border-filos-primary focus:ring-1 focus:ring-filos-primary/30 outline-none transition;
 }
 
 ::selection {
-  @apply bg-greek-blue/20;
+  @apply bg-filos-primary/20;
 }

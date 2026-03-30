@@ -4,9 +4,11 @@ from typing import Optional
 
 
 class CsvStore:
-    def __init__(self, file_path: Path, columns: list[str]):
+    def __init__(self, file_path: Path, columns: list[str],
+                 column_defaults: dict[str, str] | None = None):
         self.file_path = file_path
         self.columns = columns
+        self.column_defaults = column_defaults or {}
         self._ensure_file()
 
     def _ensure_file(self):
@@ -18,7 +20,13 @@ class CsvStore:
 
     def read_all(self) -> list[dict]:
         with open(self.file_path, "r", encoding="utf-8") as f:
-            return list(csv.DictReader(f))
+            rows = list(csv.DictReader(f))
+        if self.column_defaults:
+            for row in rows:
+                for col, default in self.column_defaults.items():
+                    if col not in row or row[col] == "":
+                        row[col] = default
+        return rows
 
     def find_by_id(self, id: str) -> Optional[dict]:
         for row in self.read_all():

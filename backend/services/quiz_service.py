@@ -58,7 +58,7 @@ def start_session(req: QuizStartRequest) -> str:
         selected: list[Word] = []
     else:
         num_q = min(req.num_questions, len(words))
-        selected = random.sample(words, num_q)
+        selected = _weighted_sample(words, num_q)
         total_q = len(selected)
 
     session_id = uuid.uuid4().hex[:8]
@@ -151,6 +151,7 @@ def _submit_word_answer(session: QuizSession, answer: str) -> QuizAnswerResult:
         prompt = word.greek
 
     is_correct = _check_word_answer(answer, correct_answer)
+    vocabulary_service.record_answer(word.id, is_correct)
     if is_correct:
         session.correct_count += 1
 
@@ -244,6 +245,25 @@ def _get_session(session_id: str) -> QuizSession:
     if not session:
         raise ValueError("Session not found")
     return session
+
+
+def _weighted_sample(words: list[Word], k: int) -> list[Word]:
+    """Pick k unique words, weighted so unseen/low-accuracy words appear more often."""
+    remaining = list(words)
+    selected: list[Word] = []
+    for _ in range(k):
+        weights = []
+        for w in remaining:
+            asked = w.times_asked
+            if asked == 0:
+                weights.append(10.0)
+            else:
+                accuracy = w.times_correct / asked
+                weights.append(max(1.0, 5.0 * (1 - accuracy) + 2.0 / (1 + asked)))
+        chosen = random.choices(remaining, weights=weights, k=1)[0]
+        selected.append(chosen)
+        remaining.remove(chosen)
+    return selected
 
 
 def _check_word_answer(answer: str, correct: str) -> bool:

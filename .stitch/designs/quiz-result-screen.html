@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Quiz Result | Filos</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "sapphire": "#004688",
+                        "correct-green": "#2D6A4F",
+                        "error-red": "#BA1A1A",
+                        "soft-green": "#E8F5EE",
+                        "soft-red": "#FDECEA",
+                        "terracotta": "#E07A5F",
+                        "on-background": "#171c1f",
+                        "surface": "#f6fafe",
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+        }
+        .progress-dot {
+            @apply w-3 h-3 rounded-full;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-background font-body">
+<nav class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-xl border-b border-slate-100">
+<div class="flex justify-between items-center h-24 px-8 max-w-5xl mx-auto">
+<div class="flex flex-col">
+<div class="flex flex-col leading-tight">
+  <span class="text-2xl font-black tracking-tighter font-headline" style="color:#004688">Filos</span>
+  <span class="text-xs font-medium italic" style="color:#C15A1A">Your Greek companion</span>
+</div>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-slate-500 font-medium hover:text-sapphire transition-colors" href="#">Dashboard</a>
+<a class="text-slate-500 font-medium hover:text-sapphire transition-colors" href="#">Vocabulary</a>
+<a class="text-sapphire font-bold border-b-2 border-sapphire pb-1" href="#">Sentence Quiz</a>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 text-slate-400 hover:text-sapphire transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-sapphire transition-colors">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</div>
+</nav>
+<main class="pt-36 pb-24 px-6 max-w-3xl mx-auto space-y-16">
+<section class="flex flex-col items-center text-center animate-fade-in">
+<div class="mb-6">
+<div class="w-20 h-20 bg-correct-green/10 text-correct-green rounded-full flex items-center justify-center ring-8 ring-correct-green/5">
+<span class="material-symbols-outlined !text-5xl">check_circle</span>
+</div>
+</div>
+<h2 class="text-3xl font-headline font-extrabold text-correct-green mb-4">Correct!</h2>
+<div class="mb-6">
+<h1 class="text-6xl font-headline font-black text-sapphire tracking-tight mb-4">θάλασσα</h1>
+<div class="inline-flex items-center bg-green-100 text-correct-green px-4 py-2 rounded-full font-bold text-sm shadow-sm">
+                Your answer: sea <span class="ml-2 font-bold">✓</span>
+</div>
+</div>
+<div class="w-full bg-soft-green p-8 rounded-2xl border border-correct-green/10 text-left mb-8">
+<div class="space-y-4">
+<div>
+<span class="text-[10px] font-black tracking-widest text-correct-green/60 uppercase">Etymology</span>
+<p class="text-slate-700 leading-relaxed mt-1">From Ancient Greek <span class="italic font-medium">θάλασσα</span> (thálassa), possibly of Pre-Greek origin. It remains one of the most iconic words in the Greek language.</p>
+</div>
+<div class="pt-4 border-t border-correct-green/10">
+<span class="text-[10px] font-black tracking-widest text-correct-green/60 uppercase">Example Sentence</span>
+<p class="text-xl font-headline font-bold text-slate-800 mt-2">"Η θάλασσα είναι μπλε"</p>
+<p class="text-slate-500 text-sm mt-1">(The sea is blue)</p>
+</div>
+</div>
+</div>
+<button class="w-full bg-sapphire hover:bg-sapphire/90 text-white py-5 rounded-xl font-black text-lg transition-all shadow-xl shadow-sapphire/20 flex items-center justify-center gap-3 group">
+            Next Question
+            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</section>
+<div class="relative py-4">
+<div aria-hidden="true" class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-slate-200"></div>
+</div>
+<div class="relative flex justify-center">
+<span class="bg-surface px-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Scenario Comparison</span>
+</div>
+</div>
+<section class="flex flex-col items-center text-center opacity-90">
+<div class="mb-6">
+<div class="w-20 h-20 bg-error-red/10 text-error-red rounded-full flex items-center justify-center ring-8 ring-error-red/5">
+<span class="material-symbols-outlined !text-5xl">cancel</span>
+</div>
+</div>
+<h2 class="text-3xl font-headline font-extrabold text-error-red mb-4">Not quite!</h2>
+<div class="mb-6 space-y-4">
+<h1 class="text-6xl font-headline font-black text-sapphire tracking-tight mb-4 opacity-50">θάλασσα</h1>
+<div class="flex flex-wrap justify-center gap-3">
+<div class="inline-flex items-center bg-red-100 text-error-red px-4 py-2 rounded-full font-bold text-sm shadow-sm">
+                    Your answer: sky <span class="ml-2 font-bold">✗</span>
+</div>
+<div class="inline-flex items-center bg-green-100 text-correct-green px-4 py-2 rounded-full font-bold text-sm shadow-sm border border-correct-green/20">
+                    Correct: sea <span class="ml-2 font-bold">✓</span>
+</div>
+</div>
+</div>
+<div class="w-full bg-soft-red p-8 rounded-2xl border border-error-red/10 text-left mb-8">
+<div class="space-y-4">
+<div>
+<span class="text-[10px] font-black tracking-widest text-error-red/60 uppercase">Etymology</span>
+<p class="text-slate-700 leading-relaxed mt-1">From Ancient Greek <span class="italic font-medium">θάλασσα</span> (thálassa). While you answered "sky" (ουρανός), remember that <span class="italic">Thalassa</span> was also the primeval spirit of the sea in Greek mythology.</p>
+</div>
+<div class="pt-4 border-t border-error-red/10">
+<span class="text-[10px] font-black tracking-widest text-error-red/60 uppercase">Example Sentence</span>
+<p class="text-xl font-headline font-bold text-slate-800 mt-2">"Η θάλασσα είναι μπλε"</p>
+<p class="text-slate-500 text-sm mt-1">(The sea is blue)</p>
+</div>
+</div>
+</div>
+<button class="w-full bg-sapphire hover:bg-sapphire/90 text-white py-5 rounded-xl font-black text-lg transition-all shadow-xl shadow-sapphire/20 flex items-center justify-center gap-3 group">
+            Next Question
+            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</section>
+<div class="flex justify-center items-center gap-3 py-8">
+<div class="progress-dot bg-correct-green"></div>
+<div class="progress-dot bg-correct-green"></div>
+<div class="progress-dot bg-correct-green"></div>
+<div class="progress-dot bg-terracotta ring-4 ring-terracotta/20"></div>
+<div class="progress-dot bg-slate-300"></div>
+<div class="progress-dot bg-slate-300"></div>
+<div class="progress-dot bg-slate-300"></div>
+<div class="progress-dot bg-slate-300"></div>
+<div class="progress-dot bg-slate-300"></div>
+<div class="progress-dot bg-slate-300"></div>
+</div>
+</main>
+<footer class="w-full py-12 border-t border-slate-200 bg-slate-50">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 max-w-5xl mx-auto gap-8">
+<div class="flex flex-col items-center md:items-start">
+<div class="font-headline font-bold text-sapphire">Filos</div>
+<p class="text-slate-400 text-xs mt-1">Your Greek companion</p>
+</div>
+<div class="flex gap-6">
+<a class="text-slate-500 text-sm font-medium hover:text-sapphire" href="#">About</a>
+<a class="text-slate-500 text-sm font-medium hover:text-sapphire" href="#">Methodology</a>
+<a class="text-slate-500 text-sm font-medium hover:text-sapphire" href="#">Support</a>
+</div>
+<div class="text-slate-400 text-xs">
+            © 2026 Filos · Your Greek companion · Powered by AI</div>
+</div>
+</footer>
+
+</body></html>

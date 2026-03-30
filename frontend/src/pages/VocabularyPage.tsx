@@ -55,7 +55,7 @@ export default function VocabularyPage() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Vocabulary</h2>
+      <h2 className="text-2xl font-bold text-filos-primary mb-6">Vocabulary</h2>
       <WordForm words={words} onSubmit={handleAdd} />
 
       <div className="flex flex-wrap items-center gap-4 mb-4">

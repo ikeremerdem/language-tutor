@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { DashboardStats } from '../types'
+import type { DashboardStats, RecentSession } from '../types'
 import { getDashboard, resetStats } from '../api/client'
 import StatsChart from '../components/StatsChart'
 
@@ -38,7 +38,7 @@ export default function DashboardPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Dashboard</h2>
+        <h2 className="text-2xl font-bold text-filos-primary">Dashboard</h2>
         {stats.total_sessions > 0 && (
           <button
             onClick={() => setShowConfirm(true)}
@@ -86,33 +86,39 @@ export default function DashboardPage() {
         <StatCard icon={STAT_ICONS.best} label="Best Score" value={`${stats.best_score}%`} />
       </div>
       <StatsChart data={stats.weekly_activity} />
-      {stats.recent_sessions.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mt-6">
-          <h3 className="text-lg font-semibold text-gray-700 mb-4">Recent Sessions</h3>
-          <div className="space-y-2">
-            {stats.recent_sessions.map((s) => (
-              <div key={s.id} className="flex items-center justify-between p-3.5 bg-gray-50/80 rounded-lg hover:bg-greek-sky/50 transition">
-                <div className="flex items-center gap-3">
-                  <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${
-                    s.quiz_type === 'word' ? 'bg-blue-100 text-blue-700' : 'bg-violet-100 text-violet-700'
-                  }`}>
-                    {s.quiz_type === 'word' ? 'W' : 'S'}
-                  </span>
-                  <span className="text-sm text-gray-600">
-                    {s.correct_answers}/{s.total_questions} correct
-                  </span>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span className={`font-bold text-lg ${s.score_percent >= 80 ? 'text-green-600' : s.score_percent >= 50 ? 'text-amber-500' : 'text-red-500'}`}>
-                    {s.score_percent}%
-                  </span>
-                  <span className="text-xs text-gray-400">
-                    {s.ended_at ? new Date(s.ended_at).toLocaleDateString() : ''}
-                  </span>
-                </div>
+      {(stats.recent_sessions.length > 0 || stats.difficult_words.length > 0) && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+          {stats.recent_sessions.length > 0 && (
+            <div className="bg-white rounded-xl shadow-sm p-5">
+              <h3 className="text-base font-semibold text-filos-primary mb-3 font-headline">Recent Sessions</h3>
+              <div className="space-y-1.5">
+                {stats.recent_sessions.map((s) => (
+                  <RecentSessionRow key={s.id} s={s} />
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          )}
+          {stats.difficult_words.length > 0 && (
+            <div className="bg-white rounded-xl shadow-sm p-5">
+              <h3 className="text-base font-semibold text-filos-primary mb-3 font-headline">Top 10 Difficult Words</h3>
+              <div className="space-y-1.5">
+                {stats.difficult_words.map((w) => (
+                  <div key={w.id} className="flex items-center justify-between p-2.5 bg-filos-marble rounded-lg hover:bg-filos-surface transition">
+                    <div className="min-w-0">
+                      <span className="text-sm font-medium text-gray-800 truncate block">{w.english}</span>
+                      <span className="text-xs text-gray-400">{w.greek}</span>
+                    </div>
+                    <div className="flex items-center gap-2 ml-2 flex-shrink-0">
+                      <span className="text-xs text-gray-400">{w.times_correct}/{w.times_asked}</span>
+                      <span className={`font-bold text-sm ${w.success_percent >= 70 ? 'text-green-600' : w.success_percent >= 40 ? 'text-amber-500' : 'text-red-500'}`}>
+                        {w.success_percent}%
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -121,12 +127,35 @@ export default function DashboardPage() {
 
 function StatCard({ icon, label, value }: { icon: string; label: string; value: string | number }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition">
+    <div className="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition">
       <div className="flex items-center gap-2 mb-2">
         <span className="text-xl">{icon}</span>
-        <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">{label}</p>
+        <p className="text-xs font-medium text-gray-400 uppercase tracking-widest">{label}</p>
       </div>
-      <p className="text-3xl font-bold text-gray-800">{value}</p>
+      <p className="text-3xl font-bold text-filos-primary font-headline">{value}</p>
+    </div>
+  )
+}
+
+function RecentSessionRow({ s }: { s: RecentSession }) {
+  return (
+    <div className="flex items-center justify-between p-2.5 bg-filos-marble rounded-lg hover:bg-filos-surface transition">
+      <div className="flex items-center gap-2">
+        <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold flex-shrink-0 ${
+          s.quiz_type === 'word' ? 'bg-filos-primary/10 text-filos-primary' : 'bg-filos-accent/10 text-filos-accent'
+        }`}>
+          {s.quiz_type === 'word' ? 'W' : 'S'}
+        </span>
+        <span className="text-sm text-gray-600">{s.correct_answers}/{s.total_questions}</span>
+      </div>
+      <div className="flex items-center gap-3">
+        <span className={`font-bold text-sm ${s.score_percent >= 80 ? 'text-green-600' : s.score_percent >= 50 ? 'text-amber-500' : 'text-red-500'}`}>
+          {s.score_percent}%
+        </span>
+        <span className="text-xs text-gray-400 w-16 text-right">
+          {s.ended_at ? new Date(s.ended_at).toLocaleDateString() : ''}
+        </span>
+      </div>
     </div>
   )
 }

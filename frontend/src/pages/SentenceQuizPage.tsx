@@ -8,11 +8,11 @@ export default function SentenceQuizPage() {
   const quiz = useQuiz('sentence')
 
   if (quiz.phase === 'setup') {
-    return <QuizSetup title="Sentence Quiz" onStart={quiz.start} loading={quiz.loading} error={quiz.error} />
+    return <QuizSetup title="Sentence Quiz" quizType="sentence" onStart={quiz.start} loading={quiz.loading} error={quiz.error} />
   }
 
   if (quiz.phase === 'question' && quiz.question) {
-    return <QuizCard question={quiz.question} onAnswer={quiz.answer} loading={quiz.loading} />
+    return <QuizCard question={quiz.question} onAnswer={quiz.answer} loading={quiz.loading} correctCount={quiz.correctCount} wrongCount={quiz.wrongCount} />
   }
 
   if (quiz.phase === 'result' && quiz.result) {

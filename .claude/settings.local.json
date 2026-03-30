@@ -18,7 +18,24 @@
       "Bash(xargs kill:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(.venv/bin/python:*)",
+      "Skill(stitch-design)",
+      "mcp__stitch__list_projects",
+      "mcp__stitch__create_project",
+      "mcp__stitch__generate_screen_from_text",
+      "mcp__stitch__list_screens",
+      "mcp__stitch__get_project",
+      "mcp__stitch__create_design_system",
+      "mcp__stitch__update_design_system",
+      "mcp__stitch__list_design_systems",
+      "mcp__stitch__generate_variants",
+      "mcp__stitch__edit_screens",
+      "Bash(for f:*)",
+      "Bash(do grep:*)",
+      "Bash(head -5 echo \"--- $f ---\" done)",
+      "Bash(do echo:*)",
+      "Bash(/Users/keremerdem/Code/kaloma-ai/greek-tutor/frontend/public/favicon.svg:*)"
     ]
   }
 }
