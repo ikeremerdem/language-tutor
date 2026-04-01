@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import type { QuizType, RecentSession, SourceLanguage } from '../types'
 import { getSessionsByType } from '../api/client'
 import FilosLogo from './FilosLogo'
+import { useLanguage } from '../context/LanguageContext'
 
 interface Props {
   title: string
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export default function QuizSetup({ title, quizType, onStart, loading, error }: Props) {
+  const { target_language } = useLanguage()
   const [sourceLang, setSourceLang] = useState<SourceLanguage>('english')
   const [numQuestions, setNumQuestions] = useState(10)
   const [recentSessions, setRecentSessions] = useState<RecentSession[]>([])
@@ -27,7 +29,7 @@ export default function QuizSetup({ title, quizType, onStart, loading, error }: 
           <FilosLogo size={52} />
         </div>
         <h2 className="text-2xl font-bold text-filos-primary mb-1">{title}</h2>
-        <p className="text-gray-400 text-sm mb-8">Test your Greek vocabulary</p>
+        <p className="text-gray-400 text-sm mb-8">Test your {target_language} vocabulary</p>
         <div className="space-y-5 text-left">
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1.5">Show me the word in</label>
@@ -36,8 +38,8 @@ export default function QuizSetup({ title, quizType, onStart, loading, error }: 
               onChange={(e) => setSourceLang(e.target.value as SourceLanguage)}
               className="w-full border border-gray-300 rounded-xl px-3 py-2.5"
             >
-              <option value="english">English (translate to Greek)</option>
-              <option value="greek">Greek (translate to English)</option>
+              <option value="english">English (translate to {target_language})</option>
+              <option value="target_language">{target_language} (translate to English)</option>
             </select>
           </div>
           <div>

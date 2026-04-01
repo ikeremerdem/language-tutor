@@ -106,7 +106,7 @@ export default function DashboardPage() {
                   <div key={w.id} className="flex items-center justify-between p-2.5 bg-filos-marble rounded-lg hover:bg-filos-surface transition">
                     <div className="min-w-0">
                       <span className="text-sm font-medium text-gray-800 truncate block">{w.english}</span>
-                      <span className="text-xs text-gray-400">{w.greek}</span>
+                      <span className="text-xs text-gray-400">{w.target_language}</span>
                     </div>
                     <div className="flex items-center gap-2 ml-2 flex-shrink-0">
                       <span className="text-xs text-gray-400">{w.times_correct}/{w.times_asked}</span>

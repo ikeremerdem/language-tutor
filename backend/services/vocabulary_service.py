@@ -5,7 +5,7 @@ from config import settings
 from models.vocabulary import Word, WordCreate, WordUpdate
 from services.csv_store import CsvStore
 
-COLUMNS = ["id", "word_type", "english", "greek", "notes", "created_at",
+COLUMNS = ["id", "word_type", "english", "target_language", "notes", "created_at",
            "times_asked", "times_correct", "last_asked"]
 
 _store = CsvStore(
@@ -44,7 +44,7 @@ def add_word(data: WordCreate) -> Word:
         "id": uuid.uuid4().hex[:8],
         "word_type": data.word_type.value,
         "english": data.english.strip(),
-        "greek": data.greek.strip(),
+        "target_language": data.target_language.strip(),
         "notes": data.notes.strip(),
         "created_at": datetime.now(timezone.utc).isoformat(),
         "times_asked": "0",

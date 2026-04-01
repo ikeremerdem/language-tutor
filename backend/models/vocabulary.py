@@ -15,14 +15,14 @@ class WordType(str, Enum):
 class WordCreate(BaseModel):
     word_type: WordType
     english: str
-    greek: str
+    target_language: str
     notes: str = ""
 
 
 class WordUpdate(BaseModel):
     word_type: Optional[WordType] = None
     english: Optional[str] = None
-    greek: Optional[str] = None
+    target_language: Optional[str] = None
     notes: Optional[str] = None
 
 
@@ -30,7 +30,7 @@ class Word(BaseModel):
     id: str
     word_type: WordType
     english: str
-    greek: str
+    target_language: str
     notes: str
     created_at: str
     times_asked: int = 0

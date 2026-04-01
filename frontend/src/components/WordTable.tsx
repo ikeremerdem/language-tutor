@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { Word, WordUpdate } from '../types'
+import { useLanguage } from '../context/LanguageContext'
 
 const TYPE_COLORS: Record<string, string> = {
   verb: 'bg-violet-100 text-violet-700',
@@ -29,6 +30,7 @@ function AccuracyBadge({ word }: { word: Word }) {
 }
 
 export default function WordTable({ words, onUpdate, onDelete }: Props) {
+  const { target_language } = useLanguage()
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editData, setEditData] = useState<WordUpdate>({})
 
@@ -37,7 +39,7 @@ export default function WordTable({ words, onUpdate, onDelete }: Props) {
     setEditData({
       word_type: word.word_type,
       english: word.english,
-      greek: word.greek,
+      target_language: word.target_language,
       notes: word.notes,
     })
   }
@@ -63,7 +65,7 @@ export default function WordTable({ words, onUpdate, onDelete }: Props) {
           <tr className="border-b border-gray-100 bg-gray-50/50">
             <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Type</th>
             <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">English</th>
-            <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Greek</th>
+            <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{target_language}</th>
             <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Notes</th>
             <th className="px-5 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Asked</th>
             <th className="px-5 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Accuracy</th>
@@ -95,8 +97,8 @@ export default function WordTable({ words, onUpdate, onDelete }: Props) {
                   </td>
                   <td className="px-5 py-2">
                     <input
-                      value={editData.greek}
-                      onChange={(e) => setEditData({ ...editData, greek: e.target.value })}
+                      value={editData.target_language}
+                      onChange={(e) => setEditData({ ...editData, target_language: e.target.value })}
                       className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-full"
                     />
                   </td>
@@ -126,7 +128,7 @@ export default function WordTable({ words, onUpdate, onDelete }: Props) {
                     </span>
                   </td>
                   <td className="px-5 py-3.5 text-sm font-medium text-gray-800">{word.english}</td>
-                  <td className="px-5 py-3.5 text-sm font-medium text-filos-primary">{word.greek}</td>
+                  <td className="px-5 py-3.5 text-sm font-medium text-filos-primary">{word.target_language}</td>
                   <td className="px-5 py-3.5 text-sm text-gray-400">{word.notes}</td>
                   <td className="px-5 py-3.5 text-center text-sm text-gray-500">{word.times_asked}</td>
                   <td className="px-5 py-3.5 text-center"><AccuracyBadge word={word} /></td>

@@ -10,7 +10,7 @@ class QuizType(str, Enum):
 
 class SourceLanguage(str, Enum):
     english = "english"
-    greek = "greek"
+    target_language = "target_language"
 
 
 class QuizStartRequest(BaseModel):

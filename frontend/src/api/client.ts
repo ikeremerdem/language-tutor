@@ -11,6 +11,7 @@ import type {
   DashboardStats,
   RecentSession,
   QuizType,
+  AppConfig,
 } from '../types'
 
 const BASE = '/api'
@@ -48,6 +49,9 @@ export const submitAnswer = (sessionId: string, data: QuizAnswerRequest) =>
   request<QuizAnswerResult>(`/quiz/${sessionId}/answer`, { method: 'POST', body: JSON.stringify(data) })
 export const endQuiz = (sessionId: string) =>
   request<QuizSummary>(`/quiz/${sessionId}/end`, { method: 'POST' })
+
+// Config
+export const fetchConfig = () => request<AppConfig>('/config')
 
 // Stats
 export const getDashboard = () => request<DashboardStats>('/stats/dashboard')

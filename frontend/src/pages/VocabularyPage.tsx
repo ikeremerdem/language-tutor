@@ -3,10 +3,12 @@ import type { Word, WordCreate, WordUpdate, WordType } from '../types'
 import { getWords, addWord, updateWord, deleteWord } from '../api/client'
 import WordForm from '../components/WordForm'
 import WordTable from '../components/WordTable'
+import { useLanguage } from '../context/LanguageContext'
 
 const PAGE_SIZE = 20
 
 export default function VocabularyPage() {
+  const { target_language } = useLanguage()
   const [words, setWords] = useState<Word[]>([])
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState<WordType | ''>('')
@@ -23,7 +25,7 @@ export default function VocabularyPage() {
     if (search) {
       const q = search.toLowerCase()
       result = result.filter(
-        (w) => w.english.toLowerCase().includes(q) || w.greek.toLowerCase().includes(q)
+        (w) => w.english.toLowerCase().includes(q) || w.target_language.toLowerCase().includes(q)
       )
     }
     if (typeFilter) {
@@ -68,7 +70,7 @@ export default function VocabularyPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-64"
-          placeholder="Search English or Greek..."
+          placeholder={`Search English or ${target_language}...`}
         />
         <select
           value={typeFilter}

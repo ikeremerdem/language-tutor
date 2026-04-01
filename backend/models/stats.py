@@ -20,7 +20,7 @@ class WeeklyActivity(BaseModel):
 class DifficultWord(BaseModel):
     id: str
     english: str
-    greek: str
+    target_language: str
     times_asked: int
     times_correct: int
     success_percent: float

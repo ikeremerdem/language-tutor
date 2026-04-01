@@ -1,6 +1,6 @@
-# Filos — Your Greek Companion
+# Filos — Your Language Companion
 
-> **Design System:** Filos — Your Greek Companion
+> **Design System:** Filos — Your Language Companion
 > **Stitch Project ID:** `12749142568416210858`
 > **Design System Asset ID:** `assets/7e709dd218ae4b3b95fbb52d1223115d`
 
@@ -8,9 +8,9 @@
 
 ## Brand Identity
 
-**App Name:** Filos (φίλος = "friend" in Greek)
+**App Name:** Filos (φίλος = "friend" in Greek — the name is fixed regardless of the configured language)
 
-**Tagline:** Your Greek companion
+**Tagline:** Your [target language] companion (dynamic, driven by the `TARGET_LANGUAGE` config)
 
 **Logo:** Φ (Phi) monogram inside a circle, deep sapphire `#004688`. Clean, modern, iconic.
 
@@ -20,7 +20,7 @@
 
 ## Creative North Star: Mediterranean Premium
 
-This design evokes the clarity of Mediterranean light, the warmth of terracotta walls, and the depth of the Aegean sea. Learning Greek should feel like an immersive cultural journey — premium, inspiring, and deeply human. The interface feels like a high-end cultural magazine meets language app.
+This design evokes the clarity of Mediterranean light, the warmth of terracotta walls, and the depth of the Aegean sea. Learning a language should feel like an immersive cultural journey — premium, inspiring, and deeply human. The interface feels like a high-end cultural magazine meets language app.
 
 ---
 
@@ -42,7 +42,7 @@ This design evokes the clarity of Mediterranean light, the warmth of terracotta 
 ### Rules
 - **No borders for sectioning** — use tonal layering (white card on marble bg creates natural edge)
 - **No pure black** — use `#171C1F` for text
-- Hero backgrounds: gradient `#004688` → `#0A2540` with subtle Greek meander pattern at 6% opacity
+- Hero backgrounds: gradient `#004688` → `#0A2540` with subtle geometric pattern at 6% opacity
 
 ---
 
@@ -69,7 +69,7 @@ This design evokes the clarity of Mediterranean light, the warmth of terracotta 
 ## Components
 
 ### Navigation
-Sticky glassmorphism header: Φ logomark + "Greek Filos" wordmark left | page links center | streak badge right.
+Sticky glassmorphism header: Φ logomark + "Filos" wordmark left | page links center | streak badge right.
 
 ### Cards
 - No borders — tonal background shift only
@@ -115,7 +115,7 @@ Sticky glassmorphism header: Φ logomark + "Greek Filos" wordmark left | page li
 
 ### Do
 - Use breathing room — generous spacing (`2.75–3.5rem`) between major sections
-- Ensure Greek characters have consistent `line-height` with Latin to prevent "jumping" text
+- Ensure target language characters have consistent `line-height` with Latin to prevent "jumping" text
 - Use intentional asymmetry in grids (e.g. wider activity card to break monotony)
 
 ### Don't

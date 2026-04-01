@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import FilosLogo from './FilosLogo'
+import { useLanguage } from '../context/LanguageContext'
 
 const links = [
   { to: '/dashboard', label: 'Dashboard' },
@@ -9,6 +10,7 @@ const links = [
 ]
 
 export default function Layout() {
+  const { target_language } = useLanguage()
   return (
     <div className="min-h-screen bg-filos-marble">
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm">
@@ -17,7 +19,7 @@ export default function Layout() {
             <FilosLogo size={38} />
             <div className="leading-tight">
               <h1 className="text-xl font-bold tracking-tight text-filos-primary font-headline">Filos</h1>
-              <p className="text-filos-accent text-xs italic">Your Greek companion</p>
+              <p className="text-filos-accent text-xs italic">Your {target_language} companion</p>
             </div>
           </div>
           <nav className="flex gap-1">
@@ -43,7 +45,7 @@ export default function Layout() {
         <Outlet />
       </main>
       <footer className="text-center text-xs text-gray-400 py-6">
-        Filos &middot; Your Greek companion &middot; Powered by AI
+        Filos &middot; Your {target_language} companion &middot; Powered by AI
       </footer>
     </div>
   )

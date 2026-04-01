@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { QuizQuestion } from '../types'
+import { useLanguage } from '../context/LanguageContext'
 
 interface Props {
   question: QuizQuestion
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export default function QuizCard({ question, onAnswer, loading, correctCount, wrongCount }: Props) {
+  const { target_language } = useLanguage()
   const [answer, setAnswer] = useState('')
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -19,7 +21,7 @@ export default function QuizCard({ question, onAnswer, loading, correctCount, wr
     setAnswer('')
   }
 
-  const targetLang = question.source_language === 'english' ? 'Greek' : 'English'
+  const targetLang = question.source_language === 'english' ? target_language : 'English'
   const progress = (question.question_number / question.total_questions) * 100
 
   return (

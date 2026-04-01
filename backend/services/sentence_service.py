@@ -75,19 +75,20 @@ def _chat(prompt: str, temperature: float = 0.7) -> str:
 
 
 def lookup_word(english: str) -> dict:
-    """Look up an English word and return its Greek translation, type, and notes.
-    Returns {"greek": str, "word_type": str, "notes": str}
+    """Look up an English word and return its target language translation, type, and notes.
+    Returns {"target_language": str, "word_type": str, "notes": str}
     """
-    prompt = f"""You are a Greek language dictionary. Translate the English word/phrase below to Greek.
+    lang = settings.target_language
+    prompt = f"""You are a {lang} language dictionary. Translate the English word/phrase below to {lang}.
 
 Word: {english}
 
 Respond with ONLY valid JSON (no markdown) with these fields:
-- "greek": the Greek translation (use the most common/standard form)
+- "target_language": the {lang} translation (use the most common/standard form)
 - "word_type": one of "verb", "noun", "adjective", "adverb", "preposition", "other"
-- "notes": helpful notes for a learner, e.g. for nouns include the article (ο/η/το) and gender, for verbs note if it's type A or B conjugation, any irregularities. Keep it brief.
+- "notes": helpful notes for a learner. Keep it brief.
 
-{{"greek": "...", "word_type": "...", "notes": "..."}}"""
+{{"target_language": "...", "word_type": "...", "notes": "..."}}"""
 
     text = _chat(prompt)
     return json.loads(text)
@@ -95,12 +96,17 @@ Respond with ONLY valid JSON (no markdown) with these fields:
 
 def generate_sentence(words: list[Word], source_language: str, previous_sentences: list[str] | None = None) -> dict:
     """Generate a sentence using a subset of vocabulary words.
+    source_language is either "english" or "target_language".
     Returns {"sentence": str, "translation": str, "word_id": str}
     """
+    lang = settings.target_language
+    src_lang_name = lang if source_language == "target_language" else "English"
+    tgt_lang_name = "English" if source_language == "target_language" else lang
+
     shuffled = list(words)
     random.shuffle(shuffled)
     word_list = "\n".join(
-        f"- {w.english} = {w.greek}" for w in shuffled
+        f"- {w.english} = {w.target_language}" for w in shuffled
     )
 
     # Assign a random noun from the vocabulary to random_subject
@@ -114,10 +120,10 @@ def generate_sentence(words: list[Word], source_language: str, previous_sentence
     subject_form = _random_subject()
     if seed_type == "verb":
         verb = random.choice(verbs) if verbs else None
-        seed_constraint = f"Use this verb: {verb.english} ({verb.greek}), the subject should be {subject_form}. If needed pick a noun ONLY from the vocabulary provided. "
+        seed_constraint = f"Use this verb: {verb.english} ({verb.target_language}), the subject should be {subject_form}. If needed pick a noun ONLY from the vocabulary provided. "
     else:
         subject = random.choice(nouns) if nouns else None
-        seed_constraint = f"The subject shuold be {subject_form}. The noun it depicts is {subject.english} ({subject.greek}). If the subject is 'you', give in paranthesis if it is singular, formal or plural."
+        seed_constraint = f"The subject shuold be {subject_form}. The noun it depicts is {subject.english} ({subject.target_language}). If the subject is 'you', give in paranthesis if it is singular, formal or plural."
 
     object_count = _random_singular_or_plural()
 
@@ -126,19 +132,17 @@ def generate_sentence(words: list[Word], source_language: str, previous_sentence
         avoid_block = "\n\nDo NOT generate any of these sentences (already used):\n" + "\n".join(
             f"- {s}" for s in previous_sentences
         )
-    
 
-    target_language = "english" if source_language == "greek" else "greek"
     tense_constraint = "Only use present tense."
 
     prompt = f"""I want you to generate a sentence for a language quiz.
-        Generate a short, simple {source_language} sentence using basic grammar. 
+        Generate a short, simple {src_lang_name} sentence using basic grammar.
         The sentence structure should be {sentence_structure}.
         {seed_constraint}. {tense_constraint}
         Select a verb ONLY from the vocabulary words provided.
         If you decide to use an object, select a noun ONLY from the vocabulary words provided and it should be {object_count}.
         You can use adjectives, but select them ONLY from the vocabulary words provided.
-        You can use personal pronouns (he, she, you, etc.), demonstrative pronouns (this, that, etc.), indefinite articles (a, an), prepositions (in, into, from, etc.), conjunctions. They would add variety to the sentences. 
+        You can use personal pronouns (he, she, you, etc.), demonstrative pronouns (this, that, etc.), indefinite articles (a, an), prepositions (in, into, from, etc.), conjunctions. They would add variety to the sentences.
         When I say use ONLY from the vocabulary words provided, I mean do not use a word that is not in the vocabulary.
         The sentences should follow common sense, should be realistic, not just random words brought together. Do not bring any verbs and subjects together, that are not realistic, if possible. {avoid_block}
 
@@ -146,7 +150,7 @@ def generate_sentence(words: list[Word], source_language: str, previous_sentence
         {word_list}
 
         Respond with ONLY valid JSON (no markdown):
-        {{"sentence": "<{source_language} sentence>", "translation": "<{target_language} translation>", "word_id": "<id of the main word used>"}}"""
+        {{"sentence": "<{src_lang_name} sentence>", "translation": "<{tgt_lang_name} translation>", "word_id": "<id of the main word used>"}}"""
 
     print(prompt)
     text = _chat(prompt, temperature=1.0)
@@ -156,9 +160,10 @@ def generate_sentence(words: list[Word], source_language: str, previous_sentence
 def check_sentence_answer(original_sentence: str, correct_translation: str,
                           user_answer: str, target_language: str) -> dict:
     """Use LLM to check if the user's translation is semantically correct.
+    target_language is the display name (e.g. "Greek", "Spanish", "English").
     Returns {"correct": bool, "explanation": str}
     """
-    prompt = f"""You are a Greek language tutor checking a student's translation.
+    prompt = f"""You are a {target_language} language tutor checking a student's translation.
 
 Original sentence: {original_sentence}
 Expected translation: {correct_translation}
@@ -166,7 +171,7 @@ Student's answer: {user_answer}
 Target language: {target_language}
 
 The student's answer should convey the same meaning. Be lenient with:
-- Minor spelling/accent differences in Greek
+- Minor spelling/accent differences in {target_language}
 - Word order variations
 - Article differences
 - Equivalent synonyms

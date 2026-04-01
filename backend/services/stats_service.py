@@ -73,7 +73,7 @@ def _compute_difficult_words(words) -> list[DifficultWord]:
         DifficultWord(
             id=w.id,
             english=w.english,
-            greek=w.greek,
+            target_language=w.target_language,
             times_asked=w.times_asked,
             times_correct=w.times_correct,
             success_percent=round(w.times_correct / w.times_asked * 100, 1),

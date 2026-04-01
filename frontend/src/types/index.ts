@@ -4,7 +4,7 @@ export interface Word {
   id: string
   word_type: WordType
   english: string
-  greek: string
+  target_language: string
   notes: string
   created_at: string
   times_asked: number
@@ -15,12 +15,12 @@ export interface Word {
 export interface WordCreate {
   word_type: WordType
   english: string
-  greek: string
+  target_language: string
   notes: string
 }
 
 export interface WordLookup {
-  greek: string
+  target_language: string
   word_type: WordType
   notes: string
 }
@@ -28,12 +28,12 @@ export interface WordLookup {
 export interface WordUpdate {
   word_type?: WordType
   english?: string
-  greek?: string
+  target_language?: string
   notes?: string
 }
 
 export type QuizType = 'word' | 'sentence'
-export type SourceLanguage = 'english' | 'greek'
+export type SourceLanguage = 'english' | 'target_language'
 
 export interface QuizStartRequest {
   quiz_type: QuizType
@@ -81,7 +81,7 @@ export interface QuizDetailItem {
 export interface DifficultWord {
   id: string
   english: string
-  greek: string
+  target_language: string
   times_asked: number
   times_correct: number
   success_percent: number
@@ -112,4 +112,8 @@ export interface WeeklyActivity {
   sessions: number
   questions: number
   avg_score: number
+}
+
+export interface AppConfig {
+  target_language: string
 }

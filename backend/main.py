@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from config import settings
 from routers import vocabulary, quiz, stats
 
-app = FastAPI(title="Greek Tutor API")
+app = FastAPI(title="Language Tutor API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -23,3 +23,8 @@ app.include_router(stats.router)
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/api/config")
+def config():
+    return {"target_language": settings.target_language}

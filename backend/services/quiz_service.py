@@ -90,7 +90,7 @@ def _get_word_question(session: QuizSession) -> QuizQuestion:
     if session.source_language == SourceLanguage.english:
         prompt = word.english
     else:
-        prompt = word.greek
+        prompt = word.target_language
 
     session.awaiting_answer = True
     return QuizQuestion(
@@ -144,11 +144,11 @@ def submit_answer(session_id: str, answer: str) -> QuizAnswerResult:
 def _submit_word_answer(session: QuizSession, answer: str) -> QuizAnswerResult:
     word = session.questions[session.current_index]
     if session.source_language == SourceLanguage.english:
-        correct_answer = word.greek
+        correct_answer = word.target_language
         prompt = word.english
     else:
         correct_answer = word.english
-        prompt = word.greek
+        prompt = word.target_language
 
     is_correct = _check_word_answer(answer, correct_answer)
     vocabulary_service.record_answer(word.id, is_correct)
@@ -180,8 +180,8 @@ def _submit_sentence_answer(session: QuizSession, answer: str) -> QuizAnswerResu
     if not sq:
         raise ValueError("No sentence question active")
 
-    target_language = "greek" if session.source_language == SourceLanguage.english else "english"
-    result = check_sentence_answer(sq.sentence, sq.translation, answer, target_language)
+    target_lang_name = settings.target_language if session.source_language == SourceLanguage.english else "English"
+    result = check_sentence_answer(sq.sentence, sq.translation, answer, target_lang_name)
 
     is_correct = result["correct"]
     if is_correct:

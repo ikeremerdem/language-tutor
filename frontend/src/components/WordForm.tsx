@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Word, WordCreate, WordType } from '../types'
 import { lookupWord } from '../api/client'
+import { useLanguage } from '../context/LanguageContext'
 
 const WORD_TYPES: WordType[] = ['verb', 'noun', 'adjective', 'adverb', 'preposition', 'other']
 
@@ -10,9 +11,10 @@ interface Props {
 }
 
 export default function WordForm({ words, onSubmit }: Props) {
+  const { target_language } = useLanguage()
   const [wordType, setWordType] = useState<WordType>('noun')
   const [english, setEnglish] = useState('')
-  const [greek, setGreek] = useState('')
+  const [targetWord, setTargetWord] = useState('')
   const [notes, setNotes] = useState('')
   const [loading, setLoading] = useState(false)
   const [lookingUp, setLookingUp] = useState(false)
@@ -34,7 +36,7 @@ export default function WordForm({ words, onSubmit }: Props) {
     setLookingUp(true)
     try {
       const result = await lookupWord(english.trim())
-      setGreek(result.greek)
+      setTargetWord(result.target_language)
       setWordType(result.word_type)
       setNotes(result.notes)
     } catch {
@@ -47,7 +49,7 @@ export default function WordForm({ words, onSubmit }: Props) {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault()
-      if (!greek) {
+      if (!targetWord) {
         handleLookup()
       }
     }
@@ -55,13 +57,13 @@ export default function WordForm({ words, onSubmit }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!english.trim() || !greek.trim()) return
+    if (!english.trim() || !targetWord.trim()) return
     setLoading(true)
     setError('')
     try {
-      await onSubmit({ word_type: wordType, english, greek, notes })
+      await onSubmit({ word_type: wordType, english, target_language: targetWord, notes })
       setEnglish('')
-      setGreek('')
+      setTargetWord('')
       setNotes('')
       setDuplicate(null)
     } catch (e) {
@@ -103,7 +105,7 @@ export default function WordForm({ words, onSubmit }: Props) {
       </div>
       {duplicate && (
         <div className="mb-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-4 py-3 text-sm">
-          This word already exists: <strong>{duplicate.english}</strong> = <strong>{duplicate.greek}</strong> ({duplicate.word_type}{duplicate.notes ? `, ${duplicate.notes}` : ''})
+          This word already exists: <strong>{duplicate.english}</strong> = <strong>{duplicate.target_language}</strong> ({duplicate.word_type}{duplicate.notes ? `, ${duplicate.notes}` : ''})
         </div>
       )}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -120,10 +122,10 @@ export default function WordForm({ words, onSubmit }: Props) {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-600 mb-1">Greek</label>
+          <label className="block text-sm font-medium text-gray-600 mb-1">{target_language}</label>
           <input
-            value={greek}
-            onChange={(e) => setGreek(e.target.value)}
+            value={targetWord}
+            onChange={(e) => setTargetWord(e.target.value)}
             className="w-full border border-gray-300 rounded-lg px-3 py-2.5"
             placeholder="auto-filled by lookup"
           />
@@ -141,7 +143,7 @@ export default function WordForm({ words, onSubmit }: Props) {
       {error && <p className="mt-3 text-red-600 text-sm">{error}</p>}
       <button
         type="submit"
-        disabled={loading || !english.trim() || !greek.trim()}
+        disabled={loading || !english.trim() || !targetWord.trim()}
         className="mt-5 bg-green-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-green-700 disabled:opacity-40 transition shadow-sm"
       >
         {loading ? 'Adding...' : 'Add Word'}
