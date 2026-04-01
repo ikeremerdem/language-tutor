@@ -66,7 +66,11 @@ export default function WordTable({ words, onUpdate, onDelete }: Props) {
                   <td className="px-5 py-2"><input value={editData.english} onChange={(e) => setEditData({ ...editData, english: e.target.value })} className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-full" /></td>
                   <td className="px-5 py-2"><input value={editData.target_language} onChange={(e) => setEditData({ ...editData, target_language: e.target.value })} className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-full" /></td>
                   <td className="px-5 py-2"><input value={editData.notes} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-full" /></td>
-                  <td className="px-5 py-2 text-center text-sm text-gray-500">{word.times_asked}</td>
+                  <td className="px-5 py-2 text-center text-sm text-gray-500">
+                    {word.times_asked === 0
+                      ? <span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-sky-100 text-sky-600">new</span>
+                      : word.times_asked}
+                  </td>
                   <td className="px-5 py-2 text-center"><AccuracyBadge word={word} /></td>
                   <td className="px-5 py-2 text-right space-x-1">
                     <button onClick={saveEdit} className="p-1.5 rounded-lg text-green-600 hover:bg-green-50 transition" title="Save">
@@ -83,7 +87,11 @@ export default function WordTable({ words, onUpdate, onDelete }: Props) {
                   <td className="px-5 py-3.5 text-sm font-medium text-gray-800">{word.english}</td>
                   <td className="px-5 py-3.5 text-sm font-medium text-filos-primary">{word.target_language}</td>
                   <td className="px-5 py-3.5 text-sm text-gray-400">{word.notes}</td>
-                  <td className="px-5 py-3.5 text-center text-sm text-gray-500">{word.times_asked}</td>
+                  <td className="px-5 py-3.5 text-center text-sm text-gray-500">
+                    {word.times_asked === 0
+                      ? <span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-sky-100 text-sky-600">new</span>
+                      : word.times_asked}
+                  </td>
                   <td className="px-5 py-3.5 text-center"><AccuracyBadge word={word} /></td>
                   <td className="px-5 py-3.5 text-right whitespace-nowrap space-x-1">
                     <button onClick={() => startEdit(word)} className="p-1.5 rounded-lg text-gray-400 hover:text-filos-primary hover:bg-filos-surface transition" title="Edit">

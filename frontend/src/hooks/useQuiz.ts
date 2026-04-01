@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import type { QuizType, SourceLanguage, QuizQuestion, QuizAnswerResult, QuizSummary } from '../types'
+import type { QuizType, QuizFocus, SourceLanguage, QuizQuestion, QuizAnswerResult, QuizSummary } from '../types'
 import { startQuiz, getNextQuestion, submitAnswer, endQuiz } from '../api/client'
 import { useTutor } from '../context/TutorContext'
 
@@ -31,13 +31,14 @@ export function useQuiz(quizType: QuizType) {
     wrongCount: 0,
   })
 
-  const start = useCallback(async (sourceLang: SourceLanguage, numQuestions: number) => {
+  const start = useCallback(async (sourceLang: SourceLanguage, numQuestions: number, focus: QuizFocus) => {
     setState((s) => ({ ...s, loading: true, error: null }))
     try {
       const { session_id } = await startQuiz(tutorId, {
         quiz_type: quizType,
         source_language: sourceLang,
         num_questions: numQuestions,
+        focus,
       })
       const question = await getNextQuestion(tutorId, session_id)
       setState({

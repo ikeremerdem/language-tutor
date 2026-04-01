@@ -26,12 +26,19 @@ class DifficultWord(BaseModel):
     success_percent: float
 
 
+class WordStatusCounts(BaseModel):
+    new: int
+    good: int
+    struggling: int
+
+
 class DashboardStats(BaseModel):
     total_words: int
     total_sessions: int
     total_questions: int
     average_score: float
     best_score: float
+    word_status: WordStatusCounts
     recent_sessions: list[RecentSession]
     weekly_activity: list[WeeklyActivity]
     difficult_words: list[DifficultWord]

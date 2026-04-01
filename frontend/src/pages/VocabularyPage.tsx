@@ -14,6 +14,7 @@ export default function VocabularyPage() {
   const [addMode, setAddMode] = useState<'single' | 'bulk'>('single')
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState<WordType | ''>('')
+  const [perfFilter, setPerfFilter] = useState<'all' | 'new' | 'good' | 'struggling'>('all')
   const [page, setPage] = useState(1)
 
   const load = async () => setWords(await getWords(tutorId))
@@ -29,14 +30,17 @@ export default function VocabularyPage() {
       )
     }
     if (typeFilter) result = result.filter((w) => w.word_type === typeFilter)
+    if (perfFilter === 'new') result = result.filter((w) => w.times_asked === 0)
+    else if (perfFilter === 'good') result = result.filter((w) => w.times_asked > 0 && (w.times_correct / w.times_asked) >= 0.8)
+    else if (perfFilter === 'struggling') result = result.filter((w) => w.times_asked > 0 && (w.times_correct / w.times_asked) < 0.8)
     return result
-  }, [words, search, typeFilter])
+  }, [words, search, typeFilter, perfFilter])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const currentPage = Math.min(page, totalPages)
   const paged = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
 
-  useEffect(() => { setPage(1) }, [search, typeFilter])
+  useEffect(() => { setPage(1) }, [search, typeFilter, perfFilter])
 
   const handleAdd = async (data: WordCreate) => { await addWord(tutorId, data); await load() }
   const handleUpdate = async (id: string, data: WordUpdate) => { await updateWord(tutorId, id, data); await load() }
@@ -87,6 +91,16 @@ export default function VocabularyPage() {
           {['verb', 'noun', 'adjective', 'adverb', 'preposition', 'other'].map((t) => (
             <option key={t} value={t}>{t}</option>
           ))}
+        </select>
+        <select
+          value={perfFilter}
+          onChange={(e) => setPerfFilter(e.target.value as typeof perfFilter)}
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+        >
+          <option value="all">All words</option>
+          <option value="new">New</option>
+          <option value="good">Correct ≥ 80%</option>
+          <option value="struggling">Correct &lt; 80%</option>
         </select>
       </div>
 

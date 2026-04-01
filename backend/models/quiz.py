@@ -13,10 +13,17 @@ class SourceLanguage(str, Enum):
     target_language = "target_language"
 
 
+class QuizFocus(str, Enum):
+    balanced = "balanced"
+    new_words = "new_words"
+    mistakes = "mistakes"
+
+
 class QuizStartRequest(BaseModel):
     quiz_type: QuizType
     source_language: SourceLanguage
     num_questions: int = 10
+    focus: QuizFocus = QuizFocus.balanced
 
 
 class QuizQuestion(BaseModel):

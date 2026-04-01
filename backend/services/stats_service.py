@@ -1,7 +1,7 @@
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 
-from models.stats import DashboardStats, DifficultWord, RecentSession, WeeklyActivity
+from models.stats import DashboardStats, DifficultWord, RecentSession, WeeklyActivity, WordStatusCounts
 from services import vocabulary_service
 from services.supabase_client import supabase
 
@@ -46,6 +46,7 @@ def get_dashboard(tutor_id: str) -> DashboardStats:
         total_questions=total_questions,
         average_score=average_score,
         best_score=best_score,
+        word_status=_compute_word_status(words),
         recent_sessions=recent_sessions,
         weekly_activity=_compute_weekly_activity(sessions),
         difficult_words=_compute_difficult_words(words),
@@ -73,6 +74,13 @@ def get_sessions_by_type(tutor_id: str, quiz_type: str) -> list[RecentSession]:
         )
         for s in response.data
     ]
+
+
+def _compute_word_status(words) -> WordStatusCounts:
+    new = sum(1 for w in words if w.times_asked == 0)
+    good = sum(1 for w in words if w.times_asked > 0 and w.times_correct / w.times_asked >= 0.8)
+    struggling = sum(1 for w in words if w.times_asked > 0 and w.times_correct / w.times_asked < 0.8)
+    return WordStatusCounts(new=new, good=good, struggling=struggling)
 
 
 def _compute_difficult_words(words) -> list[DifficultWord]:
