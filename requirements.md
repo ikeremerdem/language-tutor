@@ -41,19 +41,30 @@ The application helps users learn a target language from English. It is a multi-
 
 ## 6. Vocabulary List
 
-- The vocabulary list supports filtering by text search (English or target language) and by word type.
+- The vocabulary list supports filtering by:
+  - Text search (English or target language)
+  - Word type (verb, noun, adjective, etc.)
+  - Performance: All words / New (never asked) / Correct ≥ 80% / Correct < 80%
+- Words that have never been asked display a "new" pill instead of a count of 0.
 - Pagination shows 20 words per page.
 - Words can be edited inline or deleted.
 
 ## 7. Word Quiz
 
-- The user configures a quiz: direction (English → target or target → English) and number of questions.
-- Questions are drawn randomly from the user's vocabulary, weighted toward words answered incorrectly in the past.
+- The quiz setup screen offers:
+  - **Translation direction** — a visual toggle button showing e.g. `English → Greek`; clicking it swaps the direction.
+  - **Focus** — three pill options:
+    - *Balanced*: weighted mix of all words (new words and mistakes get higher weight)
+    - *New words*: only words never practiced, selected uniformly at random
+    - *Mistakes*: only words answered incorrectly at least once, weighted toward higher error rates
+  - **Number of questions** — quick-pick buttons (5 / 10 / 20 / 50) plus a custom input.
+- The setup screen also shows a Vocabulary Status summary (New / Correct ≥ 80% / Correct < 80%) and recent session history.
 - After each answer, the result (correct/incorrect), the correct answer, and grammar notes are displayed.
 - At the end of the session, a summary shows score, per-word results, and session statistics.
 
 ## 8. Sentence Quiz
 
+- The quiz setup screen offers the same translation direction toggle and number of questions picker as the word quiz.
 - The system generates simple sentences using ONLY words in the user's vocabulary, in either direction.
 - The user types the translated sentence as an answer.
 - Answers are checked semantically using an LLM (handling word order, accents, and equivalent synonyms).
@@ -64,8 +75,9 @@ The application helps users learn a target language from English. It is a multi-
 
 - Displays: total vocabulary count, total sessions, total questions answered, average score, best score.
 - Weekly activity chart showing questions answered per day.
-- Recent session history.
-- Top 10 most difficult words (lowest accuracy rate, minimum 3 attempts).
+- Two-column panel below the chart:
+  - **Left**: Recent session history (last 10 sessions).
+  - **Right**: Vocabulary Status table (New / Correct ≥ 80% / Correct < 80% with counts and share %), followed by Top 10 most difficult words (lowest accuracy, sorted ascending).
 - A "Reset Statistics" button that clears all session history without affecting vocabulary.
 
 ## 10. LLM Provider

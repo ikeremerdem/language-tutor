@@ -6,11 +6,11 @@ A multi-user, web-based language learning application with vocabulary management
 
 - **Multi-user auth** — Register and sign in via Supabase Auth. Each user's data is fully isolated.
 - **Language Tutors** — Create one tutor per language (Greek, German, Spanish). Switch between them freely.
-- **Vocabulary Management** — Add words one at a time or in bulk. Auto-lookup translates, classifies, and adds grammar notes via LLM. Filter by text or word type, with pagination.
+- **Vocabulary Management** — Add words one at a time or in bulk. Auto-lookup translates, classifies, and adds grammar notes via LLM. Filter by text, word type, or performance (New / Correct ≥ 80% / Correct < 80%), with pagination.
 - **Bulk Word Add** — Paste a list of English words (one per line); the app looks each up and adds it automatically, skipping duplicates.
-- **Word Quiz** — Flashcards drawn from your vocabulary in either direction (English → target or target → English).
+- **Word Quiz** — Flashcards with a visual direction toggle, focus modes (Balanced / New words / Mistakes), and quick question count presets.
 - **Sentence Quiz** — AI-generated sentences using only your vocabulary. Answers are checked semantically, handling word order and accent variations.
-- **Dashboard** — Quiz session history, scores, weekly activity chart, vocabulary count, and your 10 most difficult words.
+- **Dashboard** — Weekly activity chart, vocabulary status breakdown, recent sessions, and your 10 most difficult words.
 
 ## Tech Stack
 
