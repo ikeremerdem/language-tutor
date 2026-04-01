@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import type { QuizType, SourceLanguage, QuizQuestion, QuizAnswerResult, QuizSummary } from '../types'
 import { startQuiz, getNextQuestion, submitAnswer, endQuiz } from '../api/client'
+import { useTutor } from '../context/TutorContext'
 
 type QuizPhase = 'setup' | 'question' | 'result' | 'summary'
 
@@ -17,6 +18,7 @@ interface QuizState {
 }
 
 export function useQuiz(quizType: QuizType) {
+  const { tutorId } = useTutor()
   const [state, setState] = useState<QuizState>({
     phase: 'setup',
     sessionId: null,
@@ -32,12 +34,12 @@ export function useQuiz(quizType: QuizType) {
   const start = useCallback(async (sourceLang: SourceLanguage, numQuestions: number) => {
     setState((s) => ({ ...s, loading: true, error: null }))
     try {
-      const { session_id } = await startQuiz({
+      const { session_id } = await startQuiz(tutorId, {
         quiz_type: quizType,
         source_language: sourceLang,
         num_questions: numQuestions,
       })
-      const question = await getNextQuestion(session_id)
+      const question = await getNextQuestion(tutorId, session_id)
       setState({
         phase: 'question',
         sessionId: session_id,
@@ -52,13 +54,13 @@ export function useQuiz(quizType: QuizType) {
     } catch (e) {
       setState((s) => ({ ...s, loading: false, error: (e as Error).message }))
     }
-  }, [quizType])
+  }, [quizType, tutorId])
 
   const answer = useCallback(async (text: string) => {
     if (!state.sessionId) return
     setState((s) => ({ ...s, loading: true }))
     try {
-      const result = await submitAnswer(state.sessionId, { answer: text })
+      const result = await submitAnswer(tutorId, state.sessionId, { answer: text })
       setState((s) => ({
         ...s,
         phase: 'result',
@@ -70,20 +72,19 @@ export function useQuiz(quizType: QuizType) {
     } catch (e) {
       setState((s) => ({ ...s, loading: false, error: (e as Error).message }))
     }
-  }, [state.sessionId])
+  }, [state.sessionId, tutorId])
 
   const next = useCallback(async () => {
     if (!state.sessionId) return
     setState((s) => ({ ...s, loading: true }))
     try {
-      const question = await getNextQuestion(state.sessionId)
+      const question = await getNextQuestion(tutorId, state.sessionId)
       setState((s) => ({ ...s, phase: 'question', question, result: null, loading: false }))
     } catch {
-      // No more questions - end the session
-      const summary = await endQuiz(state.sessionId)
+      const summary = await endQuiz(tutorId, state.sessionId)
       setState((s) => ({ ...s, phase: 'summary', summary, loading: false }))
     }
-  }, [state.sessionId])
+  }, [state.sessionId, tutorId])
 
   const reset = useCallback(() => {
     setState({

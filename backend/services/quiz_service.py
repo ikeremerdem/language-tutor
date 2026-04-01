@@ -5,21 +5,19 @@ from datetime import datetime, timezone
 from dataclasses import dataclass, field
 from typing import Optional
 
-from config import settings
 from models.quiz import (
     QuizType, SourceLanguage, QuizStartRequest, QuizQuestion,
     QuizAnswerResult, QuizDetailItem, QuizSummary,
 )
 from models.vocabulary import Word
 from services import vocabulary_service
-from services.csv_store import CsvStore
+from services.supabase_client import supabase
 
 SESSION_COLUMNS = [
-    "id", "quiz_type", "source_language", "total_questions",
-    "correct_answers", "score_percent", "started_at", "ended_at", "details_json",
+    "id", "tutor_id", "user_id", "quiz_type", "source_language",
+    "total_questions", "correct_answers", "score_percent",
+    "started_at", "ended_at", "details_json",
 ]
-
-_session_store = CsvStore(settings.data_dir / "quiz_sessions.csv", SESSION_COLUMNS)
 
 
 @dataclass
@@ -32,6 +30,9 @@ class SentenceQuestion:
 @dataclass
 class QuizSession:
     id: str
+    tutor_id: str
+    user_id: str
+    language: str
     quiz_type: QuizType
     source_language: SourceLanguage
     questions: list[Word]
@@ -48,9 +49,9 @@ class QuizSession:
 _active_sessions: dict[str, QuizSession] = {}
 
 
-def start_session(req: QuizStartRequest) -> str:
-    words = vocabulary_service.list_words()
-    if len(words) < 1:
+def start_session(tutor_id: str, user_id: str, language: str, req: QuizStartRequest) -> str:
+    words = vocabulary_service.list_words(tutor_id)
+    if not words:
         raise ValueError("No vocabulary words available")
 
     if req.quiz_type == QuizType.sentence:
@@ -64,6 +65,9 @@ def start_session(req: QuizStartRequest) -> str:
     session_id = uuid.uuid4().hex[:8]
     session = QuizSession(
         id=session_id,
+        tutor_id=tutor_id,
+        user_id=user_id,
+        language=language,
         quiz_type=req.quiz_type,
         source_language=req.source_language,
         questions=selected,
@@ -74,24 +78,18 @@ def start_session(req: QuizStartRequest) -> str:
     return session_id
 
 
-def get_next_question(session_id: str) -> QuizQuestion:
-    session = _get_session(session_id)
+def get_next_question(session_id: str, user_id: str) -> QuizQuestion:
+    session = _get_session(session_id, user_id)
     if session.current_index >= session.total_questions:
         raise ValueError("No more questions")
-
     if session.quiz_type == QuizType.sentence:
         return _get_sentence_question(session)
-
     return _get_word_question(session)
 
 
 def _get_word_question(session: QuizSession) -> QuizQuestion:
     word = session.questions[session.current_index]
-    if session.source_language == SourceLanguage.english:
-        prompt = word.english
-    else:
-        prompt = word.target_language
-
+    prompt = word.english if session.source_language == SourceLanguage.english else word.target_language
     session.awaiting_answer = True
     return QuizQuestion(
         question_number=session.current_index + 1,
@@ -106,10 +104,11 @@ def _get_word_question(session: QuizSession) -> QuizQuestion:
 def _get_sentence_question(session: QuizSession) -> QuizQuestion:
     from services.sentence_service import generate_sentence
 
-    all_words = vocabulary_service.list_words()
+    all_words = vocabulary_service.list_words(session.tutor_id)
     result = generate_sentence(
         all_words,
         session.source_language.value,
+        session.language,
         previous_sentences=session.used_sentences,
     )
     session.used_sentences.append(result["sentence"])
@@ -118,7 +117,6 @@ def _get_sentence_question(session: QuizSession) -> QuizQuestion:
         translation=result["translation"],
         word_id=result.get("word_id", ""),
     )
-
     session.awaiting_answer = True
     return QuizQuestion(
         question_number=session.current_index + 1,
@@ -130,14 +128,12 @@ def _get_sentence_question(session: QuizSession) -> QuizQuestion:
     )
 
 
-def submit_answer(session_id: str, answer: str) -> QuizAnswerResult:
-    session = _get_session(session_id)
+def submit_answer(session_id: str, user_id: str, answer: str) -> QuizAnswerResult:
+    session = _get_session(session_id, user_id)
     if not session.awaiting_answer:
         raise ValueError("No question awaiting answer")
-
     if session.quiz_type == QuizType.sentence:
         return _submit_sentence_answer(session, answer)
-
     return _submit_word_answer(session, answer)
 
 
@@ -150,26 +146,21 @@ def _submit_word_answer(session: QuizSession, answer: str) -> QuizAnswerResult:
         correct_answer = word.english
         prompt = word.target_language
 
-    is_correct = _check_word_answer(answer, correct_answer)
+    is_correct = answer.strip().lower() == correct_answer.strip().lower()
     vocabulary_service.record_answer(word.id, is_correct)
     if is_correct:
         session.correct_count += 1
 
     session.details.append(QuizDetailItem(
-        prompt=prompt,
-        your_answer=answer,
-        correct_answer=correct_answer,
-        correct=is_correct,
+        prompt=prompt, your_answer=answer,
+        correct_answer=correct_answer, correct=is_correct,
     ))
-
     session.current_index += 1
     session.awaiting_answer = False
 
     return QuizAnswerResult(
-        correct=is_correct,
-        correct_answer=correct_answer,
-        your_answer=answer,
-        notes=word.notes if word.notes else None,
+        correct=is_correct, correct_answer=correct_answer,
+        your_answer=answer, notes=word.notes or None,
     )
 
 
@@ -180,7 +171,7 @@ def _submit_sentence_answer(session: QuizSession, answer: str) -> QuizAnswerResu
     if not sq:
         raise ValueError("No sentence question active")
 
-    target_lang_name = settings.target_language if session.source_language == SourceLanguage.english else "English"
+    target_lang_name = session.language if session.source_language == SourceLanguage.english else "English"
     result = check_sentence_answer(sq.sentence, sq.translation, answer, target_lang_name)
 
     is_correct = result["correct"]
@@ -188,26 +179,21 @@ def _submit_sentence_answer(session: QuizSession, answer: str) -> QuizAnswerResu
         session.correct_count += 1
 
     session.details.append(QuizDetailItem(
-        prompt=sq.sentence,
-        your_answer=answer,
-        correct_answer=sq.translation,
-        correct=is_correct,
+        prompt=sq.sentence, your_answer=answer,
+        correct_answer=sq.translation, correct=is_correct,
     ))
-
     session.current_index += 1
     session.awaiting_answer = False
     session.current_sentence = None
 
     return QuizAnswerResult(
-        correct=is_correct,
-        correct_answer=sq.translation,
-        your_answer=answer,
-        explanation=result.get("explanation"),
+        correct=is_correct, correct_answer=sq.translation,
+        your_answer=answer, explanation=result.get("explanation"),
     )
 
 
-def end_session(session_id: str) -> QuizSummary:
-    session = _get_session(session_id)
+def end_session(session_id: str, user_id: str) -> QuizSummary:
+    session = _get_session(session_id, user_id)
     total = len(session.details) or 1
     score = round(session.correct_count / total * 100, 1)
 
@@ -220,8 +206,9 @@ def end_session(session_id: str) -> QuizSummary:
         details=session.details,
     )
 
-    _session_store.append({
-        "id": session.id,
+    supabase.table("quiz_sessions").insert({
+        "tutor_id": session.tutor_id,
+        "user_id": session.user_id,
         "quiz_type": session.quiz_type.value,
         "source_language": session.source_language.value,
         "total_questions": total,
@@ -229,26 +216,23 @@ def end_session(session_id: str) -> QuizSummary:
         "score_percent": score,
         "started_at": session.started_at,
         "ended_at": datetime.now(timezone.utc).isoformat(),
-        "details_json": json.dumps([d.model_dump() for d in session.details]),
-    })
+        "details_json": [d.model_dump() for d in session.details],
+    }).execute()
 
     del _active_sessions[session_id]
     return summary
 
 
-def get_session_store() -> CsvStore:
-    return _session_store
-
-
-def _get_session(session_id: str) -> QuizSession:
+def _get_session(session_id: str, user_id: str) -> QuizSession:
     session = _active_sessions.get(session_id)
     if not session:
+        raise ValueError("Session not found")
+    if session.user_id != user_id:
         raise ValueError("Session not found")
     return session
 
 
 def _weighted_sample(words: list[Word], k: int) -> list[Word]:
-    """Pick k unique words, weighted so unseen/low-accuracy words appear more often."""
     remaining = list(words)
     selected: list[Word] = []
     for _ in range(k):
@@ -264,7 +248,3 @@ def _weighted_sample(words: list[Word], k: int) -> list[Word]:
         selected.append(chosen)
         remaining.remove(chosen)
     return selected
-
-
-def _check_word_answer(answer: str, correct: str) -> bool:
-    return answer.strip().lower() == correct.strip().lower()

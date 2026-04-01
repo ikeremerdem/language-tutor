@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { Word, WordUpdate } from '../types'
-import { useLanguage } from '../context/LanguageContext'
+import { useTutor } from '../context/TutorContext'
 
 const TYPE_COLORS: Record<string, string> = {
   verb: 'bg-violet-100 text-violet-700',
@@ -18,45 +18,26 @@ interface Props {
 }
 
 function AccuracyBadge({ word }: { word: Word }) {
-  if (word.times_asked === 0) {
-    return <span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 text-gray-400">--</span>
-  }
+  if (word.times_asked === 0) return <span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 text-gray-400">--</span>
   const pct = Math.round((word.times_correct / word.times_asked) * 100)
-  const color =
-    pct >= 80 ? 'bg-emerald-100 text-emerald-700' :
-    pct >= 50 ? 'bg-amber-100 text-amber-700' :
-    'bg-red-100 text-red-700'
+  const color = pct >= 80 ? 'bg-emerald-100 text-emerald-700' : pct >= 50 ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'
   return <span className={`inline-block text-xs font-medium px-2.5 py-1 rounded-full ${color}`}>{pct}%</span>
 }
 
 export default function WordTable({ words, onUpdate, onDelete }: Props) {
-  const { target_language } = useLanguage()
+  const { targetLanguage } = useTutor()
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editData, setEditData] = useState<WordUpdate>({})
 
   const startEdit = (word: Word) => {
     setEditingId(word.id)
-    setEditData({
-      word_type: word.word_type,
-      english: word.english,
-      target_language: word.target_language,
-      notes: word.notes,
-    })
+    setEditData({ word_type: word.word_type, english: word.english, target_language: word.target_language, notes: word.notes })
   }
+  const saveEdit = async () => { if (!editingId) return; await onUpdate(editingId, editData); setEditingId(null) }
 
-  const saveEdit = async () => {
-    if (!editingId) return
-    await onUpdate(editingId, editData)
-    setEditingId(null)
-  }
-
-  if (words.length === 0) {
-    return (
-      <div className="bg-white rounded-xl shadow-sm p-12 text-center text-gray-400">
-        No words yet. Add some words above to get started!
-      </div>
-    )
-  }
+  if (words.length === 0) return (
+    <div className="bg-white rounded-xl shadow-sm p-12 text-center text-gray-400">No words yet. Add some words above to get started!</div>
+  )
 
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden">
@@ -65,7 +46,7 @@ export default function WordTable({ words, onUpdate, onDelete }: Props) {
           <tr className="border-b border-gray-100 bg-gray-50/50">
             <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Type</th>
             <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">English</th>
-            <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{target_language}</th>
+            <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{targetLanguage}</th>
             <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Notes</th>
             <th className="px-5 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Asked</th>
             <th className="px-5 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Accuracy</th>
@@ -78,37 +59,13 @@ export default function WordTable({ words, onUpdate, onDelete }: Props) {
               {editingId === word.id ? (
                 <>
                   <td className="px-5 py-2">
-                    <select
-                      value={editData.word_type}
-                      onChange={(e) => setEditData({ ...editData, word_type: e.target.value as Word['word_type'] })}
-                      className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-full"
-                    >
-                      {['verb', 'noun', 'adjective', 'adverb', 'preposition', 'other'].map((t) => (
-                        <option key={t} value={t}>{t}</option>
-                      ))}
+                    <select value={editData.word_type} onChange={(e) => setEditData({ ...editData, word_type: e.target.value as Word['word_type'] })} className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-full">
+                      {['verb', 'noun', 'adjective', 'adverb', 'preposition', 'other'].map((t) => <option key={t} value={t}>{t}</option>)}
                     </select>
                   </td>
-                  <td className="px-5 py-2">
-                    <input
-                      value={editData.english}
-                      onChange={(e) => setEditData({ ...editData, english: e.target.value })}
-                      className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-full"
-                    />
-                  </td>
-                  <td className="px-5 py-2">
-                    <input
-                      value={editData.target_language}
-                      onChange={(e) => setEditData({ ...editData, target_language: e.target.value })}
-                      className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-full"
-                    />
-                  </td>
-                  <td className="px-5 py-2">
-                    <input
-                      value={editData.notes}
-                      onChange={(e) => setEditData({ ...editData, notes: e.target.value })}
-                      className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-full"
-                    />
-                  </td>
+                  <td className="px-5 py-2"><input value={editData.english} onChange={(e) => setEditData({ ...editData, english: e.target.value })} className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-full" /></td>
+                  <td className="px-5 py-2"><input value={editData.target_language} onChange={(e) => setEditData({ ...editData, target_language: e.target.value })} className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-full" /></td>
+                  <td className="px-5 py-2"><input value={editData.notes} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-full" /></td>
                   <td className="px-5 py-2 text-center text-sm text-gray-500">{word.times_asked}</td>
                   <td className="px-5 py-2 text-center"><AccuracyBadge word={word} /></td>
                   <td className="px-5 py-2 text-right space-x-1">
@@ -122,11 +79,7 @@ export default function WordTable({ words, onUpdate, onDelete }: Props) {
                 </>
               ) : (
                 <>
-                  <td className="px-5 py-3.5">
-                    <span className={`inline-block text-xs font-medium px-2.5 py-1 rounded-full ${TYPE_COLORS[word.word_type] || TYPE_COLORS.other}`}>
-                      {word.word_type}
-                    </span>
-                  </td>
+                  <td className="px-5 py-3.5"><span className={`inline-block text-xs font-medium px-2.5 py-1 rounded-full ${TYPE_COLORS[word.word_type] || TYPE_COLORS.other}`}>{word.word_type}</span></td>
                   <td className="px-5 py-3.5 text-sm font-medium text-gray-800">{word.english}</td>
                   <td className="px-5 py-3.5 text-sm font-medium text-filos-primary">{word.target_language}</td>
                   <td className="px-5 py-3.5 text-sm text-gray-400">{word.notes}</td>

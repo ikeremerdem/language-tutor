@@ -1,22 +1,10 @@
-import uuid
 from datetime import datetime, timezone
 
-from config import settings
 from models.vocabulary import Word, WordCreate, WordUpdate
-from services.csv_store import CsvStore
-
-COLUMNS = ["id", "word_type", "english", "target_language", "notes", "created_at",
-           "times_asked", "times_correct", "last_asked"]
-
-_store = CsvStore(
-    settings.data_dir / "vocabulary.csv",
-    COLUMNS,
-    column_defaults={"times_asked": "0", "times_correct": "0", "last_asked": ""},
-)
+from services.supabase_client import supabase
 
 
 def _attention_weight(word: Word) -> float:
-    """Same formula as quiz selection: higher = needs more attention."""
     asked = word.times_asked
     if asked == 0:
         return 10.0
@@ -24,56 +12,93 @@ def _attention_weight(word: Word) -> float:
     return max(1.0, 5.0 * (1 - accuracy) + 2.0 / (1 + asked))
 
 
-def list_words() -> list[Word]:
-    rows = _store.read_all()
-    words = [Word(**r) for r in rows]
+def list_words(tutor_id: str) -> list[Word]:
+    response = (
+        supabase.table("vocabulary")
+        .select("*")
+        .eq("tutor_id", tutor_id)
+        .execute()
+    )
+    words = [Word(**row) for row in response.data]
     return sorted(words, key=_attention_weight, reverse=True)
 
 
-def get_word(word_id: str) -> Word | None:
-    row = _store.find_by_id(word_id)
-    return Word(**row) if row else None
+def get_word(word_id: str, tutor_id: str) -> Word | None:
+    response = (
+        supabase.table("vocabulary")
+        .select("*")
+        .eq("id", word_id)
+        .eq("tutor_id", tutor_id)
+        .single()
+        .execute()
+    )
+    return Word(**response.data) if response.data else None
 
 
-def add_word(data: WordCreate) -> Word:
+def add_word(tutor_id: str, user_id: str, data: WordCreate) -> Word:
     english_lower = data.english.strip().lower()
-    for existing in _store.read_all():
-        if existing["english"].strip().lower() == english_lower:
-            raise ValueError(f"Word '{data.english.strip()}' already exists")
+    existing = (
+        supabase.table("vocabulary")
+        .select("id")
+        .eq("tutor_id", tutor_id)
+        .ilike("english", english_lower)
+        .execute()
+    )
+    if existing.data:
+        raise ValueError(f"Word '{data.english.strip()}' already exists")
+
     row = {
-        "id": uuid.uuid4().hex[:8],
+        "tutor_id": tutor_id,
+        "user_id": user_id,
         "word_type": data.word_type.value,
         "english": data.english.strip(),
         "target_language": data.target_language.strip(),
         "notes": data.notes.strip(),
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "times_asked": "0",
-        "times_correct": "0",
-        "last_asked": "",
     }
-    _store.append(row)
-    return Word(**row)
+    response = supabase.table("vocabulary").insert(row).execute()
+    return Word(**response.data[0])
 
 
-def update_word(word_id: str, data: WordUpdate) -> Word | None:
-    updates = {k: v.value if hasattr(v, "value") else v.strip() if isinstance(v, str) else v
-                for k, v in data.model_dump(exclude_unset=True).items()}
-    row = _store.update(word_id, updates)
-    return Word(**row) if row else None
+def update_word(word_id: str, tutor_id: str, data: WordUpdate) -> Word | None:
+    updates = {}
+    for k, v in data.model_dump(exclude_unset=True).items():
+        updates[k] = v.value if hasattr(v, "value") else v.strip() if isinstance(v, str) else v
+
+    response = (
+        supabase.table("vocabulary")
+        .update(updates)
+        .eq("id", word_id)
+        .eq("tutor_id", tutor_id)
+        .execute()
+    )
+    return Word(**response.data[0]) if response.data else None
 
 
-def delete_word(word_id: str) -> bool:
-    return _store.delete(word_id)
+def delete_word(word_id: str, tutor_id: str) -> bool:
+    response = (
+        supabase.table("vocabulary")
+        .delete()
+        .eq("id", word_id)
+        .eq("tutor_id", tutor_id)
+        .execute()
+    )
+    return len(response.data) > 0
 
 
 def record_answer(word_id: str, correct: bool) -> None:
-    row = _store.find_by_id(word_id)
-    if not row:
+    response = (
+        supabase.table("vocabulary")
+        .select("times_asked, times_correct")
+        .eq("id", word_id)
+        .single()
+        .execute()
+    )
+    if not response.data:
         return
-    times_asked = int(row.get("times_asked", 0)) + 1
-    times_correct = int(row.get("times_correct", 0)) + (1 if correct else 0)
-    _store.update(word_id, {
-        "times_asked": str(times_asked),
-        "times_correct": str(times_correct),
+    times_asked = response.data["times_asked"] + 1
+    times_correct = response.data["times_correct"] + (1 if correct else 0)
+    supabase.table("vocabulary").update({
+        "times_asked": times_asked,
+        "times_correct": times_correct,
         "last_asked": datetime.now(timezone.utc).isoformat(),
-    })
+    }).eq("id", word_id).execute()

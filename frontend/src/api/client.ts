@@ -1,3 +1,4 @@
+import { supabase } from '../lib/supabase'
 import type {
   Word,
   WordCreate,
@@ -11,16 +12,23 @@ import type {
   DashboardStats,
   RecentSession,
   QuizType,
-  AppConfig,
+  LanguageTutor,
 } from '../types'
 
 const BASE = '/api'
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
+  const { data: { session } } = await supabase.auth.getSession()
+  const token = session?.access_token
+
   const res = await fetch(`${BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     ...options,
   })
+
   if (!res.ok) {
     const text = await res.text()
     throw new Error(text || res.statusText)
@@ -29,32 +37,51 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   return res.json()
 }
 
-// Vocabulary
-export const lookupWord = (english: string) =>
-  request<WordLookup>(`/vocabulary/lookup?english=${encodeURIComponent(english)}`)
-export const getWords = () => request<Word[]>('/vocabulary')
-export const addWord = (data: WordCreate) =>
-  request<Word>('/vocabulary', { method: 'POST', body: JSON.stringify(data) })
-export const updateWord = (id: string, data: WordUpdate) =>
-  request<Word>(`/vocabulary/${id}`, { method: 'PUT', body: JSON.stringify(data) })
-export const deleteWord = (id: string) =>
-  request<void>(`/vocabulary/${id}`, { method: 'DELETE' })
+// ── Tutors ──────────────────────────────────────────────────
+export const getTutors = () =>
+  request<LanguageTutor[]>('/tutors')
 
-// Quiz
-export const startQuiz = (data: QuizStartRequest) =>
-  request<{ session_id: string }>('/quiz/start', { method: 'POST', body: JSON.stringify(data) })
-export const getNextQuestion = (sessionId: string) =>
-  request<QuizQuestion>(`/quiz/${sessionId}/next`)
-export const submitAnswer = (sessionId: string, data: QuizAnswerRequest) =>
-  request<QuizAnswerResult>(`/quiz/${sessionId}/answer`, { method: 'POST', body: JSON.stringify(data) })
-export const endQuiz = (sessionId: string) =>
-  request<QuizSummary>(`/quiz/${sessionId}/end`, { method: 'POST' })
+export const createTutor = (language: string) =>
+  request<LanguageTutor>('/tutors', { method: 'POST', body: JSON.stringify({ language }) })
 
-// Config
-export const fetchConfig = () => request<AppConfig>('/config')
+export const deleteTutor = (tutorId: string) =>
+  request<void>(`/tutors/${tutorId}`, { method: 'DELETE' })
 
-// Stats
-export const getDashboard = () => request<DashboardStats>('/stats/dashboard')
-export const getSessionsByType = (quizType: QuizType) =>
-  request<RecentSession[]>(`/stats/sessions/${quizType}`)
-export const resetStats = () => request<void>('/stats/reset', { method: 'DELETE' })
+// ── Vocabulary ───────────────────────────────────────────────
+export const lookupWord = (tutorId: string, english: string) =>
+  request<WordLookup>(`/tutors/${tutorId}/vocabulary/lookup?english=${encodeURIComponent(english)}`)
+
+export const getWords = (tutorId: string) =>
+  request<Word[]>(`/tutors/${tutorId}/vocabulary`)
+
+export const addWord = (tutorId: string, data: WordCreate) =>
+  request<Word>(`/tutors/${tutorId}/vocabulary`, { method: 'POST', body: JSON.stringify(data) })
+
+export const updateWord = (tutorId: string, id: string, data: WordUpdate) =>
+  request<Word>(`/tutors/${tutorId}/vocabulary/${id}`, { method: 'PUT', body: JSON.stringify(data) })
+
+export const deleteWord = (tutorId: string, id: string) =>
+  request<void>(`/tutors/${tutorId}/vocabulary/${id}`, { method: 'DELETE' })
+
+// ── Quiz ─────────────────────────────────────────────────────
+export const startQuiz = (tutorId: string, data: QuizStartRequest) =>
+  request<{ session_id: string }>(`/tutors/${tutorId}/quiz/start`, { method: 'POST', body: JSON.stringify(data) })
+
+export const getNextQuestion = (tutorId: string, sessionId: string) =>
+  request<QuizQuestion>(`/tutors/${tutorId}/quiz/${sessionId}/next`)
+
+export const submitAnswer = (tutorId: string, sessionId: string, data: QuizAnswerRequest) =>
+  request<QuizAnswerResult>(`/tutors/${tutorId}/quiz/${sessionId}/answer`, { method: 'POST', body: JSON.stringify(data) })
+
+export const endQuiz = (tutorId: string, sessionId: string) =>
+  request<QuizSummary>(`/tutors/${tutorId}/quiz/${sessionId}/end`, { method: 'POST' })
+
+// ── Stats ────────────────────────────────────────────────────
+export const getDashboard = (tutorId: string) =>
+  request<DashboardStats>(`/tutors/${tutorId}/stats/dashboard`)
+
+export const getSessionsByType = (tutorId: string, quizType: QuizType) =>
+  request<RecentSession[]>(`/tutors/${tutorId}/stats/sessions/${quizType}`)
+
+export const resetStats = (tutorId: string) =>
+  request<void>(`/tutors/${tutorId}/stats/reset`, { method: 'DELETE' })

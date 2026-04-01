@@ -9,7 +9,7 @@ export interface Word {
   created_at: string
   times_asked: number
   times_correct: number
-  last_asked: string
+  last_asked: string | null
 }
 
 export interface WordCreate {
@@ -114,6 +114,9 @@ export interface WeeklyActivity {
   avg_score: number
 }
 
-export interface AppConfig {
-  target_language: string
+export interface LanguageTutor {
+  id: string
+  user_id: string
+  language: string
+  created_at: string
 }

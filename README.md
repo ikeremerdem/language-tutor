@@ -1,13 +1,16 @@
 # Filos — Language Tutor
 
-A web-based language learning application with vocabulary management, quizzes, and AI-powered sentence generation. Currently configured for Greek, but supports any language via a single environment variable.
+A multi-user, web-based language learning application with vocabulary management, quizzes, and AI-powered sentence generation. Users register and create personal Language Tutors, each dedicated to a specific language.
 
 ## Features
 
-- **Vocabulary Management** — Add English words and auto-lookup target language translations, word types, and grammar notes via LLM. Filter by text or word type, with pagination.
-- **Word Quiz** — Random vocabulary flashcards in either direction (English-to-target or target-to-English). Displays grammar notes alongside correct answers.
-- **Sentence Quiz** — AI-generated sentences using your vocabulary. Answers are checked semantically, handling word order and accent variations.
-- **Dashboard** — Track quiz sessions, scores, weekly activity, and vocabulary growth.
+- **Multi-user auth** — Register and sign in via Supabase Auth. Each user's data is fully isolated.
+- **Language Tutors** — Create one tutor per language (Greek, German, Spanish). Switch between them freely.
+- **Vocabulary Management** — Add words one at a time or in bulk. Auto-lookup translates, classifies, and adds grammar notes via LLM. Filter by text or word type, with pagination.
+- **Bulk Word Add** — Paste a list of English words (one per line); the app looks each up and adds it automatically, skipping duplicates.
+- **Word Quiz** — Flashcards drawn from your vocabulary in either direction (English → target or target → English).
+- **Sentence Quiz** — AI-generated sentences using only your vocabulary. Answers are checked semantically, handling word order and accent variations.
+- **Dashboard** — Quiz session history, scores, weekly activity chart, vocabulary count, and your 10 most difficult words.
 
 ## Tech Stack
 
@@ -15,8 +18,8 @@ A web-based language learning application with vocabulary management, quizzes, a
 |---|---|
 | Backend | Python, FastAPI, Pydantic |
 | Frontend | React, TypeScript, Vite, Tailwind CSS |
+| Auth & Database | Supabase (PostgreSQL + Auth + Row Level Security) |
 | AI | LiteLLM (supports OpenAI, Anthropic, Ollama, LMStudio, etc.) |
-| Storage | CSV files (designed for easy migration to a database) |
 
 ## Getting Started
 
@@ -24,9 +27,14 @@ A web-based language learning application with vocabulary management, quizzes, a
 
 - Python 3.11+
 - Node.js 18+
+- A [Supabase](https://supabase.com) project
 - An LLM API key (OpenAI, Anthropic, etc.) or a local model (Ollama, LMStudio)
 
-### Backend
+### 1. Database Setup
+
+Run `supabase/schema.sql` against your Supabase project (SQL Editor → paste → Run). This creates the `language_tutors`, `vocabulary`, and `quiz_sessions` tables with Row Level Security enabled.
+
+### 2. Backend
 
 ```bash
 cd backend
@@ -35,30 +43,32 @@ source .venv/bin/activate
 pip install -r requirements.txt
 
 cp .env.example .env
-# Edit .env with your LLM configuration and target language
+# Edit .env with your credentials
 ```
 
-Configure your LLM provider and target language in `.env`:
+`.env` configuration:
 
 ```bash
-# The language being learned (default: Greek)
-TARGET_LANGUAGE=Greek
+# Supabase
+SUPABASE_URL=https://your-project-id.supabase.co
+SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 
-# OpenAI
+# LLM provider (pick one)
 LLM_MODEL=openai/gpt-4o-mini
 LLM_API_KEY=sk-your-key-here
 
 # Anthropic
-LLM_MODEL=anthropic/claude-sonnet-4-5-20250929
-LLM_API_KEY=sk-ant-your-key-here
+# LLM_MODEL=anthropic/claude-sonnet-4-5-20250929
+# LLM_API_KEY=sk-ant-your-key-here
 
 # Ollama (local, no key needed)
-LLM_MODEL=ollama/llama3
-LLM_API_BASE=http://localhost:11434
+# LLM_MODEL=ollama/llama3
+# LLM_API_BASE=http://localhost:11434
 
 # LMStudio (local, no key needed)
-LLM_MODEL=openai/local-model
-LLM_API_BASE=http://localhost:1234/v1
+# LLM_MODEL=openai/local-model
+# LLM_API_BASE=http://localhost:1234/v1
 ```
 
 Start the server:
@@ -69,45 +79,99 @@ uvicorn main:app --reload
 
 API docs available at http://localhost:8000/docs
 
-### Frontend
+### 3. Frontend
 
 ```bash
 cd frontend
 npm install
+
+cp .env.example .env
+# Edit .env with your Supabase public credentials
+```
+
+`.env` configuration:
+
+```bash
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+```
+
+Start the dev server:
+
+```bash
 npm run dev
 ```
 
 Open http://localhost:5173
 
-## Switching Languages
+## User Flow
 
-To use the app for a different language:
-
-1. Set `TARGET_LANGUAGE=<language>` in `backend/.env` (e.g. `TARGET_LANGUAGE=Spanish`)
-2. Clear or replace the vocabulary and quiz session data files in `backend/data/`
-3. Restart the backend — all LLM prompts, UI labels, and column headers update automatically
-
-The frontend fetches the configured language from `GET /api/config` on startup, so all labels (column headers, quiz options, search placeholder, tagline) reflect the active language without any rebuild.
+1. Register or sign in at `/register` / `/login`
+2. Create a Language Tutor (Greek, German, or Spanish) on the **My Tutors** page
+3. Enter a tutor to access its dashboard, vocabulary, and quizzes
+4. All data (vocabulary, sessions, stats) is scoped per user and per tutor
 
 ## Project Structure
 
 ```
+supabase/
+  schema.sql              # Database schema and RLS policies
+
 backend/
-  main.py                 # FastAPI app, CORS, router mounting, /api/config endpoint
-  config.py               # Settings from environment variables (incl. TARGET_LANGUAGE)
-  data/                   # CSV storage (gitignored)
-  models/                 # Pydantic schemas
-  routers/                # API endpoints (vocabulary, quiz, stats)
-  services/               # Business logic (CSV store, quiz, LLM)
+  main.py                 # FastAPI app entry point
+  config.py               # Settings (Supabase keys, LLM config, supported languages)
+  middleware/
+    auth.py               # JWT verification via Supabase Auth
+  models/                 # Pydantic schemas (vocabulary, quiz, stats, tutor)
+  routers/                # API endpoints
+    tutors.py             #   /api/tutors
+    vocabulary.py         #   /api/tutors/{id}/vocabulary
+    quiz.py               #   /api/tutors/{id}/quiz
+    stats.py              #   /api/tutors/{id}/stats
+  services/
+    supabase_client.py    # Supabase service-role client
+    tutor_service.py      # Language tutor CRUD
+    vocabulary_service.py # Vocabulary CRUD (Supabase)
+    quiz_service.py       # In-memory quiz sessions, persisted on end
+    sentence_service.py   # LLM sentence generation
+    stats_service.py      # Dashboard and session queries
+  data/
+    Greek/sentence_structures.csv
+    German/sentence_structures.csv
+    Spanish/sentence_structures.csv
 
 frontend/src/
-  api/client.ts           # Typed API client (incl. fetchConfig)
-  context/                # LanguageContext — provides target language name app-wide
-  components/             # Reusable UI components
-  hooks/useQuiz.ts        # Quiz state machine hook
-  pages/                  # Dashboard, Vocabulary, WordQuiz, SentenceQuiz
+  lib/supabase.ts         # Supabase JS client (anon key, used for auth)
+  context/
+    AuthContext.tsx        # User auth state (user, loading, signOut)
+    TutorContext.ts        # Active tutor state (tutorId, targetLanguage)
+  api/client.ts           # Typed API client (JWT injected on every request)
+  components/
+    TutorLayout.tsx        # Loads tutor from URL param, provides TutorContext
+    Layout.tsx             # App shell with nav and header
+    BulkWordForm.tsx       # Bulk word add with per-word live status
+    WordForm.tsx           # Single word add with LLM lookup
+    WordTable.tsx          # Vocabulary list with inline editing
+    QuizCard.tsx           # Active quiz question UI
+    QuizSetup.tsx          # Quiz configuration and recent sessions
+    ...
+  hooks/useQuiz.ts        # Quiz state machine
+  pages/
+    LoginPage.tsx
+    RegisterPage.tsx
+    TutorsPage.tsx         # My Tutors list and tutor creation
+    DashboardPage.tsx
+    VocabularyPage.tsx
+    WordQuizPage.tsx
+    SentenceQuizPage.tsx
   types/index.ts          # TypeScript interfaces
 ```
+
+## Adding a New Language
+
+1. Add the language name to `SUPPORTED_LANGUAGES` in `backend/config.py`
+2. Create `backend/data/<Language>/sentence_structures.csv` with sentence templates
+3. The language will appear automatically in the tutor creation UI
 
 ## License
 

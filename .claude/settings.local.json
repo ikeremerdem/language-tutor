@@ -35,7 +35,9 @@
       "Bash(do grep:*)",
       "Bash(head -5 echo \"--- $f ---\" done)",
       "Bash(do echo:*)",
-      "Bash(/Users/keremerdem/Code/kaloma-ai/greek-tutor/frontend/public/favicon.svg:*)"
+      "Bash(/Users/keremerdem/Code/kaloma-ai/greek-tutor/frontend/public/favicon.svg:*)",
+      "Bash(.venv/bin/pip install:*)",
+      "Bash(ls:*)"
     ]
   }
 }

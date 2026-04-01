@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { Word, WordCreate, WordType } from '../types'
 import { lookupWord } from '../api/client'
-import { useLanguage } from '../context/LanguageContext'
+import { useTutor } from '../context/TutorContext'
 
 const WORD_TYPES: WordType[] = ['verb', 'noun', 'adjective', 'adverb', 'preposition', 'other']
 
@@ -11,7 +11,7 @@ interface Props {
 }
 
 export default function WordForm({ words, onSubmit }: Props) {
-  const { target_language } = useLanguage()
+  const { tutorId, targetLanguage } = useTutor()
   const [wordType, setWordType] = useState<WordType>('noun')
   const [english, setEnglish] = useState('')
   const [targetWord, setTargetWord] = useState('')
@@ -25,17 +25,11 @@ export default function WordForm({ words, onSubmit }: Props) {
     if (!english.trim()) return
     setError('')
     setDuplicate(null)
-
-    const existing = words.find(
-      (w) => w.english.toLowerCase() === english.trim().toLowerCase()
-    )
-    if (existing) {
-      setDuplicate(existing)
-    }
-
+    const existing = words.find((w) => w.english.toLowerCase() === english.trim().toLowerCase())
+    if (existing) setDuplicate(existing)
     setLookingUp(true)
     try {
-      const result = await lookupWord(english.trim())
+      const result = await lookupWord(tutorId, english.trim())
       setTargetWord(result.target_language)
       setWordType(result.word_type)
       setNotes(result.notes)
@@ -47,12 +41,7 @@ export default function WordForm({ words, onSubmit }: Props) {
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      if (!targetWord) {
-        handleLookup()
-      }
-    }
+    if (e.key === 'Enter') { e.preventDefault(); if (!targetWord) handleLookup() }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -62,17 +51,10 @@ export default function WordForm({ words, onSubmit }: Props) {
     setError('')
     try {
       await onSubmit({ word_type: wordType, english, target_language: targetWord, notes })
-      setEnglish('')
-      setTargetWord('')
-      setNotes('')
-      setDuplicate(null)
+      setEnglish(''); setTargetWord(''); setNotes(''); setDuplicate(null)
     } catch (e) {
       const msg = (e as Error).message
-      if (msg.includes('already exists')) {
-        setError(`"${english.trim()}" is already in your vocabulary.`)
-      } else {
-        setError(msg)
-      }
+      setError(msg.includes('already exists') ? `"${english.trim()}" is already in your vocabulary.` : msg)
     } finally {
       setLoading(false)
     }
@@ -99,45 +81,30 @@ export default function WordForm({ words, onSubmit }: Props) {
             disabled={lookingUp || !english.trim()}
             className="bg-filos-primary text-white px-5 py-2.5 rounded-xl font-medium hover:bg-filos-primary-dark disabled:opacity-40 transition shadow-sm"
           >
-            {lookingUp ? 'Looking up...' : 'Lookup'}
+            {lookingUp ? 'Looking up…' : 'Lookup'}
           </button>
         </div>
       </div>
       {duplicate && (
         <div className="mb-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-4 py-3 text-sm">
-          This word already exists: <strong>{duplicate.english}</strong> = <strong>{duplicate.target_language}</strong> ({duplicate.word_type}{duplicate.notes ? `, ${duplicate.notes}` : ''})
+          This word already exists: <strong>{duplicate.english}</strong> = <strong>{duplicate.target_language}</strong>{' '}
+          ({duplicate.word_type}{duplicate.notes ? `, ${duplicate.notes}` : ''})
         </div>
       )}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-600 mb-1">Type</label>
-          <select
-            value={wordType}
-            onChange={(e) => setWordType(e.target.value as WordType)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2.5"
-          >
-            {WORD_TYPES.map((t) => (
-              <option key={t} value={t}>{t}</option>
-            ))}
+          <select value={wordType} onChange={(e) => setWordType(e.target.value as WordType)} className="w-full border border-gray-300 rounded-lg px-3 py-2.5">
+            {WORD_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-600 mb-1">{target_language}</label>
-          <input
-            value={targetWord}
-            onChange={(e) => setTargetWord(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2.5"
-            placeholder="auto-filled by lookup"
-          />
+          <label className="block text-sm font-medium text-gray-600 mb-1">{targetLanguage}</label>
+          <input value={targetWord} onChange={(e) => setTargetWord(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2.5" placeholder="auto-filled by lookup" />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-600 mb-1">Notes</label>
-          <input
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2.5"
-            placeholder="article, verb type, etc."
-          />
+          <input value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2.5" placeholder="article, verb type, etc." />
         </div>
       </div>
       {error && <p className="mt-3 text-red-600 text-sm">{error}</p>}
@@ -146,7 +113,7 @@ export default function WordForm({ words, onSubmit }: Props) {
         disabled={loading || !english.trim() || !targetWord.trim()}
         className="mt-5 bg-green-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-green-700 disabled:opacity-40 transition shadow-sm"
       >
-        {loading ? 'Adding...' : 'Add Word'}
+        {loading ? 'Adding…' : 'Add Word'}
       </button>
     </form>
   )

@@ -1,0 +1,11 @@
+structure,weight
+[subject] + [verb] | e.g. The dog runs.,1.0
+[subject] + [verb] + [object] | e.g. The man drinks water.,1.0
+[subject] + [verb] + [adjective] + [object] | e.g. The woman buys a small book.,1.0
+[subject] + [to be] + [adjective] | e.g. The orange is red.,1.0
+[subject] + [to have] + [object] | e.g. The teacher has a book.,1.0
+[subject] + [to have] + [adjective] + [object] | e.g. The woman has a small gift.,1.0
+[subject] + [verb] + [preposition] + [object] | e.g. The student goes to the university.,1.0
+[subject] + [verb] + [object] + [preposition] + [object] | e.g. The man drinks water from a bottle.,1.0
+[subject] + and + [subject] + [verb] | e.g. The dog and the cat run.,1.0
+[subject] + and + [subject] + [verb] + [object] | e.g. The man and the woman drink coffee.,1.0

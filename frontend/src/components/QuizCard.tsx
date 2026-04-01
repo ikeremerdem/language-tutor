@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { QuizQuestion } from '../types'
-import { useLanguage } from '../context/LanguageContext'
+import { useTutor } from '../context/TutorContext'
 
 interface Props {
   question: QuizQuestion
@@ -11,7 +11,7 @@ interface Props {
 }
 
 export default function QuizCard({ question, onAnswer, loading, correctCount, wrongCount }: Props) {
-  const { target_language } = useLanguage()
+  const { targetLanguage: target_language } = useTutor()
   const [answer, setAnswer] = useState('')
 
   const handleSubmit = (e: React.FormEvent) => {
