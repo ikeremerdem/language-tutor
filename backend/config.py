@@ -15,8 +15,12 @@ class Settings(BaseSettings):
     supabase_anon_key: str = ""
     supabase_service_role_key: str = ""
 
-    # CORS — comma-separated list of allowed origins
-    allowed_origins: list[str] = ["http://localhost:5173"]
+    # CORS — comma-separated origins e.g. "https://app.vercel.app,http://localhost:5173"
+    allowed_origins_str: str = "http://localhost:5173"
+
+    @property
+    def allowed_origins(self) -> list[str]:
+        return [o.strip() for o in self.allowed_origins_str.split(",")]
 
     # Local data directory (sentence structures per language)
     data_dir: Path = Path(__file__).parent / "data"
