@@ -20,6 +20,8 @@ A multi-user, web-based language learning application with vocabulary management
 | Frontend | React, TypeScript, Vite, Tailwind CSS |
 | Auth & Database | Supabase (PostgreSQL + Auth + Row Level Security) |
 | AI | LiteLLM (supports OpenAI, Anthropic, Ollama, LMStudio, etc.) |
+| Hosting (frontend) | Vercel (free tier) |
+| Hosting (backend) | Fly.io (free tier, 512MB VM) |
 
 ## Getting Started
 
@@ -166,6 +168,55 @@ frontend/src/
     SentenceQuizPage.tsx
   types/index.ts          # TypeScript interfaces
 ```
+
+## Production Deployment
+
+The recommended production setup:
+
+```
+Users → Vercel (frontend) → Fly.io (backend) → Supabase (DB + Auth)
+```
+
+### Frontend → Vercel
+
+1. Connect your GitHub repo on [vercel.com](https://vercel.com)
+2. Set **Root Directory** to `frontend`
+3. Add environment variables:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+   - `VITE_API_BASE_URL` — your Fly.io backend URL (e.g. `https://filos-tutor.fly.dev`)
+4. Deploy — Vercel auto-deploys on every push to `main`
+
+`frontend/vercel.json` handles SPA routing so direct URLs don't 404.
+
+### Backend → Fly.io
+
+Install [flyctl](https://fly.io/docs/hands-on/install-flyctl/), then from the `backend/` folder:
+
+```bash
+fly auth login
+fly apps create filos-tutor        # choose a globally unique name
+fly secrets set \
+  SUPABASE_URL="https://your-project.supabase.co" \
+  SUPABASE_ANON_KEY="your-anon-key" \
+  SUPABASE_SERVICE_ROLE_KEY="your-service-role-key" \
+  LLM_MODEL="openai/gpt-4o-mini" \
+  LLM_API_KEY="sk-your-key" \
+  ALLOWED_ORIGINS_STR="https://your-app.vercel.app"
+fly deploy
+```
+
+The app runs as a Docker container (see `backend/Dockerfile`) with 1 gunicorn + uvicorn worker on 512MB RAM — required due to litellm's memory footprint.
+
+> **Note:** Fly.io requires a credit card on file to run beyond the 5-minute trial. You won't be charged within the free tier (3 shared VMs included).
+
+Health check endpoint: `GET /api/health`
+
+### CORS
+
+The backend reads `ALLOWED_ORIGINS_STR` as a comma-separated list of allowed origins. For local development the default is `http://localhost:5173`. For production set it to your Vercel URL.
+
+---
 
 ## Adding a New Language
 
