@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { Word, WordUpdate } from '../types'
+import CategoryPill from './CategoryPill'
 import { useTutor } from '../context/TutorContext'
 
 const TYPE_COLORS: Record<string, string> = {
@@ -82,9 +83,7 @@ export default function WordTable({ words, onUpdate, onDelete }: Props) {
                   <td className="px-5 py-2"><input value={editData.target_language} onChange={(e) => setEditData({ ...editData, target_language: e.target.value })} className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-full" /></td>
                   <td className="px-5 py-2"><input value={editData.notes} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-full" /></td>
                   <td className="px-5 py-2 text-center text-sm text-gray-500">
-                    {word.times_asked === 0
-                      ? <span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-sky-100 text-sky-600">new</span>
-                      : word.times_asked}
+                    {word.times_asked === 0 ? <CategoryPill category="new" /> : word.times_asked}
                   </td>
                   <td className="px-5 py-2 text-center"><AccuracyBadge word={word} /></td>
                   <td className="px-5 py-2 text-center"><StreakBadge streak={word.current_streak} /></td>
@@ -104,9 +103,7 @@ export default function WordTable({ words, onUpdate, onDelete }: Props) {
                   <td className="px-5 py-3.5 text-sm font-medium text-filos-primary">{word.target_language}</td>
                   <td className="px-5 py-3.5 text-sm text-gray-400">{word.notes}</td>
                   <td className="px-5 py-3.5 text-center text-sm text-gray-500">
-                    {word.times_asked === 0
-                      ? <span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-sky-100 text-sky-600">new</span>
-                      : word.times_asked}
+                    {word.times_asked === 0 ? <CategoryPill category="new" /> : word.times_asked}
                   </td>
                   <td className="px-5 py-3.5 text-center"><AccuracyBadge word={word} /></td>
                   <td className="px-5 py-3.5 text-center"><StreakBadge streak={word.current_streak} /></td>

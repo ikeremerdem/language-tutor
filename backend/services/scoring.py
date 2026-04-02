@@ -1,6 +1,13 @@
 """
 Central word-scoring module.
 
+word_category(word) -> str
+  Classifies a word into one of four mutually exclusive status categories:
+    "new"        — never asked
+    "struggling" — asked at least once, streak is 0
+    "learning"   — streak > 0 but below the learn threshold
+    "learned"    — streak >= STREAK_LEARN_THRESHOLD
+
 word_weight(word, focus) -> float
   Returns the sampling weight for a word under a given quiz focus.
   A weight of EXCLUDE (0.0) means the word must not be selected for that focus.
@@ -9,6 +16,8 @@ attention_weight(word) -> float
   Focus-independent weight used for vocabulary list ordering.
 """
 
+from enum import Enum
+
 from config import STREAK_LEARN_THRESHOLD
 from models.vocabulary import Word
 from models.quiz import QuizFocus
@@ -16,8 +25,25 @@ from models.quiz import QuizFocus
 EXCLUDE = 0.0
 
 
+class WordCategory(str, Enum):
+    new = "new"
+    struggling = "struggling"
+    learning = "learning"
+    learned = "learned"
+
+
+def word_category(word: Word) -> WordCategory:
+    if word.current_streak >= STREAK_LEARN_THRESHOLD:
+        return WordCategory.learned
+    if word.times_asked == 0:
+        return WordCategory.new
+    if word.current_streak == 0:
+        return WordCategory.struggling
+    return WordCategory.learning
+
+
 def is_learned(word: Word) -> bool:
-    return word.current_streak >= STREAK_LEARN_THRESHOLD
+    return word_category(word) == WordCategory.learned
 
 
 def _base_weight(word: Word) -> float:
@@ -36,8 +62,9 @@ def word_weight(word: Word, focus: QuizFocus) -> float:
     if focus == QuizFocus.new_words:
         return 1.0 if word.times_asked == 0 else EXCLUDE
 
-    if focus == QuizFocus.mistakes:
-        if is_learned(word) or word.times_asked == 0 or word.times_correct >= word.times_asked:
+    if focus == QuizFocus.struggling:
+        # Struggling: asked at least once and streak is 0 (matches WordCategory.struggling)
+        if word.times_asked == 0 or word.current_streak != 0:
             return EXCLUDE
         return _base_weight(word)
 

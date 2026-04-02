@@ -15,7 +15,7 @@ export default function VocabularyPage() {
   const [addMode, setAddMode] = useState<'single' | 'multiple' | 'package'>('single')
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState<WordType | ''>('')
-  const [perfFilter, setPerfFilter] = useState<'all' | 'new' | 'good' | 'struggling' | 'learned'>('all')
+  const [perfFilter, setPerfFilter] = useState<'all' | 'new' | 'struggling' | 'learning' | 'learned'>('all')
 
   const STREAK_LEARN_THRESHOLD = 5
   const [page, setPage] = useState(1)
@@ -34,8 +34,8 @@ export default function VocabularyPage() {
     }
     if (typeFilter) result = result.filter((w) => w.word_type === typeFilter)
     if (perfFilter === 'new') result = result.filter((w) => w.times_asked === 0)
-    else if (perfFilter === 'good') result = result.filter((w) => w.times_asked > 0 && w.current_streak < STREAK_LEARN_THRESHOLD && (w.times_correct / w.times_asked) >= 0.8)
-    else if (perfFilter === 'struggling') result = result.filter((w) => w.times_asked > 0 && w.current_streak < STREAK_LEARN_THRESHOLD && (w.times_correct / w.times_asked) < 0.8)
+    else if (perfFilter === 'struggling') result = result.filter((w) => w.times_asked > 0 && w.current_streak === 0)
+    else if (perfFilter === 'learning') result = result.filter((w) => w.current_streak > 0 && w.current_streak < STREAK_LEARN_THRESHOLD)
     else if (perfFilter === 'learned') result = result.filter((w) => w.current_streak >= STREAK_LEARN_THRESHOLD)
     return result
   }, [words, search, typeFilter, perfFilter])
@@ -108,9 +108,9 @@ export default function VocabularyPage() {
         >
           <option value="all">All words</option>
           <option value="new">New</option>
-          <option value="good">Correct ≥ 80%</option>
-          <option value="struggling">Correct &lt; 80%</option>
-          <option value="learned">Learned (streak ≥ {STREAK_LEARN_THRESHOLD})</option>
+          <option value="struggling">Struggling</option>
+          <option value="learning">Learning</option>
+          <option value="learned">Learned</option>
         </select>
       </div>
 

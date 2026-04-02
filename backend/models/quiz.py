@@ -16,7 +16,7 @@ class SourceLanguage(str, Enum):
 class QuizFocus(str, Enum):
     balanced = "balanced"
     new_words = "new_words"
-    mistakes = "mistakes"
+    struggling = "struggling"
 
 
 class QuizStartRequest(BaseModel):

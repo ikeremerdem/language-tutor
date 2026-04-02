@@ -35,7 +35,7 @@ export interface WordUpdate {
 
 export type QuizType = 'word' | 'sentence'
 export type SourceLanguage = 'english' | 'target_language'
-export type QuizFocus = 'balanced' | 'new_words' | 'mistakes'
+export type QuizFocus = 'balanced' | 'new_words' | 'struggling'
 
 export interface QuizStartRequest {
   quiz_type: QuizType
@@ -92,8 +92,8 @@ export interface DifficultWord {
 
 export interface WordStatusCounts {
   new: number
-  good: number
   struggling: number
+  learning: number
   learned: number
 }
 
@@ -104,6 +104,7 @@ export interface DashboardStats {
   average_score: number
   best_score: number
   word_status: WordStatusCounts
+  word_type_counts: Record<string, number>
   recent_sessions: RecentSession[]
   weekly_activity: WeeklyActivity[]
   difficult_words: DifficultWord[]

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import type { DashboardStats, RecentSession } from '../types'
 import { getDashboard, resetStats } from '../api/client'
 import StatsChart from '../components/StatsChart'
+import CategoryPill from '../components/CategoryPill'
 import { useTutor } from '../context/TutorContext'
 
 const STAT_ICONS: Record<string, string> = {
@@ -88,15 +89,41 @@ export default function DashboardPage() {
       <StatsChart data={stats.weekly_activity} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        {/* Left column: Recent Sessions */}
-        {stats.recent_sessions.length > 0 && (
-          <div className="bg-white rounded-xl shadow-sm p-5">
-            <h3 className="text-base font-semibold text-filos-primary mb-3 font-headline">Recent Sessions</h3>
-            <div className="space-y-1.5">
-              {stats.recent_sessions.map((s) => <RecentSessionRow key={s.id} s={s} />)}
+        {/* Left column: Word Types + Recent Sessions */}
+        <div className="flex flex-col gap-6">
+          {Object.keys(stats.word_type_counts).length > 0 && (
+            <div className="bg-white rounded-xl shadow-sm p-5">
+              <h3 className="text-base font-semibold text-filos-primary mb-3 font-headline">Words by Type</h3>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-100">
+                    <th className="pb-2 text-left font-medium text-gray-500">Type</th>
+                    <th className="pb-2 text-right font-medium text-gray-500">Words</th>
+                    <th className="pb-2 text-right font-medium text-gray-500">Share</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {Object.entries(stats.word_type_counts).map(([type, count]) => (
+                    <tr key={type}>
+                      <td className="py-2.5 capitalize text-gray-700 font-medium">{type}</td>
+                      <td className="py-2.5 text-right font-medium text-gray-700">{count}</td>
+                      <td className="py-2.5 text-right text-gray-400">{Math.round(count / stats.total_words * 100)}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </div>
-        )}
+          )}
+
+          {stats.recent_sessions.length > 0 && (
+            <div className="bg-white rounded-xl shadow-sm p-5">
+              <h3 className="text-base font-semibold text-filos-primary mb-3 font-headline">Recent Sessions</h3>
+              <div className="space-y-1.5">
+                {stats.recent_sessions.map((s) => <RecentSessionRow key={s.id} s={s} />)}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Right column: Vocabulary Status + Top 10 Difficult Words */}
         <div className="flex flex-col gap-6">
@@ -111,26 +138,13 @@ export default function DashboardPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                <tr>
-                  <td className="py-2.5"><span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-sky-100 text-sky-600">New</span></td>
-                  <td className="py-2.5 text-right font-medium text-gray-700">{stats.word_status.new}</td>
-                  <td className="py-2.5 text-right text-gray-400">{stats.total_words ? Math.round(stats.word_status.new / stats.total_words * 100) : 0}%</td>
-                </tr>
-                <tr>
-                  <td className="py-2.5"><span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700">Correct ≥ 80%</span></td>
-                  <td className="py-2.5 text-right font-medium text-gray-700">{stats.word_status.good}</td>
-                  <td className="py-2.5 text-right text-gray-400">{stats.total_words ? Math.round(stats.word_status.good / stats.total_words * 100) : 0}%</td>
-                </tr>
-                <tr>
-                  <td className="py-2.5"><span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-red-100 text-red-600">Correct &lt; 80%</span></td>
-                  <td className="py-2.5 text-right font-medium text-gray-700">{stats.word_status.struggling}</td>
-                  <td className="py-2.5 text-right text-gray-400">{stats.total_words ? Math.round(stats.word_status.struggling / stats.total_words * 100) : 0}%</td>
-                </tr>
-                <tr>
-                  <td className="py-2.5"><span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-violet-100 text-violet-700">★ Learned</span></td>
-                  <td className="py-2.5 text-right font-medium text-gray-700">{stats.word_status.learned}</td>
-                  <td className="py-2.5 text-right text-gray-400">{stats.total_words ? Math.round(stats.word_status.learned / stats.total_words * 100) : 0}%</td>
-                </tr>
+                {(['new', 'struggling', 'learning', 'learned'] as const).map((cat) => (
+                  <tr key={cat}>
+                    <td className="py-2.5"><CategoryPill category={cat} /></td>
+                    <td className="py-2.5 text-right font-medium text-gray-700">{stats.word_status[cat]}</td>
+                    <td className="py-2.5 text-right text-gray-400">{stats.total_words ? Math.round(stats.word_status[cat] / stats.total_words * 100) : 0}%</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

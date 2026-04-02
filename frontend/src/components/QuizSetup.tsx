@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import type { QuizType, QuizFocus, RecentSession, SourceLanguage, WordStatusCounts } from '../types'
 import { getSessionsByType, getDashboard } from '../api/client'
 import FilosLogo from './FilosLogo'
+import CategoryPill from './CategoryPill'
 import { useTutor } from '../context/TutorContext'
 
 interface Props {
@@ -15,7 +16,7 @@ interface Props {
 const FOCUS_OPTIONS: { value: QuizFocus; label: string; description: string }[] = [
   { value: 'balanced', label: 'Balanced', description: 'Mix of all words' },
   { value: 'new_words', label: 'New words', description: 'Never practiced' },
-  { value: 'mistakes', label: 'Mistakes', description: 'Where you failed' },
+  { value: 'struggling', label: 'Struggling', description: 'Streak is zero' },
 ]
 
 export default function QuizSetup({ title, quizType, onStart, loading, error }: Props) {
@@ -144,22 +145,12 @@ export default function QuizSetup({ title, quizType, onStart, loading, error }: 
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  <tr>
-                    <td className="py-2"><span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-sky-100 text-sky-600">New</span></td>
-                    <td className="py-2 text-right font-medium text-gray-700">{wordStatus.new}</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2"><span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700">Correct ≥ 80%</span></td>
-                    <td className="py-2 text-right font-medium text-gray-700">{wordStatus.good}</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2"><span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-red-100 text-red-600">Correct &lt; 80%</span></td>
-                    <td className="py-2 text-right font-medium text-gray-700">{wordStatus.struggling}</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2"><span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-violet-100 text-violet-700">★ Learned</span></td>
-                    <td className="py-2 text-right font-medium text-gray-700">{wordStatus.learned}</td>
-                  </tr>
+                  {(['new', 'struggling', 'learning', 'learned'] as const).map((cat) => (
+                    <tr key={cat}>
+                      <td className="py-2"><CategoryPill category={cat} /></td>
+                      <td className="py-2 text-right font-medium text-gray-700">{wordStatus[cat]}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

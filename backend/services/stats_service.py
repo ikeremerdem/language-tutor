@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 
 from models.stats import DashboardStats, DifficultWord, RecentSession, WeeklyActivity, WordStatusCounts
 from services import vocabulary_service
-from services.scoring import is_learned
+from services.scoring import word_category, WordCategory, is_learned
 from services.supabase_client import supabase
 
 
@@ -48,6 +48,7 @@ def get_dashboard(tutor_id: str) -> DashboardStats:
         average_score=average_score,
         best_score=best_score,
         word_status=_compute_word_status(words),
+        word_type_counts=_compute_word_type_counts(words),
         recent_sessions=recent_sessions,
         weekly_activity=_compute_weekly_activity(sessions),
         difficult_words=_compute_difficult_words(words),
@@ -78,15 +79,27 @@ def get_sessions_by_type(tutor_id: str, quiz_type: str) -> list[RecentSession]:
 
 
 def _compute_word_status(words) -> WordStatusCounts:
-    new = sum(1 for w in words if w.times_asked == 0 and not is_learned(w))
-    learned = sum(1 for w in words if is_learned(w))
-    good = sum(1 for w in words if w.times_asked > 0 and not is_learned(w) and w.times_correct / w.times_asked >= 0.8)
-    struggling = sum(1 for w in words if w.times_asked > 0 and not is_learned(w) and w.times_correct / w.times_asked < 0.8)
-    return WordStatusCounts(new=new, good=good, struggling=struggling, learned=learned)
+    cats = [word_category(w) for w in words]
+    return WordStatusCounts(
+        new=cats.count(WordCategory.new),
+        struggling=cats.count(WordCategory.struggling),
+        learning=cats.count(WordCategory.learning),
+        learned=cats.count(WordCategory.learned),
+    )
+
+
+def _compute_word_type_counts(words) -> dict[str, int]:
+    order = ["verb", "noun", "adjective", "adverb", "preposition", "other"]
+    counts: dict[str, int] = {t: 0 for t in order}
+    for w in words:
+        t = w.word_type.value if hasattr(w.word_type, "value") else str(w.word_type)
+        if t in counts:
+            counts[t] += 1
+    return {t: counts[t] for t in order if counts[t] > 0}
 
 
 def _compute_difficult_words(words) -> list[DifficultWord]:
-    asked_words = [w for w in words if w.times_asked > 0]
+    asked_words = [w for w in words if w.times_asked > 0 and not is_learned(w)]
     sorted_words = sorted(asked_words, key=lambda w: w.times_correct / w.times_asked)
     return [
         DifficultWord(
