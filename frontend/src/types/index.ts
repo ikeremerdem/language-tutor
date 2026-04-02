@@ -125,6 +125,20 @@ export interface WeeklyActivity {
   avg_score: number
 }
 
+export interface WordPackageSummary {
+  slug: string
+  name: string
+  description: string
+  word_count: number
+}
+
+export interface WordPackageDetail {
+  slug: string
+  name: string
+  description: string
+  words: string[]
+}
+
 export interface LanguageTutor {
   id: string
   user_id: string

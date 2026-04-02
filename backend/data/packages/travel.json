@@ -1,0 +1,12 @@
+{
+  "name": "Travel",
+  "description": "Words you need when travelling — transport, accommodation and directions",
+  "words": [
+    "airport", "train", "bus", "ticket", "passport",
+    "hotel", "room", "key", "luggage", "map",
+    "street", "city", "country", "border", "customs",
+    "taxi", "station", "platform", "departure", "arrival",
+    "reservation", "price", "receipt", "bathroom", "hospital",
+    "police", "embassy", "left", "right", "straight ahead"
+  ]
+}

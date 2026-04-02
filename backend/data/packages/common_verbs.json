@@ -1,0 +1,12 @@
+{
+  "name": "Common Verbs",
+  "description": "The most frequently used everyday action words",
+  "words": [
+    "to be", "to have", "to do", "to go", "to come",
+    "to say", "to know", "to get", "to give", "to take",
+    "to see", "to want", "to think", "to make", "to look",
+    "to use", "to find", "to tell", "to ask", "to seem",
+    "to feel", "to try", "to leave", "to call", "to keep",
+    "to let", "to begin", "to show", "to hear", "to play"
+  ]
+}

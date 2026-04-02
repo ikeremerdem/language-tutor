@@ -3,6 +3,7 @@ import type { Word, WordCreate, WordUpdate, WordType } from '../types'
 import { getWords, addWord, updateWord, deleteWord } from '../api/client'
 import WordForm from '../components/WordForm'
 import BulkWordForm from '../components/BulkWordForm'
+import PackageWordForm from '../components/PackageWordForm'
 import WordTable from '../components/WordTable'
 import { useTutor } from '../context/TutorContext'
 
@@ -11,7 +12,7 @@ const PAGE_SIZE = 20
 export default function VocabularyPage() {
   const { tutorId, targetLanguage } = useTutor()
   const [words, setWords] = useState<Word[]>([])
-  const [addMode, setAddMode] = useState<'single' | 'bulk'>('single')
+  const [addMode, setAddMode] = useState<'single' | 'multiple' | 'package'>('single')
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState<WordType | ''>('')
   const [perfFilter, setPerfFilter] = useState<'all' | 'new' | 'good' | 'struggling' | 'learned'>('all')
@@ -61,17 +62,22 @@ export default function VocabularyPage() {
             Single
           </button>
           <button
-            onClick={() => setAddMode('bulk')}
-            className={`px-4 py-1.5 transition ${addMode === 'bulk' ? 'bg-filos-primary text-white' : 'text-gray-500 hover:bg-gray-50'}`}
+            onClick={() => setAddMode('multiple')}
+            className={`px-4 py-1.5 transition ${addMode === 'multiple' ? 'bg-filos-primary text-white' : 'text-gray-500 hover:bg-gray-50'}`}
           >
-            Bulk
+            Multiple
+          </button>
+          <button
+            onClick={() => setAddMode('package')}
+            className={`px-4 py-1.5 transition ${addMode === 'package' ? 'bg-filos-primary text-white' : 'text-gray-500 hover:bg-gray-50'}`}
+          >
+            Load Package
           </button>
         </div>
       </div>
-      {addMode === 'single'
-        ? <WordForm words={words} onSubmit={handleAdd} />
-        : <BulkWordForm words={words} onDone={load} />
-      }
+      {addMode === 'single' && <WordForm words={words} onSubmit={handleAdd} />}
+      {addMode === 'multiple' && <BulkWordForm words={words} onDone={load} />}
+      {addMode === 'package' && <PackageWordForm words={words} onDone={load} />}
 
       <div className="flex flex-wrap items-center gap-4 mb-4">
         <div className="text-sm text-gray-400 font-medium">

@@ -13,6 +13,8 @@ import type {
   RecentSession,
   QuizType,
   LanguageTutor,
+  WordPackageSummary,
+  WordPackageDetail,
 } from '../types'
 
 const BASE = (import.meta.env.VITE_API_BASE_URL ?? '') + '/api'
@@ -85,3 +87,10 @@ export const getSessionsByType = (tutorId: string, quizType: QuizType) =>
 
 export const resetStats = (tutorId: string) =>
   request<void>(`/tutors/${tutorId}/stats/reset`, { method: 'DELETE' })
+
+// ── Packages ──────────────────────────────────────────────────
+export const getPackages = () =>
+  request<WordPackageSummary[]>('/packages')
+
+export const getPackage = (slug: string) =>
+  request<WordPackageDetail>(`/packages/${slug}`)

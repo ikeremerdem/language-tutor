@@ -7,7 +7,8 @@ A multi-user, web-based language learning application with vocabulary management
 - **Multi-user auth** — Register and sign in via Supabase Auth. Each user's data is fully isolated.
 - **Language Tutors** — Create one tutor per language (Greek, German, Spanish, Italian, French). Switch between them freely.
 - **Vocabulary Management** — Add words one at a time or in bulk. Auto-lookup translates, classifies, and adds grammar notes via LLM. Filter by text, word type, or performance (New / Correct ≥ 80% / Correct < 80%), with pagination.
-- **Bulk Word Add** — Paste a list of English words (one per line); the app looks each up and adds it automatically, skipping duplicates.
+- **Multiple Word Add** — Paste a list of English words (one per line); the app looks each up and adds it automatically, skipping duplicates.
+- **Word Packages** — Pre-built thematic word lists (Common Verbs, Food & Drink, Travel, etc.) stored as JSON files. Load a package to add all its words via LLM lookup in one click.
 - **Word Quiz** — Flashcards with a visual direction toggle, focus modes (Balanced / New words / Mistakes), and quick question count presets. Learned words are automatically deprioritised.
 - **Sentence Quiz** — AI-generated sentences using only your vocabulary. Answers are checked semantically, handling word order and accent variations.
 - **Streak & Learned words** — Each word tracks a correct-answer streak. Once a word reaches `STREAK_LEARN_THRESHOLD` (default 5) consecutive correct answers it is marked **Learned** and removed from the active quiz pool. The streak resets on a wrong answer.
@@ -131,6 +132,7 @@ backend/
     vocabulary.py         #   /api/tutors/{id}/vocabulary
     quiz.py               #   /api/tutors/{id}/quiz
     stats.py              #   /api/tutors/{id}/stats
+    packages.py           #   /api/packages
   services/
     supabase_client.py    # Supabase service-role client
     tutor_service.py      # Language tutor CRUD
@@ -142,6 +144,15 @@ backend/
     Greek/sentence_structures.csv
     German/sentence_structures.csv
     Spanish/sentence_structures.csv
+    Italian/sentence_structures.csv
+    French/sentence_structures.csv
+    packages/                     # Word package JSON files
+      common_verbs.json
+      common_nouns.json
+      food_and_drink.json
+      travel.json
+      numbers_and_time.json
+      body_and_health.json
 
 frontend/src/
   lib/supabase.ts         # Supabase JS client (anon key, used for auth)

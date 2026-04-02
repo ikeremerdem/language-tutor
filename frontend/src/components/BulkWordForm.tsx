@@ -95,7 +95,7 @@ export default function BulkWordForm({ words, onDone }: Props) {
 
   return (
     <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-      <h2 className="text-lg font-semibold mb-1 text-filos-primary font-headline">Bulk Add Words</h2>
+      <h2 className="text-lg font-semibold mb-1 text-filos-primary font-headline">Add Multiple Words</h2>
       <p className="text-sm text-gray-400 mb-4">Enter one English word or phrase per line. Each will be looked up and added automatically.</p>
 
       {items.length === 0 ? (

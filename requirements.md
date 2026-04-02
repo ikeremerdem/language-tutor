@@ -31,13 +31,23 @@ The application helps users learn a target language from English. It is a multi-
 - The user can review and edit the result before saving.
 - If the word already exists in the vocabulary, a warning is shown immediately.
 
-## 5. Bulk Word Add
+## 5. Multiple Word Add
 
-- The vocabulary page offers a **Bulk** mode alongside the single-word form.
+- The vocabulary page offers a **Multiple** mode alongside the single-word form.
 - The user pastes a list of English words or phrases (one per line) into a textarea.
 - The app processes them sequentially: looks each up via LLM and adds it if not already present.
 - Each word shows a live status: added (✓), skipped duplicate (–), or failed (✕).
 - A summary is shown at the end (X added · Y skipped · Z failed).
+
+## 5a. Word Packages
+
+- The vocabulary page also offers a **Load Package** mode.
+- Word packages are JSON files stored in `backend/data/packages/`, each with a name, description, and a list of English words.
+- The package browser shows all available packages as cards with name, description, and word count.
+- Selecting a package runs the same sequential LLM lookup and add process as Multiple mode.
+- Packages are language-agnostic — the same package file works for all target languages.
+- New packages can be added by dropping a JSON file into `backend/data/packages/` with the format: `{"name": "...", "description": "...", "words": [...]}`.
+- Built-in packages: Common Verbs, Common Nouns, Food & Drink, Travel, Numbers & Time, Body & Health.
 
 ## 6. Vocabulary List
 

@@ -1,0 +1,12 @@
+{
+  "name": "Food & Drink",
+  "description": "Essential vocabulary for eating, cooking and dining out",
+  "words": [
+    "bread", "water", "milk", "coffee", "tea",
+    "wine", "beer", "juice", "soup", "salad",
+    "meat", "fish", "chicken", "rice", "pasta",
+    "potato", "tomato", "onion", "apple", "orange",
+    "cheese", "butter", "egg", "sugar", "salt",
+    "oil", "cake", "chocolate", "ice cream", "restaurant"
+  ]
+}

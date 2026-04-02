@@ -1,0 +1,12 @@
+{
+  "name": "Body & Health",
+  "description": "Parts of the body and basic health vocabulary",
+  "words": [
+    "head", "eye", "ear", "nose", "mouth",
+    "hand", "arm", "leg", "foot", "back",
+    "heart", "stomach", "skin", "hair", "tooth",
+    "doctor", "nurse", "medicine", "pain", "fever",
+    "cold", "headache", "allergy", "injury", "blood",
+    "hospital", "pharmacy", "appointment", "healthy", "sick"
+  ]
+}

@@ -10,7 +10,7 @@ STREAK_LEARN_THRESHOLD = 5
 
 class Settings(BaseSettings):
     # LLM
-    llm_model: str = "openai/gpt-4o-mini"
+    llm_model: str = "openai/gpt-5.4-mini"
     llm_api_key: str = ""
     llm_api_base: str = ""
 
