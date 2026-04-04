@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import type { Word, WordPackageSummary, WordPackageDetail } from '../types'
 import { getPackages, getPackage, lookupWord, addWord, addWordCategories } from '../api/client'
@@ -45,6 +45,9 @@ export default function PackageWordForm({ words, onDone }: Props) {
   const [items, setItems] = useState<Item[]>([])
   const [running, setRunning] = useState(false)
   const [done, setDone] = useState(false)
+  const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
+  const PAGE_SIZE = 9
 
   useEffect(() => {
     getPackages().then(setPackages).catch(() => {})
@@ -143,6 +146,21 @@ export default function PackageWordForm({ words, onDone }: Props) {
     setDone(false)
   }
 
+  const filteredPackages = useMemo(() => {
+    if (!search.trim()) return packages
+    const q = search.toLowerCase()
+    return packages.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        (p.description ?? '').toLowerCase().includes(q) ||
+        (p.category ?? '').toLowerCase().includes(q)
+    )
+  }, [packages, search])
+
+  const totalPages = Math.max(1, Math.ceil(filteredPackages.length / PAGE_SIZE))
+  const currentPage = Math.min(page, totalPages)
+  const pagedPackages = filteredPackages.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+
   // ── Package browser ──────────────────────────────────────────
   if (!preview) {
     return (
@@ -153,9 +171,18 @@ export default function PackageWordForm({ words, onDone }: Props) {
             Manage packages →
           </Link>
         </div>
-        <p className="text-sm text-gray-400 mb-5">Select a package to preview its words before importing.</p>
+        <p className="text-sm text-gray-400 mb-4">Select a package to preview its words before importing.</p>
+        <input
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full sm:w-64 mb-4"
+          placeholder="Search packages…"
+        />
+        {filteredPackages.length === 0 && search && (
+          <p className="text-sm text-gray-400 mb-4">No packages match "{search}"</p>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {packages.map((pkg) => (
+          {pagedPackages.map((pkg) => (
             <button
               key={pkg.id}
               onClick={() => handleSelectPackage(pkg.id)}
@@ -189,6 +216,25 @@ export default function PackageWordForm({ words, onDone }: Props) {
             </button>
           ))}
         </div>
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-3 mt-5">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-30 transition shadow-sm"
+            >
+              Previous
+            </button>
+            <span className="text-sm text-gray-400">Page {currentPage} of {totalPages}</span>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-30 transition shadow-sm"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     )
   }

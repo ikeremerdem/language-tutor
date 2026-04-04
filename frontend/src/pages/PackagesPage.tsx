@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import type { WordPackageSummary, WordPackageCreate, WordPackageUpdate } from '../types'
 import { getPackages, createPackage, updatePackage, deletePackage, generatePackageWords } from '../api/client'
 import { useAuth } from '../context/AuthContext'
+
+const PAGE_SIZE = 12
 
 type FormMode = 'create' | 'edit'
 
@@ -32,6 +34,9 @@ export default function PackagesPage() {
   const [generating, setGenerating] = useState(false)
   const [error, setError] = useState('')
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
+  const [ownPage, setOwnPage] = useState(1)
+  const [pubPage, setPubPage] = useState(1)
 
   const load = () =>
     getPackages()
@@ -127,8 +132,27 @@ export default function PackagesPage() {
     setDeleteConfirm(null)
   }
 
-  const ownPackages = packages.filter((p) => p.user_id === user?.id)
-  const othersPackages = packages.filter((p) => p.user_id !== user?.id && p.is_public)
+  const filtered = useMemo(() => {
+    if (!search.trim()) return packages
+    const q = search.toLowerCase()
+    return packages.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        (p.description ?? '').toLowerCase().includes(q) ||
+        (p.category ?? '').toLowerCase().includes(q)
+    )
+  }, [packages, search])
+
+  const ownPackages = filtered.filter((p) => p.user_id === user?.id)
+  const othersPackages = filtered.filter((p) => p.user_id !== user?.id && p.is_public)
+
+  const ownTotalPages = Math.max(1, Math.ceil(ownPackages.length / PAGE_SIZE))
+  const ownCurrentPage = Math.min(ownPage, ownTotalPages)
+  const ownPaged = ownPackages.slice((ownCurrentPage - 1) * PAGE_SIZE, ownCurrentPage * PAGE_SIZE)
+
+  const pubTotalPages = Math.max(1, Math.ceil(othersPackages.length / PAGE_SIZE))
+  const pubCurrentPage = Math.min(pubPage, pubTotalPages)
+  const pubPaged = othersPackages.slice((pubCurrentPage - 1) * PAGE_SIZE, pubCurrentPage * PAGE_SIZE)
 
   return (
     <div>
@@ -137,14 +161,24 @@ export default function PackagesPage() {
             <h2 className="text-2xl font-bold text-filos-primary font-headline">Word Packages</h2>
             <p className="text-gray-400 text-sm mt-1">Create and manage packages of English words to import into your vocabulary.</p>
           </div>
-          {formMode === null && (
-            <button
-              onClick={openCreate}
-              className="bg-filos-primary text-white px-5 py-2.5 rounded-xl font-medium hover:bg-filos-primary-dark transition shadow-sm"
-            >
-              + New Package
-            </button>
-          )}
+          <div className="flex items-center gap-3">
+            {formMode === null && (
+              <input
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setOwnPage(1); setPubPage(1) }}
+                className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-52"
+                placeholder="Search packages…"
+              />
+            )}
+            {formMode === null && (
+              <button
+                onClick={openCreate}
+                className="bg-filos-primary text-white px-5 py-2.5 rounded-xl font-medium hover:bg-filos-primary-dark transition shadow-sm whitespace-nowrap"
+              >
+                + New Package
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Create / Edit form */}
@@ -243,9 +277,11 @@ export default function PackagesPage() {
         {/* My packages */}
         {ownPackages.length > 0 && (
           <div className="mb-8">
-            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">My Packages</h3>
+            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+              My Packages{search && ` (${ownPackages.length})`}
+            </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {ownPackages.map((pkg) => (
+              {ownPaged.map((pkg) => (
                 <PackageCard
                   key={pkg.id}
                   pkg={pkg}
@@ -255,25 +291,71 @@ export default function PackagesPage() {
                 />
               ))}
             </div>
+            {ownTotalPages > 1 && (
+              <div className="flex items-center justify-center gap-3 mt-5">
+                <button
+                  onClick={() => setOwnPage((p) => Math.max(1, p - 1))}
+                  disabled={ownCurrentPage === 1}
+                  className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-30 transition shadow-sm"
+                >
+                  Previous
+                </button>
+                <span className="text-sm text-gray-400">Page {ownCurrentPage} of {ownTotalPages}</span>
+                <button
+                  onClick={() => setOwnPage((p) => Math.min(ownTotalPages, p + 1))}
+                  disabled={ownCurrentPage === ownTotalPages}
+                  className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-30 transition shadow-sm"
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </div>
         )}
 
         {/* Public packages from others */}
         {othersPackages.length > 0 && (
           <div>
-            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Public Packages</h3>
+            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+              Public Packages{search && ` (${othersPackages.length})`}
+            </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {othersPackages.map((pkg) => (
+              {pubPaged.map((pkg) => (
                 <PackageCard key={pkg.id} pkg={pkg} isOwn={false} />
               ))}
             </div>
+            {pubTotalPages > 1 && (
+              <div className="flex items-center justify-center gap-3 mt-5">
+                <button
+                  onClick={() => setPubPage((p) => Math.max(1, p - 1))}
+                  disabled={pubCurrentPage === 1}
+                  className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-30 transition shadow-sm"
+                >
+                  Previous
+                </button>
+                <span className="text-sm text-gray-400">Page {pubCurrentPage} of {pubTotalPages}</span>
+                <button
+                  onClick={() => setPubPage((p) => Math.min(pubTotalPages, p + 1))}
+                  disabled={pubCurrentPage === pubTotalPages}
+                  className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-30 transition shadow-sm"
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </div>
         )}
 
-        {!loading && packages.length === 0 && formMode === null && (
+        {!loading && filtered.length === 0 && formMode === null && (
           <div className="bg-white rounded-xl shadow-sm p-12 text-center text-gray-400">
-            <p className="text-lg mb-2">No packages yet</p>
-            <p className="text-sm">Create your first package to get started.</p>
+            {search ? (
+              <p className="text-lg">No packages match "{search}"</p>
+            ) : (
+              <>
+                <p className="text-lg mb-2">No packages yet</p>
+                <p className="text-sm">Create your first package to get started.</p>
+              </>
+            )}
           </div>
         )}
 

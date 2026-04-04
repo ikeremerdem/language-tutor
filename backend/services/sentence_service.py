@@ -236,7 +236,8 @@ def generate_package_words(name: str, description: str, category: str) -> list[s
 
 Requirements:
 - Generate up to 50 words or short phrases that would fit most into the context of the package description 
-- Each entry should be a single English word or short phrase (e.g. "to run", "the house", "beautiful")
+- Each entry should be a single English word or short phrase (e.g. "to run", "house", "beautiful")
+- NEVER use the article "the" for the nouns you generate. They can be within longer phrases, but not on their own.
 - Use the base/infinitive form for verbs (e.g. "to eat" not "eating")
 - Use the most common/simple form for nouns and adjectives
 - Make them relevant to the package description and category
