@@ -4,6 +4,7 @@ import type { LanguageTutor } from '../types'
 import { getTutors, createTutor, deleteTutor } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import FilosLogo from '../components/FilosLogo'
+import { useIsAdmin } from '../hooks/useIsAdmin'
 
 const SUPPORTED_LANGUAGES = ['Greek', 'German', 'Spanish', 'Italian', 'French']
 
@@ -18,6 +19,7 @@ const LANGUAGE_FLAGS: Record<string, string> = {
 export default function TutorsPage() {
   const navigate = useNavigate()
   const { user, signOut } = useAuth()
+  const isAdmin = useIsAdmin()
   const [tutors, setTutors] = useState<LanguageTutor[]>([])
   const [creating, setCreating] = useState(false)
   const [selectedLang, setSelectedLang] = useState('')
@@ -63,6 +65,14 @@ export default function TutorsPage() {
             <h1 className="text-xl font-bold text-filos-primary font-headline">Filos</h1>
           </div>
           <div className="flex items-center gap-4">
+            {isAdmin && (
+              <button
+                onClick={() => navigate('/admin')}
+                className="text-xs text-gray-400 bg-gray-100 hover:bg-gray-200 px-2 py-0.5 rounded-full transition"
+              >
+                Admin
+              </button>
+            )}
             <span className="text-sm text-gray-400">{user?.email}</span>
             <button
               onClick={signOut}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import type { DashboardStats, RecentSession } from '../types'
 import { getDashboard, resetStats } from '../api/client'
 import StatsChart from '../components/StatsChart'
@@ -76,6 +77,21 @@ export default function DashboardPage() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {stats.total_words === 0 && (
+        <div className="bg-filos-primary/5 border border-filos-primary/20 rounded-xl p-6 mb-6 flex items-center justify-between gap-4">
+          <div>
+            <p className="font-semibold text-filos-primary">Your vocabulary is empty</p>
+            <p className="text-sm text-gray-500 mt-0.5">Load a word package to get started quickly.</p>
+          </div>
+          <Link
+            to={`/tutors/${tutorId}/vocabulary?mode=package`}
+            className="flex-shrink-0 bg-filos-primary text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-filos-primary-dark transition shadow-sm"
+          >
+            Load a Package →
+          </Link>
         </div>
       )}
 

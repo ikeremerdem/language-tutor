@@ -108,6 +108,7 @@ The application helps users learn a target language from English. It is a multi-
   - **Left**: Words by Type breakdown table (verb, noun, adjective, etc. with counts and share %), followed by Recent session history (last 10 sessions).
   - **Right**: Vocabulary Status table (New / Struggling / Learning / Learned with counts and share %), followed by Top 10 most difficult words (lowest success rate, learned words excluded).
 - A "Reset Statistics" button that clears all session history without affecting vocabulary.
+- When vocabulary is empty, a call to action banner is displayed with a direct link that opens the Load Package tab on the Vocabulary page.
 
 ## 10. Streak & Word Status Categories
 

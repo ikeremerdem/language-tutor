@@ -111,6 +111,9 @@ export const resetStats = (tutorId: string) =>
   request<void>(`/tutors/${tutorId}/stats/reset`, { method: 'DELETE' })
 
 // ── Admin ─────────────────────────────────────────────────────
+export const checkAdmin = () =>
+  request<{ ok: boolean }>('/admin/check')
+
 export const getAdminUserStats = () =>
   request<AdminUserStats[]>('/admin/users')
 

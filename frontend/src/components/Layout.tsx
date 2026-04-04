@@ -2,11 +2,13 @@ import { NavLink, Outlet, useParams, useNavigate } from 'react-router-dom'
 import FilosLogo from './FilosLogo'
 import { useTutor } from '../context/TutorContext'
 import { useAuth } from '../context/AuthContext'
+import { useIsAdmin } from '../hooks/useIsAdmin'
 
 
 export default function Layout() {
   const { tutorId, targetLanguage } = useTutor()
   const { user, signOut } = useAuth()
+  const isAdmin = useIsAdmin()
   const { tutorId: paramId } = useParams<{ tutorId: string }>()
   const navigate = useNavigate()
   const id = tutorId || paramId || ''
@@ -49,6 +51,14 @@ export default function Layout() {
             ))}
           </nav>
           <div className="flex items-center gap-3">
+            {isAdmin && (
+              <NavLink
+                to="/admin"
+                className="text-xs text-gray-400 bg-gray-100 hover:bg-gray-200 px-2 py-0.5 rounded-full transition"
+              >
+                Admin
+              </NavLink>
+            )}
             <span className="text-xs text-gray-400 hidden sm:block">{user?.email}</span>
             <button
               onClick={signOut}

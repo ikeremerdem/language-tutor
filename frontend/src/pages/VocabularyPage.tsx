@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import type { Word, WordCreate, WordUpdate, WordType } from '../types'
 import { getWords, addWord, updateWord, deleteWord } from '../api/client'
 import WordForm from '../components/WordForm'
@@ -11,8 +12,10 @@ const PAGE_SIZE = 20
 
 export default function VocabularyPage() {
   const { tutorId, targetLanguage } = useTutor()
+  const [searchParams] = useSearchParams()
   const [words, setWords] = useState<Word[]>([])
-  const [addMode, setAddMode] = useState<'single' | 'multiple' | 'package'>('single')
+  const initialMode = searchParams.get('mode') === 'package' ? 'package' : 'single'
+  const [addMode, setAddMode] = useState<'single' | 'multiple' | 'package'>(initialMode)
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState<WordType | ''>('')
   const [perfFilter, setPerfFilter] = useState<'all' | 'new' | 'struggling' | 'learning' | 'learned'>('all')
