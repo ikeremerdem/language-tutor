@@ -25,7 +25,7 @@ export default function QuizCard({ question, onAnswer, loading, correctCount, wr
   const progress = (question.question_number / question.total_questions) * 100
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-10 max-w-lg mx-auto">
+    <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-10 max-w-lg mx-auto">
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm font-medium text-gray-400">
           Question {question.question_number} of {question.total_questions}
@@ -43,7 +43,7 @@ export default function QuizCard({ question, onAnswer, loading, correctCount, wr
         />
       </div>
       <p className="text-xs text-gray-400 mb-2 text-center uppercase tracking-widest">Translate to <strong className="text-gray-600 normal-case tracking-normal">{targetLang}</strong></p>
-      <p className="text-4xl font-bold text-center py-8 text-filos-primary font-headline">{question.prompt}</p>
+      <p className="text-2xl sm:text-4xl font-bold text-center py-6 sm:py-8 text-filos-primary font-headline">{question.prompt}</p>
       <form onSubmit={handleSubmit}>
         <input
           autoFocus

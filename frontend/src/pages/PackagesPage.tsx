@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import type { WordPackageSummary, WordPackageCreate, WordPackageUpdate } from '../types'
 import { getPackages, createPackage, updatePackage, deletePackage, generatePackageWords } from '../api/client'
 import { useAuth } from '../context/AuthContext'
-import FilosLogo from '../components/FilosLogo'
 
 type FormMode = 'create' | 'edit'
 
@@ -24,8 +22,7 @@ const emptyForm = (): FormState => ({
 })
 
 export default function PackagesPage() {
-  const navigate = useNavigate()
-  const { user, signOut } = useAuth()
+  const { user } = useAuth()
   const [packages, setPackages] = useState<WordPackageSummary[]>([])
   const [loading, setLoading] = useState(true)
   const [formMode, setFormMode] = useState<FormMode | null>(null)
@@ -134,27 +131,8 @@ export default function PackagesPage() {
   const othersPackages = packages.filter((p) => p.user_id !== user?.id && p.is_public)
 
   return (
-    <div className="min-h-screen bg-filos-marble">
-      <header className="bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm">
-        <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button onClick={() => navigate('/tutors')} className="flex items-center gap-3 hover:opacity-80 transition">
-              <FilosLogo size={36} />
-              <h1 className="text-xl font-bold text-filos-primary font-headline">Filos</h1>
-            </button>
-            <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full ml-2">Packages</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-400 hidden sm:block">{user?.email}</span>
-            <button onClick={signOut} className="text-sm text-gray-500 hover:text-filos-primary font-medium transition">
-              Sign out
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-5xl mx-auto px-6 py-10">
-        <div className="flex items-center justify-between mb-8">
+    <div>
+      <div className="flex items-center justify-between mb-8">
           <div>
             <h2 className="text-2xl font-bold text-filos-primary font-headline">Word Packages</h2>
             <p className="text-gray-400 text-sm mt-1">Create and manage packages of English words to import into your vocabulary.</p>
@@ -298,7 +276,6 @@ export default function PackagesPage() {
             <p className="text-sm">Create your first package to get started.</p>
           </div>
         )}
-      </main>
 
       {/* Delete confirmation modal */}
       {deleteConfirm && (
@@ -326,18 +303,12 @@ export default function PackagesPage() {
         </div>
       )}
 
-      <footer className="text-center text-xs text-gray-400 py-6 px-6 space-y-1">
-        <p>Filos &middot; Word Packages &middot; Powered by kaloma.ai</p>
-        <p className="text-gray-300 max-w-2xl mx-auto">
-          This is a pet project by Kerem Erdem, maintained on a best-effort basis. It has not undergone a security audit,
-          does not guarantee GDPR compliance, and is provided as-is. Use at your own risk.
-          For feedback and feature requests, contact{' '}
-          <a href="mailto:languagetutor@kaloma.ai" className="hover:text-gray-400 transition underline">languagetutor@kaloma.ai</a>.
-        </p>
-      </footer>
     </div>
   )
 }
+
+const isNew = (createdAt: string) =>
+  (Date.now() - new Date(createdAt).getTime()) < 15 * 24 * 60 * 60 * 1000
 
 function PackageCard({
   pkg,
@@ -354,9 +325,14 @@ function PackageCard({
     <div className="bg-white rounded-xl shadow-sm p-5 flex flex-col gap-3">
       <div className="flex items-start justify-between gap-2">
         <p className="font-semibold text-gray-800">{pkg.name}</p>
-        <span className={`text-xs px-1.5 py-0.5 rounded font-medium flex-shrink-0 ${pkg.is_public ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-400'}`}>
-          {pkg.is_public ? 'Public' : 'Private'}
-        </span>
+        <div className="flex gap-1 flex-shrink-0">
+          {isNew(pkg.created_at) && (
+            <span className="text-xs px-2 py-0.5 rounded-full bg-red-500 text-white font-semibold tracking-wide">✨ New</span>
+          )}
+          <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${pkg.is_public ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-400'}`}>
+            {pkg.is_public ? 'Public' : 'Private'}
+          </span>
+        </div>
       </div>
       {pkg.description && <p className="text-xs text-gray-400 leading-snug -mt-1">{pkg.description}</p>}
       <div className="flex items-center gap-2 flex-wrap">

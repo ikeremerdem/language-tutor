@@ -11,7 +11,7 @@ export default function SessionSummary({ summary, onRestart }: Props) {
   const ringColor = score >= 80 ? 'stroke-green-500' : score >= 50 ? 'stroke-amber-400' : 'stroke-red-400'
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-10 max-w-lg mx-auto">
+    <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-10 max-w-lg mx-auto">
       <h2 className="text-2xl font-bold text-center text-filos-primary mb-6 font-headline">Quiz Complete!</h2>
 
       <div className="flex justify-center mb-4">

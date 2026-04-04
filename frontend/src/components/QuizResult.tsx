@@ -20,7 +20,7 @@ export default function QuizResult({ result, question, onNext }: Props) {
   const icon = isFullyCorrect ? '✓' : isAlmostCorrect ? '≈' : '✗'
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-10 max-w-lg mx-auto text-center">
+    <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-10 max-w-lg mx-auto text-center">
       <div className={`w-20 h-20 rounded-full mx-auto mb-5 flex items-center justify-center text-4xl font-bold ${iconBg}`}>
         {icon}
       </div>

@@ -4,6 +4,7 @@ import { TutorContext } from '../context/TutorContext'
 import type { LanguageTutor } from '../types'
 import { getTutors } from '../api/client'
 import Layout from './Layout'
+import { saveLastTutor } from '../hooks/useLastTutor'
 
 export default function TutorLayout() {
   const { tutorId } = useParams<{ tutorId: string }>()
@@ -23,6 +24,8 @@ export default function TutorLayout() {
   if (tutor === null) {
     return <Navigate to="/tutors" replace />
   }
+
+  saveLastTutor({ id: tutor.id, language: tutor.language })
 
   return (
     <TutorContext.Provider value={{ tutorId: tutor.id, targetLanguage: tutor.language }}>

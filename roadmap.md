@@ -11,7 +11,6 @@
 - Caching word lookups to save AI time
 - Make the lookup rules more rigid for the notes field
 - Ability to override the package existing words
-- Make sure that it runs correctly on the phone screens (Aret)
 - Add release notes section
 - Add messages to the user
 - Add a button to auto-generate words in multiple words editing and to add it as a package.

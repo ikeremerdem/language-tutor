@@ -105,65 +105,68 @@ export default function VocabularyPage() {
       {addMode === 'multiple' && <BulkWordForm words={words} onDone={load} />}
       {addMode === 'package' && <PackageWordForm words={words} onDone={load} />}
 
-      <div className="flex flex-wrap items-center gap-4 mb-4">
-        <div className="text-sm text-gray-400 font-medium">
-          {filtered.length} word{filtered.length !== 1 ? 's' : ''}
-          {filtered.length !== words.length && ` (of ${words.length} total)`}
+      <div className="flex flex-col gap-2 mb-4">
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-gray-400 font-medium">
+            {filtered.length} word{filtered.length !== 1 ? 's' : ''}
+            {filtered.length !== words.length && ` (of ${words.length} total)`}
+          </div>
         </div>
-        <div className="flex-1" />
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
-        >
-          <option value="newest">Newest first</option>
-          <option value="oldest">Oldest first</option>
-          <option value="az">A → Z</option>
-          <option value="za">Z → A</option>
-          <option value="asked_desc">Most asked</option>
-          <option value="asked_asc">Least asked</option>
-          <option value="accuracy_desc">Highest accuracy</option>
-          <option value="accuracy_asc">Lowest accuracy</option>
-          <option value="streak_desc">Highest streak</option>
-          <option value="streak_asc">Lowest streak</option>
-        </select>
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-64"
-          placeholder={`Search English or ${targetLanguage}…`}
-        />
-        <select
-          value={typeFilter}
-          onChange={(e) => setTypeFilter(e.target.value as WordType | '')}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
-        >
-          <option value="">All types</option>
-          {['verb', 'noun', 'adjective', 'adverb', 'preposition', 'other'].map((t) => (
-            <option key={t} value={t}>{t}</option>
-          ))}
-        </select>
-        <select
-          value={perfFilter}
-          onChange={(e) => setPerfFilter(e.target.value as typeof perfFilter)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
-        >
-          <option value="all">All words</option>
-          <option value="new">New</option>
-          <option value="struggling">Struggling</option>
-          <option value="learning">Learning</option>
-          <option value="learned">Learned</option>
-        </select>
-        {allCategories.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full sm:w-auto sm:flex-1 sm:min-w-[180px]"
+            placeholder={`Search English or ${targetLanguage}…`}
+          />
           <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+            className="border border-gray-300 rounded-lg px-3 py-2 text-sm flex-1 min-w-[140px]"
           >
-            <option value="">All categories</option>
-            {allCategories.map((c) => <option key={c} value={c}>{c}</option>)}
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="az">A → Z</option>
+            <option value="za">Z → A</option>
+            <option value="asked_desc">Most asked</option>
+            <option value="asked_asc">Least asked</option>
+            <option value="accuracy_desc">Highest accuracy</option>
+            <option value="accuracy_asc">Lowest accuracy</option>
+            <option value="streak_desc">Highest streak</option>
+            <option value="streak_asc">Lowest streak</option>
           </select>
-        )}
+          <select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value as WordType | '')}
+            className="border border-gray-300 rounded-lg px-3 py-2 text-sm flex-1 min-w-[140px]"
+          >
+            <option value="">All types</option>
+            {['verb', 'noun', 'adjective', 'adverb', 'preposition', 'other'].map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+          <select
+            value={perfFilter}
+            onChange={(e) => setPerfFilter(e.target.value as typeof perfFilter)}
+            className="border border-gray-300 rounded-lg px-3 py-2 text-sm flex-1 min-w-[140px]"
+          >
+            <option value="all">All words</option>
+            <option value="new">New</option>
+            <option value="struggling">Struggling</option>
+            <option value="learning">Learning</option>
+            <option value="learned">Learned</option>
+          </select>
+          {allCategories.length > 0 && (
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm flex-1 min-w-[140px]"
+            >
+              <option value="">All categories</option>
+              {allCategories.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+          )}
+        </div>
       </div>
 
       <WordTable words={paged} onUpdate={handleUpdate} onDelete={handleDelete} />

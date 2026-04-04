@@ -57,7 +57,7 @@ def list_packages(user_id: str = Depends(get_current_user)):
         supabase.table("word_packages")
         .select("id,user_id,name,description,category,word_count,is_public,created_at")
         .or_(f"is_public.eq.true,user_id.eq.{user_id}")
-        .order("created_at", desc=False)
+        .order("created_at", desc=True)
         .execute()
         .data
     )

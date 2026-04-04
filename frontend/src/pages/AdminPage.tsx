@@ -2,12 +2,9 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getAdminUserStats } from '../api/client'
 import type { AdminUserStats } from '../types'
-import { useAuth } from '../context/AuthContext'
-import FilosLogo from '../components/FilosLogo'
 
 export default function AdminPage() {
   const navigate = useNavigate()
-  const { user, signOut } = useAuth()
   const [stats, setStats] = useState<AdminUserStats[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -26,44 +23,23 @@ export default function AdminPage() {
   }, [navigate])
 
   return (
-    <div className="min-h-screen bg-filos-marble">
-      <header className="bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm">
-        <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button onClick={() => navigate('/tutors')} className="flex items-center gap-3 hover:opacity-80 transition">
-              <FilosLogo size={36} />
-              <h1 className="text-xl font-bold text-filos-primary font-headline">Filos</h1>
-            </button>
-            <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full ml-2">Admin</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-400">{user?.email}</span>
-            <button
-              onClick={signOut}
-              className="text-sm text-gray-500 hover:text-filos-primary font-medium transition"
-            >
-              Sign out
-            </button>
-          </div>
-        </div>
-      </header>
+    <div>
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-filos-primary font-headline">User Statistics</h2>
+        <p className="text-gray-400 text-sm mt-1">{stats.length} registered user{stats.length !== 1 ? 's' : ''}</p>
+      </div>
 
-      <main className="max-w-6xl mx-auto px-6 py-10">
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-filos-primary font-headline">User Statistics</h2>
-          <p className="text-gray-400 text-sm mt-1">{stats.length} registered user{stats.length !== 1 ? 's' : ''}</p>
-        </div>
+      {loading && (
+        <div className="text-gray-400 text-sm">Loading…</div>
+      )}
 
-        {loading && (
-          <div className="text-gray-400 text-sm">Loading…</div>
-        )}
+      {error && (
+        <div className="bg-red-50 text-red-600 rounded-xl p-4 text-sm">{error}</div>
+      )}
 
-        {error && (
-          <div className="bg-red-50 text-red-600 rounded-xl p-4 text-sm">{error}</div>
-        )}
-
-        {!loading && !error && (
+      {!loading && !error && (
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 text-left">
@@ -103,19 +79,9 @@ export default function AdminPage() {
                 </tfoot>
               )}
             </table>
+            </div>
           </div>
-        )}
-      </main>
-
-      <footer className="text-center text-xs text-gray-400 py-6 px-6 space-y-1">
-        <p>Filos &middot; Admin &middot; Powered by kaloma.ai</p>
-        <p className="text-gray-300 max-w-2xl mx-auto">
-          This is a pet project by Kerem Erdem, maintained on a best-effort basis. It has not undergone a security audit,
-          does not guarantee GDPR compliance, and is provided as-is. Use at your own risk.
-          For feedback and feature requests, contact{' '}
-          <a href="mailto:languagetutor@kaloma.ai" className="hover:text-gray-400 transition underline">languagetutor@kaloma.ai</a>.
-        </p>
-      </footer>
+      )}
     </div>
   )
 }

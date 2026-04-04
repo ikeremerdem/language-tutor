@@ -5,6 +5,9 @@ import { getPackages, getPackage, lookupWord, addWord, addWordCategories } from 
 import { useTutor } from '../context/TutorContext'
 import { useAuth } from '../context/AuthContext'
 
+const isNew = (createdAt: string) =>
+  (Date.now() - new Date(createdAt).getTime()) < 15 * 24 * 60 * 60 * 1000
+
 type ItemStatus = 'pending' | 'processing' | 'added' | 'duplicate' | 'error'
 
 interface Item {
@@ -161,6 +164,9 @@ export default function PackageWordForm({ words, onDone }: Props) {
               <div className="flex items-start justify-between gap-2 mb-1">
                 <p className="font-semibold text-gray-800 group-hover:text-filos-primary transition">{pkg.name}</p>
                 <div className="flex gap-1 flex-shrink-0">
+                  {isNew(pkg.created_at) && (
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-red-500 text-white font-semibold tracking-wide">✨ New</span>
+                  )}
                   {pkg.user_id === user?.id && (
                     <span className="text-xs px-1.5 py-0.5 rounded bg-filos-primary/10 text-filos-primary font-medium">Yours</span>
                   )}

@@ -110,6 +110,7 @@ export default function DashboardPage() {
           {Object.keys(stats.word_type_counts).length > 0 && (
             <div className="bg-white rounded-xl shadow-sm p-5">
               <h3 className="text-base font-semibold text-filos-primary mb-3 font-headline">Words by Type</h3>
+              <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-100">
@@ -128,6 +129,7 @@ export default function DashboardPage() {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
 
@@ -145,6 +147,7 @@ export default function DashboardPage() {
         <div className="flex flex-col gap-6">
           <div className="bg-white rounded-xl shadow-sm p-5">
             <h3 className="text-base font-semibold text-filos-primary mb-3 font-headline">Vocabulary Status</h3>
+            <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100">
@@ -163,6 +166,7 @@ export default function DashboardPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
 
           {stats.difficult_words.length > 0 && (

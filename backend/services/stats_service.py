@@ -99,7 +99,7 @@ def _compute_word_type_counts(words) -> dict[str, int]:
 
 
 def _compute_difficult_words(words) -> list[DifficultWord]:
-    asked_words = [w for w in words if w.times_asked > 0 and not is_learned(w)]
+    asked_words = [w for w in words if w.times_asked > 0 and w.times_correct < w.times_asked and not is_learned(w)]
     sorted_words = sorted(asked_words, key=lambda w: w.times_correct / w.times_asked)
     return [
         DifficultWord(
