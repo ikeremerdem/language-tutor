@@ -5,7 +5,7 @@ SUPPORTED_LANGUAGES = ["Greek", "German", "Spanish", "Italian", "French"]
 
 # Words with a correct-answer streak >= this value are considered "learned"
 # and are deprioritised in quiz selection.
-STREAK_LEARN_THRESHOLD = 5
+STREAK_LEARN_THRESHOLD = 3
 
 
 class Settings(BaseSettings):

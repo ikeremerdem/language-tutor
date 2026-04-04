@@ -14,6 +14,7 @@
 - Add messages to the user
 - Add a button to auto-generate words in multiple words editing and to add it as a package.
 - Add a new sign to the package if it has been added in the last month
+- Add sentences to the vocabulary. If during a conversation you like a sentence, you can add it to the vocabulary.
 
 
 

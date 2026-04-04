@@ -86,6 +86,7 @@ export default function Layout() {
 
               {menuOpen && (
                 <div className="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
+                  <Link to="/tutors" onClick={() => setMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-600 hover:bg-filos-marble hover:text-filos-primary transition">Switch Language</Link>
                   <Link to="/packages" onClick={() => setMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-600 hover:bg-filos-marble hover:text-filos-primary transition">Packages</Link>
                   <Link to={tutorLink('preferences')} onClick={() => setMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-600 hover:bg-filos-marble hover:text-filos-primary transition">Preferences</Link>
                   <Link to={tutorLink('release-notes')} onClick={() => setMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-600 hover:bg-filos-marble hover:text-filos-primary transition">Release Notes</Link>
@@ -135,6 +136,7 @@ export default function Layout() {
               </NavLink>
             ))}
             <div className="border-t border-gray-100 mt-2 pt-2">
+              <Link to="/tutors" onClick={() => setMobileNavOpen(false)} className="block px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-filos-marble hover:text-filos-primary transition">Switch Language</Link>
               <Link to="/packages" onClick={() => setMobileNavOpen(false)} className="block px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-filos-marble hover:text-filos-primary transition">Packages</Link>
               <Link to={tutorLink('preferences')} onClick={() => setMobileNavOpen(false)} className="block px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-filos-marble hover:text-filos-primary transition">Preferences</Link>
               <Link to={tutorLink('release-notes')} onClick={() => setMobileNavOpen(false)} className="block px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-filos-marble hover:text-filos-primary transition">Release Notes</Link>

@@ -109,14 +109,6 @@ export default function QuizSetup({ title, quizType, onStart, loading, error }: 
                   {n}
                 </button>
               ))}
-              <input
-                type="number"
-                min={1}
-                max={100}
-                value={numQuestions}
-                onChange={(e) => setNumQuestions(Number(e.target.value))}
-                className="w-16 border-2 border-gray-200 rounded-xl px-2 py-2.5 text-sm text-center font-semibold text-gray-600 focus:border-filos-primary focus:outline-none"
-              />
             </div>
           </div>
 
