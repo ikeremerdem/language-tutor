@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import Optional
 from middleware.auth import get_current_user
 from services.supabase_client import supabase
+from services.sentence_service import generate_package_words
 
 router = APIRouter(prefix="/api/packages", tags=["packages"])
 
@@ -36,6 +37,18 @@ class PackageUpdate(BaseModel):
     category: Optional[str] = None
     words: Optional[list[str]] = None
     is_public: Optional[bool] = None
+
+
+class GenerateWordsRequest(BaseModel):
+    name: str = ""
+    description: str = ""
+    category: str = ""
+
+
+@router.post("/generate-words")
+def generate_words(data: GenerateWordsRequest, _: str = Depends(get_current_user)):
+    words = generate_package_words(data.name, data.description, data.category)
+    return {"words": words}
 
 
 @router.get("", response_model=list[PackageSummary])

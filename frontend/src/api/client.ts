@@ -126,6 +126,9 @@ export const getPackages = () =>
 export const getPackage = (id: string) =>
   request<WordPackageDetail>(`/packages/${id}`)
 
+export const generatePackageWords = (name: string, description: string, category: string) =>
+  request<{ words: string[] }>('/packages/generate-words', { method: 'POST', body: JSON.stringify({ name, description, category }) })
+
 export const createPackage = (data: WordPackageCreate) =>
   request<WordPackageDetail>('/packages', { method: 'POST', body: JSON.stringify(data) })
 

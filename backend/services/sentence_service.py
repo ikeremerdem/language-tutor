@@ -219,3 +219,33 @@ Respond with ONLY valid JSON (no markdown):
 {{"correct": true/false, "explanation": "<explanation>"}}"""
 
     return json.loads(_chat(prompt))
+
+
+def generate_package_words(name: str, description: str, category: str) -> list[str]:
+    """Use LLM to generate up to 50 English words for a word package based on its description."""
+    context_parts = [f'Package name: "{name}"'] if name else []
+    if description:
+        context_parts.append(f'Description: "{description}"')
+    if category:
+        context_parts.append(f'Category: "{category}"')
+    context = "\n".join(context_parts)
+
+    prompt = f"""You are a language learning expert. Generate a list of English words or short phrases suitable for a vocabulary package.
+
+{context}
+
+Requirements:
+- Generate up to 50 words or short phrases
+- Each entry should be a single English word or short phrase (e.g. "to run", "the house", "beautiful")
+- Use the base/infinitive form for verbs (e.g. "to eat" not "eating")
+- Use the most common/simple form for nouns and adjectives
+- Make them relevant to the package description and category
+- No duplicates
+
+Respond with ONLY a JSON array of strings, no markdown, no explanation:
+["word1", "word2", ...]"""
+
+    result = json.loads(_chat(prompt, temperature=0.8))
+    if not isinstance(result, list):
+        return []
+    return [str(w).strip() for w in result if w][:50]

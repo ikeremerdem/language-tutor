@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { WordPackageSummary, WordPackageCreate, WordPackageUpdate } from '../types'
-import { getPackages, createPackage, updatePackage, deletePackage } from '../api/client'
+import { getPackages, createPackage, updatePackage, deletePackage, generatePackageWords } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import FilosLogo from '../components/FilosLogo'
 
@@ -32,6 +32,7 @@ export default function PackagesPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState<FormState>(emptyForm())
   const [saving, setSaving] = useState(false)
+  const [generating, setGenerating] = useState(false)
   const [error, setError] = useState('')
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
 
@@ -76,6 +77,19 @@ export default function PackagesPage() {
 
   const parseWords = (text: string) =>
     text.split('\n').map((w) => w.trim()).filter(Boolean)
+
+  const handleGenerateWords = async () => {
+    setGenerating(true)
+    setError('')
+    try {
+      const result = await generatePackageWords(form.name, form.description, form.category)
+      setForm((prev) => ({ ...prev, wordsText: result.words.join('\n') }))
+    } catch (e) {
+      setError((e as Error).message)
+    } finally {
+      setGenerating(false)
+    }
+  }
 
   const handleSubmit = async () => {
     if (!form.name.trim()) { setError('Name is required'); return }
@@ -182,7 +196,17 @@ export default function PackagesPage() {
               </div>
             </div>
             <div className="mb-4">
-              <label className="block text-xs font-medium text-gray-500 mb-1">Description</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-medium text-gray-500">Description</label>
+                <button
+                  type="button"
+                  onClick={handleGenerateWords}
+                  disabled={generating || (!form.description.trim() && !form.name.trim())}
+                  className="text-xs text-filos-primary hover:text-filos-primary-dark font-medium disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1"
+                >
+                  {generating ? 'Generating…' : '✨ Generate words from description'}
+                </button>
+              </div>
               <input
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
