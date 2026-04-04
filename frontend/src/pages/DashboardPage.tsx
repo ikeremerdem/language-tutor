@@ -26,7 +26,6 @@ export default function DashboardPage() {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-filos-primary">Dashboard</h2>
       </div>
-      )}
 
       {stats.total_words === 0 && (
         <div className="bg-filos-primary/5 border border-filos-primary/20 rounded-xl p-6 mb-6 flex items-center justify-between gap-4">
