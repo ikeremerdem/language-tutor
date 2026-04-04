@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { Word, WordPackageSummary, WordPackageDetail } from '../types'
-import { getPackages, getPackage, lookupWord, addWord } from '../api/client'
+import { getPackages, getPackage, lookupWord, addWord, addWordCategories } from '../api/client'
 import { useTutor } from '../context/TutorContext'
 
 type ItemStatus = 'pending' | 'processing' | 'added' | 'duplicate' | 'error'
@@ -77,8 +77,24 @@ export default function PackageWordForm({ words, onDone }: Props) {
       const word = preview.words[i]
       updateItem(i, { status: 'processing' })
 
+      const packageCats = preview.category ? [preview.category] : []
+
       if (existingSet.has(word.toLowerCase())) {
-        updateItem(i, { status: 'duplicate', detail: 'already in vocabulary' })
+        if (packageCats.length > 0) {
+          const existing = words.find((w) => w.english.toLowerCase() === word.toLowerCase())
+          if (existing) {
+            try {
+              await addWordCategories(tutorId, existing.id, packageCats)
+              updateItem(i, { status: 'duplicate', detail: 'category added' })
+            } catch {
+              updateItem(i, { status: 'duplicate', detail: 'already in vocabulary' })
+            }
+          } else {
+            updateItem(i, { status: 'duplicate', detail: 'already in vocabulary' })
+          }
+        } else {
+          updateItem(i, { status: 'duplicate', detail: 'already in vocabulary' })
+        }
         continue
       }
 
@@ -89,12 +105,20 @@ export default function PackageWordForm({ words, onDone }: Props) {
           english: word,
           target_language: result.target_language,
           notes: result.notes,
+          categories: packageCats,
         })
         existingSet.add(word.toLowerCase())
         updateItem(i, { status: 'added', detail: result.target_language })
       } catch (e) {
-        const msg = (e as Error).message
-        if (msg.includes('already exists')) {
+        const err = e as Error & { existingId?: string }
+        if (err.existingId && packageCats.length > 0) {
+          try {
+            await addWordCategories(tutorId, err.existingId, packageCats)
+            updateItem(i, { status: 'duplicate', detail: 'category added' })
+          } catch {
+            updateItem(i, { status: 'duplicate', detail: 'already in vocabulary' })
+          }
+        } else if (err.message.includes('already exists')) {
           updateItem(i, { status: 'duplicate', detail: 'already in vocabulary' })
         } else {
           updateItem(i, { status: 'error', detail: 'lookup or add failed' })
@@ -128,9 +152,16 @@ export default function PackageWordForm({ words, onDone }: Props) {
             >
               <p className="font-semibold text-gray-800 group-hover:text-filos-primary transition mb-1">{pkg.name}</p>
               <p className="text-xs text-gray-400 mb-3 leading-snug">{pkg.description}</p>
-              <span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-filos-primary/10 text-filos-primary">
-                {pkg.word_count} words
-              </span>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-filos-primary/10 text-filos-primary">
+                  {pkg.word_count} words
+                </span>
+                {pkg.category && (
+                  <span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-teal-50 text-teal-700 border border-teal-200">
+                    {pkg.category}
+                  </span>
+                )}
+              </div>
             </button>
           ))}
         </div>
@@ -151,7 +182,12 @@ export default function PackageWordForm({ words, onDone }: Props) {
           </button>
         )}
       </div>
-      <p className="text-sm text-gray-400 mb-4">{preview.description}</p>
+      <p className="text-sm text-gray-400 mb-2">{preview.description}</p>
+      {preview.category && (
+        <span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-teal-50 text-teal-700 border border-teal-200 mb-4">
+          Category: {preview.category}
+        </span>
+      )}
 
       {/* Word list preview (before import starts) */}
       {!importing && (

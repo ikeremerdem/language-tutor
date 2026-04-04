@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 
-from models.vocabulary import Word, WordCreate, WordUpdate
-from services.scoring import attention_weight
+from models.vocabulary import Word, WordCreate, WordUpdate, DuplicateWordError
 from services.supabase_client import supabase
 
 
@@ -10,10 +9,10 @@ def list_words(tutor_id: str) -> list[Word]:
         supabase.table("vocabulary")
         .select("*")
         .eq("tutor_id", tutor_id)
+        .order("created_at", desc=True)
         .execute()
     )
-    words = [Word(**row) for row in response.data]
-    return sorted(words, key=attention_weight, reverse=True)
+    return [Word(**row) for row in response.data]
 
 
 def get_word(word_id: str, tutor_id: str) -> Word | None:
@@ -38,8 +37,12 @@ def add_word(tutor_id: str, user_id: str, data: WordCreate) -> Word:
         .execute()
     )
     if existing.data:
-        raise ValueError(f"Word '{data.english.strip()}' already exists")
+        raise DuplicateWordError(
+            f"Word '{data.english.strip()}' already exists",
+            existing_id=existing.data[0]["id"],
+        )
 
+    normalized_cats = [c.strip().lower() for c in data.categories if c.strip()]
     row = {
         "tutor_id": tutor_id,
         "user_id": user_id,
@@ -47,6 +50,7 @@ def add_word(tutor_id: str, user_id: str, data: WordCreate) -> Word:
         "english": data.english.strip(),
         "target_language": data.target_language.strip(),
         "notes": data.notes.strip(),
+        "categories": normalized_cats,
     }
     response = supabase.table("vocabulary").insert(row).execute()
     return Word(**response.data[0])
@@ -76,6 +80,30 @@ def delete_word(word_id: str, tutor_id: str) -> bool:
         .execute()
     )
     return len(response.data) > 0
+
+
+def add_categories_to_word(word_id: str, tutor_id: str, new_cats: list[str]) -> Word | None:
+    response = (
+        supabase.table("vocabulary")
+        .select("categories")
+        .eq("id", word_id)
+        .eq("tutor_id", tutor_id)
+        .single()
+        .execute()
+    )
+    if not response.data:
+        return None
+    existing_cats: list[str] = response.data.get("categories") or []
+    normalized_new = [c.strip().lower() for c in new_cats if c.strip()]
+    merged = list(dict.fromkeys(existing_cats + [c for c in normalized_new if c not in existing_cats]))
+    update_response = (
+        supabase.table("vocabulary")
+        .update({"categories": merged})
+        .eq("id", word_id)
+        .eq("tutor_id", tutor_id)
+        .execute()
+    )
+    return Word(**update_response.data[0]) if update_response.data else None
 
 
 def record_answer(word_id: str, correct: bool) -> None:

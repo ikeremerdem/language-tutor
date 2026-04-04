@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     # CORS — comma-separated origins e.g. "https://app.vercel.app,http://localhost:5173"
     allowed_origins_str: str = "http://localhost:5173"
 
+    # Admin access — email address of the admin user
+    admin_email: str = ""
+
     @property
     def allowed_origins(self) -> list[str]:
         return [o.strip() for o in self.allowed_origins_str.split(",")]

@@ -4,6 +4,8 @@ import type {
   WordCreate,
   WordUpdate,
   WordLookup,
+  WordLookupReverse,
+  AdminUserStats,
   QuizStartRequest,
   QuizQuestion,
   QuizAnswerRequest,
@@ -33,7 +35,21 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
   if (!res.ok) {
     const text = await res.text()
-    throw new Error(text || res.statusText)
+    let message = text || res.statusText
+    let existingId: string | undefined
+    try {
+      const body = JSON.parse(text)
+      if (body?.detail?.message) {
+        message = body.detail.message
+        existingId = body.detail.existing_id
+      } else if (body?.detail) {
+        message = typeof body.detail === 'string' ? body.detail : message
+      }
+    } catch { /* not JSON */ }
+    const err = new Error(message) as Error & { existingId?: string; status?: number }
+    err.status = res.status
+    if (existingId) err.existingId = existingId
+    throw err
   }
   if (res.status === 204) return undefined as T
   return res.json()
@@ -53,6 +69,9 @@ export const deleteTutor = (tutorId: string) =>
 export const lookupWord = (tutorId: string, english: string) =>
   request<WordLookup>(`/tutors/${tutorId}/vocabulary/lookup?english=${encodeURIComponent(english)}`)
 
+export const lookupWordReverse = (tutorId: string, targetWord: string) =>
+  request<WordLookupReverse>(`/tutors/${tutorId}/vocabulary/lookup-reverse?target_word=${encodeURIComponent(targetWord)}`)
+
 export const getWords = (tutorId: string) =>
   request<Word[]>(`/tutors/${tutorId}/vocabulary`)
 
@@ -64,6 +83,9 @@ export const updateWord = (tutorId: string, id: string, data: WordUpdate) =>
 
 export const deleteWord = (tutorId: string, id: string) =>
   request<void>(`/tutors/${tutorId}/vocabulary/${id}`, { method: 'DELETE' })
+
+export const addWordCategories = (tutorId: string, id: string, categories: string[]) =>
+  request<Word>(`/tutors/${tutorId}/vocabulary/${id}/categories`, { method: 'PATCH', body: JSON.stringify({ categories }) })
 
 // ── Quiz ─────────────────────────────────────────────────────
 export const startQuiz = (tutorId: string, data: QuizStartRequest) =>
@@ -87,6 +109,10 @@ export const getSessionsByType = (tutorId: string, quizType: QuizType) =>
 
 export const resetStats = (tutorId: string) =>
   request<void>(`/tutors/${tutorId}/stats/reset`, { method: 'DELETE' })
+
+// ── Admin ─────────────────────────────────────────────────────
+export const getAdminUserStats = () =>
+  request<AdminUserStats[]>('/admin/users')
 
 // ── Packages ──────────────────────────────────────────────────
 export const getPackages = () =>

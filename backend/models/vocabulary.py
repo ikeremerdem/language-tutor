@@ -12,11 +12,18 @@ class WordType(str, Enum):
     other = "other"
 
 
+class DuplicateWordError(ValueError):
+    def __init__(self, message: str, existing_id: str):
+        super().__init__(message)
+        self.existing_id = existing_id
+
+
 class WordCreate(BaseModel):
     word_type: WordType
     english: str
     target_language: str
     notes: str = ""
+    categories: list[str] = []
 
 
 class WordUpdate(BaseModel):
@@ -24,6 +31,11 @@ class WordUpdate(BaseModel):
     english: Optional[str] = None
     target_language: Optional[str] = None
     notes: Optional[str] = None
+    categories: Optional[list[str]] = None
+
+
+class AddCategoriesRequest(BaseModel):
+    categories: list[str]
 
 
 class Word(BaseModel):
@@ -37,3 +49,4 @@ class Word(BaseModel):
     times_correct: int = 0
     last_asked: Optional[str] = None
     current_streak: int = 0
+    categories: list[str] = []

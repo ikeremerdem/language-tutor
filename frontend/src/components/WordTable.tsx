@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import type { Word, WordUpdate } from '../types'
 import CategoryPill from './CategoryPill'
+import TagInput from './TagInput'
+import WordCategoryTag from './WordCategoryTag'
 import { useTutor } from '../context/TutorContext'
 
 const TYPE_COLORS: Record<string, string> = {
@@ -46,7 +48,7 @@ export default function WordTable({ words, onUpdate, onDelete }: Props) {
 
   const startEdit = (word: Word) => {
     setEditingId(word.id)
-    setEditData({ word_type: word.word_type, english: word.english, target_language: word.target_language, notes: word.notes })
+    setEditData({ word_type: word.word_type, english: word.english, target_language: word.target_language, notes: word.notes, categories: word.categories })
   }
   const saveEdit = async () => { if (!editingId) return; await onUpdate(editingId, editData); setEditingId(null) }
 
@@ -63,6 +65,7 @@ export default function WordTable({ words, onUpdate, onDelete }: Props) {
             <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">English</th>
             <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{targetLanguage}</th>
             <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Notes</th>
+            <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Categories</th>
             <th className="px-5 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Asked</th>
             <th className="px-5 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Accuracy</th>
             <th className="px-5 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Streak</th>
@@ -82,6 +85,9 @@ export default function WordTable({ words, onUpdate, onDelete }: Props) {
                   <td className="px-5 py-2"><input value={editData.english} onChange={(e) => setEditData({ ...editData, english: e.target.value })} className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-full" /></td>
                   <td className="px-5 py-2"><input value={editData.target_language} onChange={(e) => setEditData({ ...editData, target_language: e.target.value })} className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-full" /></td>
                   <td className="px-5 py-2"><input value={editData.notes} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-full" /></td>
+                  <td className="px-5 py-2 min-w-[140px]">
+                    <TagInput tags={editData.categories ?? []} onChange={(cats) => setEditData({ ...editData, categories: cats })} placeholder="Add category…" />
+                  </td>
                   <td className="px-5 py-2 text-center text-sm text-gray-500">
                     {word.times_asked === 0 ? <CategoryPill category="new" /> : word.times_asked}
                   </td>
@@ -102,6 +108,11 @@ export default function WordTable({ words, onUpdate, onDelete }: Props) {
                   <td className="px-5 py-3.5 text-sm font-medium text-gray-800">{word.english}</td>
                   <td className="px-5 py-3.5 text-sm font-medium text-filos-primary">{word.target_language}</td>
                   <td className="px-5 py-3.5 text-sm text-gray-400">{word.notes}</td>
+                  <td className="px-5 py-3.5">
+                    <div className="flex flex-wrap gap-1">
+                      {(word.categories ?? []).map((cat) => <WordCategoryTag key={cat} category={cat} />)}
+                    </div>
+                  </td>
                   <td className="px-5 py-3.5 text-center text-sm text-gray-500">
                     {word.times_asked === 0 ? <CategoryPill category="new" /> : word.times_asked}
                   </td>

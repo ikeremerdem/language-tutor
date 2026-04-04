@@ -11,6 +11,7 @@ export interface Word {
   times_correct: number
   last_asked: string | null
   current_streak: number
+  categories: string[]
 }
 
 export interface WordCreate {
@@ -18,10 +19,17 @@ export interface WordCreate {
   english: string
   target_language: string
   notes: string
+  categories: string[]
 }
 
 export interface WordLookup {
   target_language: string
+  word_type: WordType
+  notes: string
+}
+
+export interface WordLookupReverse {
+  english: string
   word_type: WordType
   notes: string
 }
@@ -31,6 +39,7 @@ export interface WordUpdate {
   english?: string
   target_language?: string
   notes?: string
+  categories?: string[]
 }
 
 export type QuizType = 'word' | 'sentence'
@@ -131,6 +140,7 @@ export interface WordPackageSummary {
   name: string
   description: string
   word_count: number
+  category: string
 }
 
 export interface WordPackageDetail {
@@ -138,6 +148,16 @@ export interface WordPackageDetail {
   name: string
   description: string
   words: string[]
+  category: string
+}
+
+export interface AdminUserStats {
+  user_id: string
+  email: string
+  created_at: string
+  language_count: number
+  word_count: number
+  session_count: number
 }
 
 export interface LanguageTutor {

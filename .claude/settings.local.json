@@ -42,7 +42,12 @@
       "Bash(fly machine:*)",
       "Bash(cp /Users/keremerdem/Code/kaloma-ai/greek-tutor/backend/data/Greek/sentence_structures.csv /tmp/ss.csv)",
       "Bash(cp /tmp/ss.csv /Users/keremerdem/Code/kaloma-ai/greek-tutor/backend/data/Italian/sentence_structures.csv)",
-      "Bash(cp /tmp/ss.csv /Users/keremerdem/Code/kaloma-ai/greek-tutor/backend/data/French/sentence_structures.csv)"
+      "Bash(cp /tmp/ss.csv /Users/keremerdem/Code/kaloma-ai/greek-tutor/backend/data/French/sentence_structures.csv)",
+      "Bash(claude:*)",
+      "Bash(npm info:*)",
+      "Bash(do)",
+      "Read(//Users/keremerdem/Code/kaloma-ai/greek-tutor/**)",
+      "Bash(done)"
     ]
   }
 }

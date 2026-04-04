@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import type { Word, WordCreate, WordType } from '../types'
-import { lookupWord } from '../api/client'
+import { lookupWord, lookupWordReverse } from '../api/client'
 import { useTutor } from '../context/TutorContext'
+import TagInput from './TagInput'
 
 const WORD_TYPES: WordType[] = ['verb', 'noun', 'adjective', 'adverb', 'preposition', 'other']
 
@@ -16,8 +17,10 @@ export default function WordForm({ words, onSubmit }: Props) {
   const [english, setEnglish] = useState('')
   const [targetWord, setTargetWord] = useState('')
   const [notes, setNotes] = useState('')
+  const [categories, setCategories] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
   const [lookingUp, setLookingUp] = useState(false)
+  const [lookingUpReverse, setLookingUpReverse] = useState(false)
   const [error, setError] = useState('')
   const [duplicate, setDuplicate] = useState<Word | null>(null)
 
@@ -40,6 +43,23 @@ export default function WordForm({ words, onSubmit }: Props) {
     }
   }
 
+  const handleLookupReverse = async () => {
+    if (!targetWord.trim()) return
+    setError('')
+    setLookingUpReverse(true)
+    try {
+      const result = await lookupWordReverse(tutorId, targetWord.trim())
+      setEnglish(result.english)
+      setWordType(result.word_type)
+      setNotes(result.notes)
+      setDuplicate(words.find((w) => w.english.toLowerCase() === result.english.toLowerCase()) ?? null)
+    } catch {
+      // leave fields for manual entry
+    } finally {
+      setLookingUpReverse(false)
+    }
+  }
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') { e.preventDefault(); if (!targetWord) handleLookup() }
   }
@@ -50,8 +70,8 @@ export default function WordForm({ words, onSubmit }: Props) {
     setLoading(true)
     setError('')
     try {
-      await onSubmit({ word_type: wordType, english, target_language: targetWord, notes })
-      setEnglish(''); setTargetWord(''); setNotes(''); setDuplicate(null)
+      await onSubmit({ word_type: wordType, english, target_language: targetWord, notes, categories })
+      setEnglish(''); setTargetWord(''); setNotes(''); setCategories([]); setDuplicate(null)
     } catch (e) {
       const msg = (e as Error).message
       setError(msg.includes('already exists') ? `"${english.trim()}" is already in your vocabulary.` : msg)
@@ -100,12 +120,27 @@ export default function WordForm({ words, onSubmit }: Props) {
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-600 mb-1">{targetLanguage}</label>
-          <input value={targetWord} onChange={(e) => setTargetWord(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2.5" placeholder="auto-filled by lookup" />
+          <div className="flex gap-2">
+            <input value={targetWord} onChange={(e) => setTargetWord(e.target.value)} className="flex-1 border border-gray-300 rounded-lg px-3 py-2.5" placeholder="auto-filled by lookup" />
+            <button
+              type="button"
+              onClick={handleLookupReverse}
+              disabled={lookingUpReverse || !targetWord.trim()}
+              className="px-3 py-2.5 rounded-lg border border-gray-300 text-xs font-medium text-gray-500 hover:border-filos-primary hover:text-filos-primary disabled:opacity-40 transition whitespace-nowrap"
+              title={`Look up this ${targetLanguage} word`}
+            >
+              {lookingUpReverse ? '…' : '← Lookup'}
+            </button>
+          </div>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-600 mb-1">Notes</label>
           <input value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2.5" placeholder="article, verb type, etc." />
         </div>
+      </div>
+      <div className="mt-4">
+        <label className="block text-sm font-medium text-gray-600 mb-1">Categories</label>
+        <TagInput tags={categories} onChange={setCategories} placeholder="travel, food, … (Enter or comma to add)" />
       </div>
       {error && <p className="mt-3 text-red-600 text-sm">{error}</p>}
       <button

@@ -11,6 +11,7 @@ class PackageSummary(BaseModel):
     name: str
     description: str
     word_count: int
+    category: str
 
 
 class PackageDetail(BaseModel):
@@ -18,6 +19,7 @@ class PackageDetail(BaseModel):
     name: str
     description: str
     words: list[str]
+    category: str
 
 
 def _packages_dir():
@@ -35,6 +37,7 @@ def list_packages():
                 name=data["name"],
                 description=data["description"],
                 word_count=len(data["words"]),
+                category=data.get("category", ""),
             ))
         except Exception:
             continue
@@ -52,4 +55,5 @@ def get_package(slug: str):
         name=data["name"],
         description=data["description"],
         words=data["words"],
+        category=data.get("category", ""),
     )

@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS vocabulary (
     times_correct   INTEGER NOT NULL DEFAULT 0,
     last_asked      TIMESTAMPTZ,
     current_streak  INTEGER NOT NULL DEFAULT 0,
+    categories      TEXT[] NOT NULL DEFAULT '{}',
     UNIQUE (tutor_id, english)
 );
 
@@ -47,6 +48,9 @@ CREATE TABLE IF NOT EXISTS quiz_sessions (
 -- ============================================================
 -- Migration: add current_streak (run on existing databases)
 -- ALTER TABLE vocabulary ADD COLUMN IF NOT EXISTS current_streak INTEGER NOT NULL DEFAULT 0;
+--
+-- Migration: add categories (run on existing databases)
+-- ALTER TABLE vocabulary ADD COLUMN IF NOT EXISTS categories TEXT[] NOT NULL DEFAULT '{}';
 --
 -- Migration: add Italian and French language support (run on existing databases)
 -- ALTER TABLE language_tutors DROP CONSTRAINT IF EXISTS language_tutors_language_check;

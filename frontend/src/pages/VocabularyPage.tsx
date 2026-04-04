@@ -16,6 +16,8 @@ export default function VocabularyPage() {
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState<WordType | ''>('')
   const [perfFilter, setPerfFilter] = useState<'all' | 'new' | 'struggling' | 'learning' | 'learned'>('all')
+  const [categoryFilter, setCategoryFilter] = useState('')
+  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'az' | 'za' | 'asked_desc' | 'asked_asc' | 'accuracy_desc' | 'accuracy_asc' | 'streak_desc' | 'streak_asc'>('newest')
 
   const STREAK_LEARN_THRESHOLD = 5
   const [page, setPage] = useState(1)
@@ -23,6 +25,12 @@ export default function VocabularyPage() {
   const load = async () => setWords(await getWords(tutorId))
 
   useEffect(() => { load() }, [tutorId])
+
+  const allCategories = useMemo(() => {
+    const cats = new Set<string>()
+    words.forEach((w) => (w.categories ?? []).forEach((c) => cats.add(c)))
+    return Array.from(cats).sort()
+  }, [words])
 
   const filtered = useMemo(() => {
     let result = words
@@ -37,14 +45,29 @@ export default function VocabularyPage() {
     else if (perfFilter === 'struggling') result = result.filter((w) => w.times_asked > 0 && w.current_streak === 0)
     else if (perfFilter === 'learning') result = result.filter((w) => w.current_streak > 0 && w.current_streak < STREAK_LEARN_THRESHOLD)
     else if (perfFilter === 'learned') result = result.filter((w) => w.current_streak >= STREAK_LEARN_THRESHOLD)
-    return result
-  }, [words, search, typeFilter, perfFilter])
+    if (categoryFilter) result = result.filter((w) => (w.categories ?? []).includes(categoryFilter))
+
+    const accuracy = (w: Word) => w.times_asked === 0 ? -1 : w.times_correct / w.times_asked
+
+    const sorted = [...result]
+    if (sortBy === 'newest') sorted.sort((a, b) => b.created_at.localeCompare(a.created_at))
+    else if (sortBy === 'oldest') sorted.sort((a, b) => a.created_at.localeCompare(b.created_at))
+    else if (sortBy === 'az') sorted.sort((a, b) => a.english.localeCompare(b.english))
+    else if (sortBy === 'za') sorted.sort((a, b) => b.english.localeCompare(a.english))
+    else if (sortBy === 'asked_desc') sorted.sort((a, b) => b.times_asked - a.times_asked)
+    else if (sortBy === 'asked_asc') sorted.sort((a, b) => a.times_asked - b.times_asked)
+    else if (sortBy === 'accuracy_desc') sorted.sort((a, b) => accuracy(b) - accuracy(a))
+    else if (sortBy === 'accuracy_asc') sorted.sort((a, b) => accuracy(a) - accuracy(b))
+    else if (sortBy === 'streak_desc') sorted.sort((a, b) => b.current_streak - a.current_streak)
+    else if (sortBy === 'streak_asc') sorted.sort((a, b) => a.current_streak - b.current_streak)
+    return sorted
+  }, [words, search, typeFilter, perfFilter, categoryFilter, sortBy])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const currentPage = Math.min(page, totalPages)
   const paged = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
 
-  useEffect(() => { setPage(1) }, [search, typeFilter, perfFilter])
+  useEffect(() => { setPage(1) }, [search, typeFilter, perfFilter, categoryFilter, sortBy])
 
   const handleAdd = async (data: WordCreate) => { await addWord(tutorId, data); await load() }
   const handleUpdate = async (id: string, data: WordUpdate) => { await updateWord(tutorId, id, data); await load() }
@@ -85,6 +108,22 @@ export default function VocabularyPage() {
           {filtered.length !== words.length && ` (of ${words.length} total)`}
         </div>
         <div className="flex-1" />
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+        >
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="az">A → Z</option>
+          <option value="za">Z → A</option>
+          <option value="asked_desc">Most asked</option>
+          <option value="asked_asc">Least asked</option>
+          <option value="accuracy_desc">Highest accuracy</option>
+          <option value="accuracy_asc">Lowest accuracy</option>
+          <option value="streak_desc">Highest streak</option>
+          <option value="streak_asc">Lowest streak</option>
+        </select>
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -112,6 +151,16 @@ export default function VocabularyPage() {
           <option value="learning">Learning</option>
           <option value="learned">Learned</option>
         </select>
+        {allCategories.length > 0 && (
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+          >
+            <option value="">All categories</option>
+            {allCategories.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+        )}
       </div>
 
       <WordTable words={paged} onUpdate={handleUpdate} onDelete={handleDelete} />

@@ -91,11 +91,29 @@ def lookup_word(english: str, language: str) -> dict:
 Word: {english}
 
 Respond with ONLY valid JSON (no markdown) with these fields:
-- "target_language": the {language} translation (use the most common/standard form)
+- "target_language": the {language} translation (use the most common/standard form). Do not add the articles here.
 - "word_type": one of "verb", "noun", "adjective", "adverb", "preposition", "other"
-- "notes": helpful notes for a learner. Keep it brief.
+- "notes": helpful notes for a learner. Keep it brief. If applicable, state the article here.
 
 {{"target_language": "...", "word_type": "...", "notes": "..."}}"""
+
+    return json.loads(_chat(prompt))
+
+
+def lookup_word_reverse(target_word: str, language: str) -> dict:
+    """Look up a target language word and return its English translation, type, and notes.
+    Returns {"english": str, "word_type": str, "notes": str}
+    """
+    prompt = f"""You are a {language} language dictionary. Translate the {language} word/phrase below to English.
+
+Word: {target_word}
+
+Respond with ONLY valid JSON (no markdown) with these fields:
+- "english": the English translation (use the most common/standard form, no articles)
+- "word_type": one of "verb", "noun", "adjective", "adverb", "preposition", "other"
+- "notes": helpful notes for a learner. Keep it brief. If applicable, state the {language} article or grammar notes here.
+
+{{"english": "...", "word_type": "...", "notes": "..."}}"""
 
     return json.loads(_chat(prompt))
 

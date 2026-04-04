@@ -3,6 +3,7 @@ import FilosLogo from './FilosLogo'
 import { useTutor } from '../context/TutorContext'
 import { useAuth } from '../context/AuthContext'
 
+
 export default function Layout() {
   const { tutorId, targetLanguage } = useTutor()
   const { user, signOut } = useAuth()
@@ -61,8 +62,14 @@ export default function Layout() {
       <main className="max-w-6xl mx-auto px-6 py-8">
         <Outlet />
       </main>
-      <footer className="text-center text-xs text-gray-400 py-6">
-        Filos &middot; Your {targetLanguage} companion &middot; Powered by AI
+      <footer className="text-center text-xs text-gray-400 py-6 px-6 space-y-1">
+        <p>Filos &middot; Your {targetLanguage} companion &middot; Powered by kaloma.ai</p>
+        <p className="text-gray-300 max-w-2xl mx-auto">
+          This is a pet project by Kerem Erdem, maintained on a best-effort basis. It has not undergone a security audit,
+          does not guarantee GDPR compliance, and is provided as-is. Use at your own risk.
+          For feedback and feature requests, contact{' '}
+          <a href="mailto:languagetutor@kaloma.ai" className="hover:text-gray-400 transition underline">languagetutor@kaloma.ai</a>.
+        </p>
       </footer>
     </div>
   )

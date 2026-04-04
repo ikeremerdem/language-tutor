@@ -70,6 +70,15 @@ export default function LoginPage() {
           </Link>
         </p>
       </div>
+      <footer className="text-center text-xs text-gray-300 py-6 px-6 space-y-1">
+        <p>Filos &middot; Your language companion &middot; Powered by kaloma.ai</p>
+        <p className="max-w-2xl mx-auto">
+          This is a pet project by Kerem Erdem, maintained on a best-effort basis. It has not undergone a security audit,
+          does not guarantee GDPR compliance, and is provided as-is. Use at your own risk.
+          For feedback and feature requests, contact{' '}
+          <a href="mailto:languagetutor@kaloma.ai" className="hover:text-gray-400 transition underline">languagetutor@kaloma.ai</a>.
+        </p>
+      </footer>
     </div>
   )
 }

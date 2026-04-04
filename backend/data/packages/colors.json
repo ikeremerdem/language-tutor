@@ -2,9 +2,26 @@
   "name": "Colors",
   "description": "Basic and common colors",
   "words": [
-    "red", "blue", "green", "yellow", "orange",
-    "purple", "pink", "brown", "black", "white",
-    "grey", "gold", "silver", "beige", "turquoise",
-    "dark", "light", "bright", "pale", "transparent"
-  ]
+    "red",
+    "blue",
+    "green",
+    "yellow",
+    "orange",
+    "purple",
+    "pink",
+    "brown",
+    "black",
+    "white",
+    "grey",
+    "gold",
+    "silver",
+    "beige",
+    "turquoise",
+    "dark",
+    "light",
+    "bright",
+    "pale",
+    "transparent"
+  ],
+  "category": "colors"
 }

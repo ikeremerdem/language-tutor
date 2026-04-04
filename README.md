@@ -6,13 +6,15 @@ A multi-user, web-based language learning application with vocabulary management
 
 - **Multi-user auth** — Register and sign in via Supabase Auth. Each user's data is fully isolated.
 - **Language Tutors** — Create one tutor per language (Greek, German, Spanish, Italian, French). Switch between them freely.
-- **Vocabulary Management** — Add words one at a time or in bulk. Auto-lookup translates, classifies, and adds grammar notes via LLM. Filter by text, word type, or performance (New / Correct ≥ 80% / Correct < 80%), with pagination.
-- **Multiple Word Add** — Paste a list of English words (one per line); the app looks each up and adds it automatically, skipping duplicates.
-- **Word Packages** — Pre-built thematic word lists (Common Verbs, Food & Drink, Travel, etc.) stored as JSON files. Load a package to add all its words via LLM lookup in one click.
-- **Word Quiz** — Flashcards with a visual direction toggle, focus modes (Balanced / New words / Mistakes), and quick question count presets. Learned words are automatically deprioritised.
+- **Vocabulary Management** — Add words one at a time, in bulk, or via pre-built packages. Auto-lookup works in both directions (English → target language or target language → English), classifying and adding grammar notes via LLM. Filter by text, word type, performance category, or user-defined category, with pagination.
+- **Word Categories** — Words can be tagged with one or more user-defined categories (e.g. "travel", "food"). Categories are assigned when adding words individually, in bulk, or from a package. Duplicate words encountered during bulk/package import get the new category merged in rather than being skipped outright.
+- **Multiple Word Add** — Paste a list of English words (one per line); the app looks each up and adds it automatically. Duplicates are skipped (or updated with any specified categories).
+- **Word Packages** — Pre-built thematic word lists (Common Verbs, Common Nouns, Food & Drink, Travel, Numbers & Time, Body & Health, Colors) stored as JSON files. Each package has a default category applied automatically on import. Load a package to preview words before importing, with duplicates shown as strikethrough.
+- **Word Quiz** — Flashcards with a visual direction toggle, focus modes (Balanced / New words / Struggling), and quick question count presets. Learned words are automatically excluded from Balanced and Struggling pools.
 - **Sentence Quiz** — AI-generated sentences using only your vocabulary. Answers are checked semantically, handling word order and accent variations.
-- **Streak & Learned words** — Each word tracks a correct-answer streak. Once a word reaches `STREAK_LEARN_THRESHOLD` (default 5) consecutive correct answers it is marked **Learned** and removed from the active quiz pool. The streak resets on a wrong answer.
-- **Dashboard** — Weekly activity chart, vocabulary status breakdown (New / Correct ≥ 80% / Correct < 80% / Learned), recent sessions, and your 10 most difficult words.
+- **Streak & Word Categories** — Each word tracks a correct-answer streak. Words are classified into four categories: **New** (never asked), **Struggling** (streak = 0, asked at least once), **Learning** (streak > 0 and < threshold), **Learned** (streak ≥ `STREAK_LEARN_THRESHOLD`, default 5). Learned words are removed from the active quiz pool.
+- **Dashboard** — Weekly activity chart, vocabulary status by category (New / Struggling / Learning / Learned), words-by-type breakdown, recent sessions, and your 10 most difficult unlearned words.
+- **Admin** — A password-free admin page (`/admin`) accessible only to the configured admin email. Shows a user statistics table: email, join date, language count, word count, and session count for every registered user.
 
 ## Tech Stack
 
@@ -111,7 +113,7 @@ Open http://localhost:5173
 ## User Flow
 
 1. Register or sign in at `/register` / `/login`
-2. Create a Language Tutor (Greek, German, or Spanish) on the **My Tutors** page
+2. Create a Language Tutor (Greek, German, Spanish, Italian, or French) on the **My Tutors** page
 3. Enter a tutor to access its dashboard, vocabulary, and quizzes
 4. All data (vocabulary, sessions, stats) is scoped per user and per tutor
 
@@ -133,6 +135,7 @@ backend/
     quiz.py               #   /api/tutors/{id}/quiz
     stats.py              #   /api/tutors/{id}/stats
     packages.py           #   /api/packages
+    admin.py              #   /api/admin (admin-only)
   services/
     supabase_client.py    # Supabase service-role client
     tutor_service.py      # Language tutor CRUD
@@ -140,6 +143,8 @@ backend/
     quiz_service.py       # In-memory quiz sessions, persisted on end
     sentence_service.py   # LLM sentence generation
     stats_service.py      # Dashboard and session queries
+    scoring.py            # Central scoring: word_weight, word_category, is_learned
+    admin_service.py      # Admin: user stats via Supabase auth admin API
   data/
     Greek/sentence_structures.csv
     German/sentence_structures.csv
@@ -153,6 +158,7 @@ backend/
       travel.json
       numbers_and_time.json
       body_and_health.json
+      colors.json
 
 frontend/src/
   lib/supabase.ts         # Supabase JS client (anon key, used for auth)
@@ -166,8 +172,13 @@ frontend/src/
     BulkWordForm.tsx       # Bulk word add with per-word live status
     WordForm.tsx           # Single word add with LLM lookup
     WordTable.tsx          # Vocabulary list with inline editing
+    PackageWordForm.tsx    # Package browser → preview → import flow
+    TagInput.tsx           # Tag/category input component (Enter or comma to commit)
+    WordCategoryTag.tsx    # Read-only teal pill for user-defined categories
+    CategoryPill.tsx       # Status pill for New / Struggling / Learning / Learned
     QuizCard.tsx           # Active quiz question UI
     QuizSetup.tsx          # Quiz configuration and recent sessions
+    StatsChart.tsx         # Weekly activity chart
     ...
   hooks/useQuiz.ts        # Quiz state machine
   pages/
@@ -178,6 +189,7 @@ frontend/src/
     VocabularyPage.tsx
     WordQuizPage.tsx
     SentenceQuizPage.tsx
+    AdminPage.tsx          # Admin user statistics table
   types/index.ts          # TypeScript interfaces
 ```
 
@@ -214,7 +226,8 @@ fly secrets set \
   SUPABASE_SERVICE_ROLE_KEY="your-service-role-key" \
   LLM_MODEL="openai/gpt-4o-mini" \
   LLM_API_KEY="sk-your-key" \
-  ALLOWED_ORIGINS_STR="https://your-app.vercel.app"
+  ALLOWED_ORIGINS_STR="https://your-app.vercel.app" \
+  ADMIN_EMAIL="your-admin-email@example.com"
 fly deploy
 ```
 
