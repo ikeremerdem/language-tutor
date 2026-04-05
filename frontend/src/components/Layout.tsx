@@ -35,6 +35,7 @@ export default function Layout() {
     { to: tutorLink('vocabulary'), label: 'Vocabulary' },
     { to: tutorLink('quiz/word'), label: 'Word Quiz' },
     { to: tutorLink('quiz/sentence'), label: 'Sentence Quiz' },
+    { to: tutorLink('conversation'), label: 'Conversation' },
   ]
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
@@ -93,6 +94,9 @@ export default function Layout() {
                   {isAdmin && (
                     <Link to="/admin" onClick={() => setMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-600 hover:bg-filos-marble hover:text-filos-primary transition">Admin</Link>
                   )}
+                  {isAdmin && (
+                    <Link to="/admin/personas" onClick={() => setMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-600 hover:bg-filos-marble hover:text-filos-primary transition">Personas</Link>
+                  )}
                   <div className="border-t border-gray-100 my-1" />
                   <button onClick={() => { setMenuOpen(false); signOut() }} className="w-full text-left flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-600 hover:bg-filos-marble hover:text-filos-primary transition">Sign out</button>
                 </div>
@@ -142,6 +146,9 @@ export default function Layout() {
               <Link to={tutorLink('release-notes')} onClick={() => setMobileNavOpen(false)} className="block px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-filos-marble hover:text-filos-primary transition">Release Notes</Link>
               {isAdmin && (
                 <Link to="/admin" onClick={() => setMobileNavOpen(false)} className="block px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-filos-marble hover:text-filos-primary transition">Admin</Link>
+              )}
+              {isAdmin && (
+                <Link to="/admin/personas" onClick={() => setMobileNavOpen(false)} className="block px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-filos-marble hover:text-filos-primary transition">Personas</Link>
               )}
               <button onClick={() => { setMobileNavOpen(false); signOut() }} className="w-full text-left block px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-filos-marble hover:text-filos-primary transition">
                 Sign out — <span className="text-gray-400">{user?.email}</span>

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config import settings, SUPPORTED_LANGUAGES
-from routers import vocabulary, quiz, stats, tutors, packages, admin
+from routers import vocabulary, quiz, stats, tutors, packages, admin, conversations
 
 app = FastAPI(title="Filos Language Tutor API")
 
@@ -21,6 +21,7 @@ app.include_router(quiz.router)
 app.include_router(stats.router)
 app.include_router(packages.router)
 app.include_router(admin.router)
+app.include_router(conversations.router)
 
 
 @app.get("/api/health")

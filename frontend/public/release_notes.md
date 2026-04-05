@@ -1,5 +1,11 @@
 # Release Notes
 
+### 2026-04-05
+- **Conversations** — Practice your target language in realistic dialogues. Choose a persona (waiter, doctor, teacher…) and a context, then chat in your target language. The persona tries to use words from your vocabulary naturally.
+- **Conversation: grammar feedback** — After each message you send, the app checks your grammar. A green ✓ means correct; an amber warning shows an explanation in English and the corrected sentence.
+- **Conversation: translations** — Each persona message has a "Help!" link that reveals the English translation inline.
+- **Conversation: cheat button** — Type what you want to say in English and get it translated into the target language with one click.
+
 ### 2026-04-04 (3)
 - **Mobile support** — The app now works on phone screens. Navigation collapses to a hamburger menu, the vocabulary table scrolls horizontally, filter controls wrap to multiple rows, and quiz cards fit the screen.
 

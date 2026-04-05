@@ -175,6 +175,42 @@ export interface AdminUserStats {
   session_count: number
 }
 
+export interface PersonaContext {
+  id: string
+  persona_id: string
+  label: string
+  created_at: string
+}
+
+export interface Persona {
+  id: string
+  name: string
+  description: string
+  persona_prompt: string
+  image_url: string
+  created_at: string
+  contexts: PersonaContext[]
+}
+
+export interface ConversationMessage {
+  id: string
+  conversation_id: string
+  role: 'persona' | 'user'
+  content: string
+  translation: string
+  grammar_ok: boolean | null
+  grammar_explanation: string
+  grammar_corrected: string
+  created_at: string
+}
+
+export interface StartConversationResponse {
+  conversation_id: string
+  persona_name: string
+  first_message: string
+  first_message_translation: string
+}
+
 export interface TutorPreferences {
   allow_small_errors: boolean
 }

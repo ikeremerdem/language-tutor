@@ -20,6 +20,9 @@ import type {
   WordPackageDetail,
   WordPackageCreate,
   WordPackageUpdate,
+  Persona,
+  ConversationMessage,
+  StartConversationResponse,
 } from '../types'
 
 const BASE = (import.meta.env.VITE_API_BASE_URL ?? '') + '/api'
@@ -141,3 +144,44 @@ export const updatePackage = (id: string, data: WordPackageUpdate) =>
 
 export const deletePackage = (id: string) =>
   request<void>(`/packages/${id}`, { method: 'DELETE' })
+
+// ── Conversations ──────────────────────────────────────────────
+export const getPersonas = () =>
+  request<Persona[]>('/personas')
+
+export const startConversation = (tutorId: string, data: { persona_id: string; context_id?: string }) =>
+  request<StartConversationResponse>(`/tutors/${tutorId}/conversations`, { method: 'POST', body: JSON.stringify(data) })
+
+export const getConversationMessages = (tutorId: string, conversationId: string) =>
+  request<ConversationMessage[]>(`/tutors/${tutorId}/conversations/${conversationId}/messages`)
+
+export const translateSentence = (tutorId: string, text: string) =>
+  request<{ translation: string }>(`/tutors/${tutorId}/conversations/translate`, {
+    method: 'POST',
+    body: JSON.stringify({ text }),
+  })
+
+export const sendConversationMessage = (tutorId: string, conversationId: string, content: string) =>
+  request<{ content: string }>(`/tutors/${tutorId}/conversations/${conversationId}/messages`, {
+    method: 'POST',
+    body: JSON.stringify({ content }),
+  })
+
+// ── Admin: Personas ────────────────────────────────────────────
+export const adminGetPersonas = () =>
+  request<Persona[]>('/admin/personas')
+
+export const adminCreatePersona = (data: { name: string; description: string; persona_prompt: string; image_url: string }) =>
+  request<Persona>('/admin/personas', { method: 'POST', body: JSON.stringify(data) })
+
+export const adminUpdatePersona = (id: string, data: Partial<{ name: string; description: string; persona_prompt: string; image_url: string }>) =>
+  request<Persona>(`/admin/personas/${id}`, { method: 'PATCH', body: JSON.stringify(data) })
+
+export const adminDeletePersona = (id: string) =>
+  request<void>(`/admin/personas/${id}`, { method: 'DELETE' })
+
+export const adminCreateContext = (personaId: string, label: string) =>
+  request<{ id: string; label: string }>(`/admin/personas/${personaId}/contexts`, { method: 'POST', body: JSON.stringify({ label }) })
+
+export const adminDeleteContext = (personaId: string, contextId: string) =>
+  request<void>(`/admin/personas/${personaId}/contexts/${contextId}`, { method: 'DELETE' })

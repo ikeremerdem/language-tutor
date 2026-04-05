@@ -59,6 +59,66 @@ CREATE TABLE IF NOT EXISTS word_packages (
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Conversation Personas (admin-managed)
+CREATE TABLE IF NOT EXISTS personas (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name            TEXT NOT NULL,
+    description     TEXT NOT NULL DEFAULT '',
+    persona_prompt  TEXT NOT NULL DEFAULT '',
+    image_url       TEXT NOT NULL DEFAULT '',
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Contexts per persona (e.g. "Ordering food", "Paying bill")
+CREATE TABLE IF NOT EXISTS persona_contexts (
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    persona_id  UUID NOT NULL REFERENCES personas(id) ON DELETE CASCADE,
+    label       TEXT NOT NULL,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Active conversations (one per user per session)
+CREATE TABLE IF NOT EXISTS conversations (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tutor_id        UUID NOT NULL REFERENCES language_tutors(id) ON DELETE CASCADE,
+    user_id         UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    persona_id      UUID NOT NULL REFERENCES personas(id),
+    context_id      UUID REFERENCES persona_contexts(id),
+    persona_name    TEXT NOT NULL DEFAULT '',
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Messages within a conversation
+CREATE TABLE IF NOT EXISTS conversation_messages (
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    conversation_id     UUID NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+    role                TEXT NOT NULL CHECK (role IN ('persona', 'user')),
+    content             TEXT NOT NULL,
+    translation         TEXT NOT NULL DEFAULT '',
+    grammar_ok          BOOLEAN,
+    grammar_explanation TEXT NOT NULL DEFAULT '',
+    grammar_corrected   TEXT NOT NULL DEFAULT '',
+    created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- RLS for conversations
+ALTER TABLE conversations ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view own conversations"
+    ON conversations FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own conversations"
+    ON conversations FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- RLS for conversation_messages
+ALTER TABLE conversation_messages ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view messages of own conversations"
+    ON conversation_messages FOR SELECT
+    USING (EXISTS (SELECT 1 FROM conversations c WHERE c.id = conversation_id AND c.user_id = auth.uid()));
+CREATE POLICY "Users can insert messages of own conversations"
+    ON conversation_messages FOR INSERT
+    WITH CHECK (EXISTS (SELECT 1 FROM conversations c WHERE c.id = conversation_id AND c.user_id = auth.uid()));
+
+-- personas and persona_contexts are managed by backend service role key (no RLS needed)
+
 -- ============================================================
 -- Migration: add current_streak (run on existing databases)
 -- ALTER TABLE vocabulary ADD COLUMN IF NOT EXISTS current_streak INTEGER NOT NULL DEFAULT 0;
@@ -77,6 +137,9 @@ CREATE TABLE IF NOT EXISTS word_packages (
 -- Migration: add preferences column (run on existing databases)
 -- ALTER TABLE language_tutors ADD COLUMN IF NOT EXISTS preferences JSONB NOT NULL DEFAULT '{"allow_small_errors": true}';
 -- UPDATE language_tutors SET preferences = '{"allow_small_errors": true}' WHERE preferences = '{}';
+--
+-- Migration: add conversation tables (run on existing databases)
+-- (copy and run the personas, persona_contexts, conversations, conversation_messages CREATE TABLE blocks above)
 -- ============================================================
 
 -- ============================================================
