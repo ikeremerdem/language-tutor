@@ -210,7 +210,7 @@ The student's answer should convey the same meaning. Be lenient with:
 - Article differences
 - Equivalent synonyms
 
-If the answer is correct, give a brief encouraging note (1 sentence).
+If the answer is totally correct, give a brief encouraging note (1 sentence) as explanation. 
 Do not consider a sentence wrong, if the ending dot is missing. If the student's answer is correct, but the ending dot is missing, set correct to true and set explanation to: "Your sentence is correct, but the ending dot is missing."
 
 If the answer is incorrect:
