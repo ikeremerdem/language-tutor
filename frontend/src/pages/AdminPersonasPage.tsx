@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Persona } from '../types'
 import {
   adminGetPersonas,
@@ -7,6 +7,7 @@ import {
   adminDeletePersona,
   adminCreateContext,
   adminDeleteContext,
+  adminUploadPersonaImage,
 } from '../api/client'
 
 interface PersonaForm {
@@ -24,7 +25,9 @@ export default function AdminPersonasPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState<PersonaForm>(emptyForm())
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
   const [newContextLabel, setNewContextLabel] = useState<Record<string, string>>({})
   const [addingContext, setAddingContext] = useState<string | null>(null)
@@ -87,6 +90,19 @@ export default function AdminPersonasPage() {
     await adminDeleteContext(personaId, contextId); await load()
   }
 
+  const handleImageFile = async (file: File) => {
+    setUploading(true)
+    setError('')
+    try {
+      const url = await adminUploadPersonaImage(file)
+      setForm((prev) => ({ ...prev, image_url: url }))
+    } catch (e) {
+      setError((e as Error).message)
+    } finally {
+      setUploading(false)
+    }
+  }
+
   const inputCls = 'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm'
   const labelCls = 'block text-xs font-medium text-gray-500 mb-1'
 
@@ -116,8 +132,32 @@ export default function AdminPersonasPage() {
               <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputCls} placeholder="e.g. Waiter" />
             </div>
             <div>
-              <label className={labelCls}>Image URL</label>
-              <input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} className={inputCls} placeholder="https://…" />
+              <label className={labelCls}>Image</label>
+              <div className="flex items-center gap-3">
+                {form.image_url ? (
+                  <img src={form.image_url} alt="" className="w-10 h-10 rounded-full object-cover border border-gray-200 flex-shrink-0" />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-filos-primary/10 flex items-center justify-center flex-shrink-0 text-base">🧑</div>
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handleImageFile(f) }}
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="text-sm text-filos-primary font-medium hover:underline disabled:opacity-40"
+                >
+                  {uploading ? 'Uploading…' : form.image_url ? 'Change image' : 'Upload image'}
+                </button>
+                {form.image_url && (
+                  <button type="button" onClick={() => setForm((prev) => ({ ...prev, image_url: '' }))} className="text-xs text-gray-400 hover:text-red-400">Remove</button>
+                )}
+              </div>
             </div>
           </div>
           <div className="mb-4">
@@ -130,7 +170,7 @@ export default function AdminPersonasPage() {
           </div>
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
           <div className="flex gap-3">
-            <button onClick={handleSubmit} disabled={saving} className="bg-filos-primary text-white px-6 py-2.5 rounded-xl font-medium hover:bg-filos-primary-dark disabled:opacity-40 transition">
+            <button onClick={handleSubmit} disabled={saving || uploading} className="bg-filos-primary text-white px-6 py-2.5 rounded-xl font-medium hover:bg-filos-primary-dark disabled:opacity-40 transition">
               {saving ? 'Saving…' : formMode === 'create' ? 'Create' : 'Save Changes'}
             </button>
             <button onClick={closeForm} className="px-6 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-medium hover:bg-gray-50 transition">Cancel</button>

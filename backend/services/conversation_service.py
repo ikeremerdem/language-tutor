@@ -1,5 +1,6 @@
 import json
 import random
+from datetime import datetime, timezone
 
 from models.conversation import (
     PersonaWithContexts, PersonaContext, Conversation,
@@ -77,6 +78,18 @@ Respond with ONLY valid JSON (no markdown):
     first_message: str = parsed["message"]
     first_translation: str = parsed.get("translation", "")
 
+    # Create quiz session for this conversation
+    session = supabase.table("quiz_sessions").insert({
+        "tutor_id": tutor_id,
+        "user_id": user_id,
+        "quiz_type": "conversation",
+        "source_language": "target_language",
+        "total_questions": 0,
+        "correct_answers": 0,
+        "score_percent": 0.0,
+        "started_at": datetime.now(timezone.utc).isoformat(),
+    }).execute().data[0]
+
     # Persist conversation
     conv = supabase.table("conversations").insert({
         "tutor_id": tutor_id,
@@ -84,6 +97,7 @@ Respond with ONLY valid JSON (no markdown):
         "persona_id": persona_id,
         "context_id": context_id,
         "persona_name": persona_name,
+        "quiz_session_id": session["id"],
     }).execute().data[0]
 
     # Persist first message
@@ -166,6 +180,19 @@ def send_message(
         "grammar_explanation": grammar_explanation,
         "grammar_corrected": grammar_corrected,
     }).execute()
+
+    # Update quiz session stats
+    if conv.quiz_session_id:
+        s = supabase.table("quiz_sessions").select("total_questions, correct_answers").eq("id", conv.quiz_session_id).single().execute().data
+        total = int(s["total_questions"]) + 1
+        correct = int(s["correct_answers"]) + (1 if grammar_ok else 0)
+        score = round(correct / total * 100, 1)
+        supabase.table("quiz_sessions").update({
+            "total_questions": total,
+            "correct_answers": correct,
+            "score_percent": score,
+            "ended_at": datetime.now(timezone.utc).isoformat(),
+        }).eq("id", conv.quiz_session_id).execute()
 
     # Fetch full history (including the message we just inserted)
     history = get_messages(conversation_id, user_id)

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import type { Persona, PersonaContext } from '../types'
-import { getPersonas, startConversation } from '../api/client'
+import type { Persona, PersonaContext, RecentSession } from '../types'
+import { getPersonas, startConversation, getSessionsByType } from '../api/client'
 import { useTutor } from '../context/TutorContext'
 import FilosLogo from '../components/FilosLogo'
 
@@ -13,10 +13,12 @@ export default function ConversationSetupPage() {
   const [selectedContext, setSelectedContext] = useState<PersonaContext | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [recentSessions, setRecentSessions] = useState<RecentSession[]>([])
 
   useEffect(() => {
     getPersonas().then(setPersonas).catch(() => {})
-  }, [])
+    getSessionsByType(tutorId, 'conversation').then(setRecentSessions).catch(() => {})
+  }, [tutorId])
 
   const handleSelectPersona = (p: Persona) => {
     setSelected(p)
@@ -45,7 +47,7 @@ export default function ConversationSetupPage() {
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 items-start justify-center">
-      <div className="w-full max-w-2xl">
+      <div className="w-full max-w-2xl lg:max-w-xl">
         <div className="bg-white rounded-2xl shadow-sm p-8 mb-6">
           <div className="flex justify-center mb-4"><FilosLogo size={48} /></div>
           <h2 className="text-2xl font-bold text-filos-primary text-center mb-1">Conversation</h2>
@@ -131,6 +133,29 @@ export default function ConversationSetupPage() {
           </button>
         </div>
       </div>
+
+      {recentSessions.length > 0 && (
+        <div className="w-full max-w-sm">
+          <div className="bg-white rounded-2xl shadow-sm p-6">
+            <h3 className="text-base font-semibold text-filos-primary mb-3 font-headline">Recent Conversations</h3>
+            <div className="space-y-1.5">
+              {recentSessions.map((s) => (
+                <div key={s.id} className="flex items-center justify-between p-2.5 bg-filos-marble rounded-lg hover:bg-filos-surface transition">
+                  <span className="text-sm text-gray-600">{s.correct_answers}/{s.total_questions} correct</span>
+                  <div className="flex items-center gap-3">
+                    <span className={`font-bold text-sm ${s.score_percent >= 80 ? 'text-green-600' : s.score_percent >= 50 ? 'text-amber-500' : 'text-red-500'}`}>
+                      {s.score_percent}%
+                    </span>
+                    <span className="text-xs text-gray-400 w-16 text-right">
+                      {s.ended_at ? new Date(s.ended_at).toLocaleDateString() : ''}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

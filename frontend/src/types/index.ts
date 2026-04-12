@@ -42,7 +42,7 @@ export interface WordUpdate {
   categories?: string[]
 }
 
-export type QuizType = 'word' | 'sentence'
+export type QuizType = 'word' | 'sentence' | 'conversation'
 export type SourceLanguage = 'english' | 'target_language'
 export type QuizFocus = 'balanced' | 'new_words' | 'struggling'
 

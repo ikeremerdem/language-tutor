@@ -40,6 +40,10 @@ A multi-user, web-based language learning application with vocabulary management
 
 Run `supabase/schema.sql` against your Supabase project (SQL Editor → paste → Run). This creates the `language_tutors`, `vocabulary`, and `quiz_sessions` tables with Row Level Security enabled.
 
+### 1a. Storage Setup
+
+In the Supabase dashboard go to **Storage → New bucket**, create a bucket named `persona-images` and set it to **Public**. This is required for admin persona image uploads.
+
 ### 2. Backend
 
 ```bash

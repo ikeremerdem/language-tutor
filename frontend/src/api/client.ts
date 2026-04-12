@@ -171,6 +171,21 @@ export const sendConversationMessage = (tutorId: string, conversationId: string,
 export const adminGetPersonas = () =>
   request<Persona[]>('/admin/personas')
 
+export const adminUploadPersonaImage = async (file: File): Promise<string> => {
+  const { data: { session } } = await supabase.auth.getSession()
+  const token = session?.access_token
+  const form = new FormData()
+  form.append('file', file)
+  const res = await fetch(`${BASE}/admin/personas/upload-image`, {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: form,
+  })
+  if (!res.ok) throw new Error(await res.text())
+  const json = await res.json()
+  return json.url as string
+}
+
 export const adminCreatePersona = (data: { name: string; description: string; persona_prompt: string; image_url: string }) =>
   request<Persona>('/admin/personas', { method: 'POST', body: JSON.stringify(data) })
 

@@ -40,6 +40,7 @@ class Conversation(BaseModel):
     persona_id: str
     context_id: str | None
     persona_name: str
+    quiz_session_id: str | None = None
     created_at: str
 
 

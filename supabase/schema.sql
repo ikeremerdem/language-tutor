@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS quiz_sessions (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tutor_id        UUID NOT NULL REFERENCES language_tutors(id) ON DELETE CASCADE,
     user_id         UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    quiz_type       TEXT NOT NULL CHECK (quiz_type IN ('word','sentence')),
+    quiz_type       TEXT NOT NULL CHECK (quiz_type IN ('word','sentence','conversation')),
     source_language TEXT NOT NULL CHECK (source_language IN ('english','target_language')),
     total_questions INTEGER NOT NULL DEFAULT 0,
     correct_answers INTEGER NOT NULL DEFAULT 0,
@@ -85,6 +85,7 @@ CREATE TABLE IF NOT EXISTS conversations (
     persona_id      UUID NOT NULL REFERENCES personas(id),
     context_id      UUID REFERENCES persona_contexts(id),
     persona_name    TEXT NOT NULL DEFAULT '',
+    quiz_session_id UUID REFERENCES quiz_sessions(id),
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -140,6 +141,11 @@ CREATE POLICY "Users can insert messages of own conversations"
 --
 -- Migration: add conversation tables (run on existing databases)
 -- (copy and run the personas, persona_contexts, conversations, conversation_messages CREATE TABLE blocks above)
+--
+-- Migration: add conversation quiz type and quiz_session_id (run on existing databases)
+-- ALTER TABLE quiz_sessions DROP CONSTRAINT IF EXISTS quiz_sessions_quiz_type_check;
+-- ALTER TABLE quiz_sessions ADD CONSTRAINT quiz_sessions_quiz_type_check CHECK (quiz_type IN ('word','sentence','conversation'));
+-- ALTER TABLE conversations ADD COLUMN IF NOT EXISTS quiz_session_id UUID REFERENCES quiz_sessions(id);
 -- ============================================================
 
 -- ============================================================

@@ -12,9 +12,7 @@
 - Ability to override the package existing words
 - Add messages to the user
 - Add a button to auto-generate words in multiple words editing and to add it as a package.
-- Add a new sign to the package if it has been added in the last month
 - Add sentences to the vocabulary. If during a conversation you like a sentence, you can add it to the vocabulary.
-- Add scoring to the conversation sessions, how many responses correct, etc. 
-
+- Add button to the chat, to suggest a sentence with placeholders, slightly better than full cheating with translation
 
 

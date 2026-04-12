@@ -5,6 +5,7 @@
 - **Conversation: grammar feedback** — After each message you send, the app checks your grammar. A green ✓ means correct; an amber warning shows an explanation in English and the corrected sentence.
 - **Conversation: translations** — Each persona message has a "Help!" link that reveals the English translation inline.
 - **Conversation: cheat button** — Type what you want to say in English and get it translated into the target language with one click.
+- **Conversation sessions** — Conversations now count as quiz sessions. Your message count, correct rate, and score appear in the Dashboard and in the Recent Conversations panel on the Conversation setup page.
 
 ### 2026-04-04 (3)
 - **Mobile support** — The app now works on phone screens. Navigation collapses to a hamburger menu, the vocabulary table scrolls horizontally, filter controls wrap to multiple rows, and quiz cards fit the screen.

@@ -173,6 +173,7 @@ def generate_sentence(
         If you decide to use an object, select a noun ONLY from the vocabulary words provided and it should be {object_count}.
         You can use adjectives, but select them ONLY from the vocabulary words provided.
         You can use personal pronouns (he, she, you, etc.), demonstrative pronouns (this, that, etc.), indefinite articles (a, an), prepositions (in, into, from, etc.), conjunctions.
+        If the words, subjects, objects I have given you contain a disambiguation explanation in parenthesis (e.g. "you (singular)", "you (plural)", "you (formal)"), consider it and also keep them in the sentence you generate.
         When I say use ONLY from the vocabulary words provided, I mean do not use a word that is not in the vocabulary.
         The sentences should follow common sense and be realistic. {avoid_block}
 
@@ -210,6 +211,7 @@ The student's answer should convey the same meaning. Be lenient with:
 - Equivalent synonyms
 
 If the answer is correct, give a brief encouraging note (1 sentence).
+Do not consider a sentence wrong, if the ending dot is missing. If the student's answer is correct, but the ending dot is missing, set correct to true and set explanation to: "Your sentence is correct, but the ending dot is missing."
 
 If the answer is incorrect:
 - If the answer is completely unrelated or nonsensical, set explanation to: "You are totally off this time :("

@@ -171,3 +171,4 @@ The application helps users learn a target language from English. It is a multi-
 - Sentence structure templates remain file-based per language.
 - Active quiz sessions are held in memory on the backend and persisted to Supabase when the session ends.
 - Supabase service role key is used by the backend (bypasses RLS); the frontend uses the anon key only for authentication.
+- Persona images are stored in Supabase Storage in a public bucket named `persona-images`. The bucket must be created manually in the Supabase dashboard (Storage → New bucket → name: `persona-images`, visibility: Public).

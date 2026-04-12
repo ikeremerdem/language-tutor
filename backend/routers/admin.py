@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+import uuid
+
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from fastapi.responses import Response
 
 from middleware.auth import get_current_admin
@@ -6,6 +8,7 @@ from models.conversation import (
     PersonaWithContexts, PersonaCreate, PersonaUpdate, PersonaContextCreate,
 )
 from services import admin_service, conversation_service
+from services.supabase_client import supabase
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
@@ -18,6 +21,22 @@ def check(_: str = Depends(get_current_admin)):
 @router.get("/users", response_model=list[admin_service.UserStats])
 def user_stats(_: str = Depends(get_current_admin)):
     return admin_service.get_user_stats()
+
+
+# ── Persona image upload ──────────────────────────────────────────────────────
+
+PERSONA_BUCKET = "persona-images"
+
+@router.post("/personas/upload-image")
+async def upload_persona_image(file: UploadFile = File(...), _: str = Depends(get_current_admin)):
+    contents = await file.read()
+    ext = (file.filename or "image").rsplit(".", 1)[-1].lower()
+    if ext not in ("jpg", "jpeg", "png", "webp", "gif"):
+        raise HTTPException(400, "Unsupported image format")
+    filename = f"{uuid.uuid4()}.{ext}"
+    supabase.storage.from_(PERSONA_BUCKET).upload(filename, contents, {"content-type": file.content_type or "image/jpeg"})
+    url = supabase.storage.from_(PERSONA_BUCKET).get_public_url(filename)
+    return {"url": url}
 
 
 # ── Persona management ────────────────────────────────────────────────────────

@@ -49,7 +49,8 @@
       "Read(//Users/keremerdem/Code/kaloma-ai/greek-tutor/**)",
       "Bash(done)",
       "Bash(git pull:*)",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+      "Bash(/Users/keremerdem/Code/kaloma-ai/greek-tutor/backend/.venv/bin/pip install:*)"
     ]
   }
 }

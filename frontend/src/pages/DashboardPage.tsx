@@ -160,9 +160,9 @@ function RecentSessionRow({ s }: { s: RecentSession }) {
     <div className="flex items-center justify-between p-2.5 bg-filos-marble rounded-lg hover:bg-filos-surface transition">
       <div className="flex items-center gap-2">
         <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold flex-shrink-0 ${
-          s.quiz_type === 'word' ? 'bg-filos-primary/10 text-filos-primary' : 'bg-filos-accent/10 text-filos-accent'
+          s.quiz_type === 'word' ? 'bg-filos-primary/10 text-filos-primary' : s.quiz_type === 'sentence' ? 'bg-filos-accent/10 text-filos-accent' : 'bg-green-100 text-green-600'
         }`}>
-          {s.quiz_type === 'word' ? 'W' : 'S'}
+          {s.quiz_type === 'word' ? 'W' : s.quiz_type === 'sentence' ? 'S' : 'C'}
         </span>
         <span className="text-sm text-gray-600">{s.correct_answers}/{s.total_questions}</span>
       </div>
