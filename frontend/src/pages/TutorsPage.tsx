@@ -26,10 +26,14 @@ export default function TutorsPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
+  const [loadError, setLoadError] = useState('')
 
-  const load = () => getTutors().then(setTutors).catch(() => {})
+  const load = () => {
+    setLoadError('')
+    return getTutors().then(setTutors).catch((e: Error) => setLoadError(e.message || 'Failed to load tutors'))
+  }
 
-  useEffect(() => { load() }, [])
+  useEffect(() => { load() }, [user])
 
   const existingLanguages = tutors.map((t) => t.language)
   const availableLanguages = SUPPORTED_LANGUAGES.filter((l) => !existingLanguages.includes(l))
@@ -141,6 +145,13 @@ export default function TutorsPage() {
                 Cancel
               </button>
             </div>
+          </div>
+        )}
+
+        {loadError && (
+          <div className="bg-red-50 text-red-600 rounded-xl px-5 py-4 mb-6 text-sm flex items-center justify-between">
+            <span>{loadError}</span>
+            <button onClick={load} className="ml-4 underline hover:no-underline font-medium">Retry</button>
           </div>
         )}
 
