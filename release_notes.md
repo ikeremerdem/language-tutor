@@ -1,5 +1,8 @@
 # Release Notes
 
+### 2026-04-19
+- **Redesigned login page** — The login page now opens with a full hero section explaining what Filos is and why it exists, making it clear this is a serious learning tool — not a gamified app. Includes a prominent "Try it for free" button.
+
 ### 2026-04-05
 - **Conversations** — Practice your target language in realistic dialogues. Choose a persona (waiter, doctor, teacher…) and a context, then chat in your target language. The persona tries to use words from your vocabulary naturally.
 - **Conversation: grammar feedback** — After each message you send, the app checks your grammar. A green ✓ means correct; an amber warning shows an explanation in English and the corrected sentence.
