@@ -1,5 +1,8 @@
 # Release Notes
 
+### 2026-04-20 (2)
+- **MCP server** — The backend now exposes an MCP (Model Context Protocol) endpoint at `/mcp/sse`. Connect Claude Desktop or Claude Code to your tutor using your API key to list tutors, browse and add vocabulary, and look up word translations — all through natural language.
+
 ### 2026-04-20
 - **Profile page** — A new Profile page (accessible from the user menu) lets you set your first and last name.
 - **API Keys** — Generate personal API keys to call the backend programmatically from your own scripts or integrations. Keys are shown once at creation and can be revoked at any time from the Profile page. Pass your key in the `X-API-Key` request header.

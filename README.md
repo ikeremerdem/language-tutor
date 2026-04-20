@@ -14,7 +14,10 @@ A multi-user, web-based language learning application with vocabulary management
 - **Sentence Quiz** — AI-generated sentences using only your vocabulary. Answers are checked semantically, handling word order and accent variations.
 - **Streak & Word Categories** — Each word tracks a correct-answer streak. Words are classified into four categories: **New** (never asked), **Struggling** (streak = 0, asked at least once), **Learning** (streak > 0 and < threshold), **Learned** (streak ≥ `STREAK_LEARN_THRESHOLD`, default 5). Learned words are removed from the active quiz pool.
 - **Dashboard** — Weekly activity chart, vocabulary status by category (New / Struggling / Learning / Learned), words-by-type breakdown, recent sessions, and your 10 most difficult unlearned words.
-- **Admin** — A password-free admin page (`/admin`) accessible only to the configured admin email. Shows a user statistics table: email, join date, language count, word count, and session count for every registered user.
+- **Conversations** — Practice in realistic dialogues with AI personas (waiter, doctor, teacher…). Choose a persona and context, then chat in your target language. Each message gets grammar feedback and an optional English translation. Conversation sessions count toward your dashboard stats.
+- **Admin** — A password-free admin page (`/admin`) accessible only to the configured admin email. Shows a user statistics table and a personas management panel (create, edit, delete personas and their conversation contexts).
+- **Profile & API Keys** — Set your display name from the Profile page. Generate personal API keys (`sk_...`) to call the backend programmatically from scripts or integrations. Keys are shown once and can be revoked at any time.
+- **MCP Server** — The backend exposes an MCP (Model Context Protocol) endpoint at `/mcp/sse`. Connect Claude Desktop or Claude Code with your API key to manage vocabulary and look up translations through natural language.
 
 ## Tech Stack
 
@@ -131,7 +134,8 @@ backend/
   main.py                 # FastAPI app entry point
   config.py               # Settings (Supabase keys, LLM config, supported languages)
   middleware/
-    auth.py               # JWT verification via Supabase Auth
+    auth.py               # JWT + API key verification (dual-mode)
+  mcp_server.py           # MCP server tools + auth middleware (mounted at /mcp)
   models/                 # Pydantic schemas (vocabulary, quiz, stats, tutor)
   routers/                # API endpoints
     tutors.py             #   /api/tutors
@@ -139,7 +143,9 @@ backend/
     quiz.py               #   /api/tutors/{id}/quiz
     stats.py              #   /api/tutors/{id}/stats
     packages.py           #   /api/packages (CRUD, DB-backed)
-    admin.py              #   /api/admin (admin-only, includes seed endpoint)
+    conversations.py      #   /api/tutors/{id}/conversations + /api/personas
+    api_keys.py           #   /api/api-keys (create, list, revoke)
+    admin.py              #   /api/admin (admin-only, personas + user stats)
   services/
     supabase_client.py    # Supabase service-role client
     tutor_service.py      # Language tutor CRUD
@@ -193,7 +199,11 @@ frontend/src/
     VocabularyPage.tsx
     WordQuizPage.tsx
     SentenceQuizPage.tsx
+    ConversationSetupPage.tsx
+    ConversationChatPage.tsx
+    ProfilePage.tsx        # Display name + API key management
     AdminPage.tsx          # Admin user statistics table
+    AdminPersonasPage.tsx  # Persona CRUD
   types/index.ts          # TypeScript interfaces
 ```
 
@@ -240,6 +250,27 @@ The app runs as a Docker container (see `backend/Dockerfile`) with 1 gunicorn + 
 > **Note:** Fly.io requires a credit card on file to run beyond the 5-minute trial. You won't be charged within the free tier (3 shared VMs included).
 
 Health check endpoint: `GET /api/health`
+
+### MCP Server (Claude Desktop / Claude Code)
+
+The backend exposes an MCP server at `/mcp/sse` using the SSE transport.
+
+1. Generate an API key from the **Profile** page in the app.
+2. Add the following to your Claude Desktop or Claude Code MCP config:
+
+```json
+{
+  "mcpServers": {
+    "filos": {
+      "type": "sse",
+      "url": "https://<your-fly-app>.fly.dev/mcp/sse",
+      "headers": { "X-API-Key": "sk_..." }
+    }
+  }
+}
+```
+
+Available tools: `list_tutors`, `get_vocabulary`, `lookup_word`, `add_word`, `delete_word`.
 
 ### CORS
 
