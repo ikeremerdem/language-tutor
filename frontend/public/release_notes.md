@@ -1,5 +1,11 @@
 # Release Notes
 
+### 2026-04-20 (4)
+- **Language flag in top bar** — The flag of the currently active language now appears in the top bar to the left of the user icon (on both desktop and mobile).
+
+### 2026-04-20 (3)
+- **MCP: sentence practice** — Two new MCP tools let Claude run full practice sessions: `generate_sentence` creates a sentence from your vocabulary, and `check_sentence_answer` grades your translation attempt using AI — lenient with word order, synonyms, and minor spelling differences.
+
 ### 2026-04-20 (2)
 - **MCP server** — The backend now exposes an MCP (Model Context Protocol) endpoint at `/mcp/sse`. Connect Claude Desktop or Claude Code to your tutor using your API key to list tutors, browse and add vocabulary, and look up word translations — all through natural language.
 

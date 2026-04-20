@@ -15,6 +15,5 @@
 - Add sentences to the vocabulary. If during a conversation you like a sentence, you can add it to the vocabulary.
 - Add button to the chat, to suggest a sentence with placeholders, slightly better than full cheating with translation
 - Advanced sentence generator: With the use of the LLMs, when a word is added, also add the other words it can appear in a sentence with. For this, we need to have an always running service.
-- Add the flag of the current language to the top bar, preferably to the left of the user icon. 
 
 

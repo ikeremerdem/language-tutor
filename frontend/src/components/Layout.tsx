@@ -6,6 +6,14 @@ import { useAuth } from '../context/AuthContext'
 import { useIsAdmin } from '../hooks/useIsAdmin'
 
 
+const LANGUAGE_FLAGS: Record<string, string> = {
+  Greek: '🇬🇷',
+  German: '🇩🇪',
+  Spanish: '🇪🇸',
+  Italian: '🇮🇹',
+  French: '🇫🇷',
+}
+
 export default function Layout() {
   const { tutorId, targetLanguage } = useTutor()
   const { user, signOut } = useAuth()
@@ -68,6 +76,13 @@ export default function Layout() {
           </nav>
 
           <div className="flex items-center gap-2">
+            {/* Language flag */}
+            {targetLanguage && (
+              <span className="text-2xl hidden sm:block" title={targetLanguage}>
+                {LANGUAGE_FLAGS[targetLanguage] ?? '🌍'}
+              </span>
+            )}
+
             {/* User dropdown (desktop) */}
             <div className="relative hidden sm:block" ref={menuRef}>
               <button
@@ -103,6 +118,13 @@ export default function Layout() {
                 </div>
               )}
             </div>
+
+            {/* Language flag (mobile only) */}
+            {targetLanguage && (
+              <span className="text-2xl sm:hidden" title={targetLanguage}>
+                {LANGUAGE_FLAGS[targetLanguage] ?? '🌍'}
+              </span>
+            )}
 
             {/* Hamburger (mobile only) */}
             <button
