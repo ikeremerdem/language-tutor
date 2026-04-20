@@ -15,5 +15,5 @@
 - Add sentences to the vocabulary. If during a conversation you like a sentence, you can add it to the vocabulary.
 - Add button to the chat, to suggest a sentence with placeholders, slightly better than full cheating with translation
 - Advanced sentence generator: With the use of the LLMs, when a word is added, also add the other words it can appear in a sentence with. For this, we need to have an always running service.
-
+- The user should be able to click which language constructs she learned so far in the preferences page, so that the sentence builder can make use of these. These can be verb, adjective, past tense, questions, prepositions etc. So the sentence structures would be filtered with this knowledge.
 
