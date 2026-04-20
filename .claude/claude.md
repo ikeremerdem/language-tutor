@@ -3,6 +3,11 @@
 - Store the design system in .stitch/DESIGN.md
 - Use the stitch-design skill workflow for all new screens
 
+## Important Rule for Coding
+I want you to work as a coding agent at the moment, I do not want you to manage my github repo. I will do it myself. 
+- Do not create git branches automatically, always work on the branch you are in. 
+- Do not commit to git, create PRs unless you are explicitly told so. 
+
 ## General Rules
 - Always update the documentation when there is a change that needs to be documented (readme.md, requirements.md)
 - If you add a new feature, go to the roadmap.md file. If the feature is in the roadmap part, remove it from there. Add this new feature to the Release Notes, first the date, then the feature list. Keep the release notes concise and targeted to end users of the app. 

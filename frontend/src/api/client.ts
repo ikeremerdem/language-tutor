@@ -23,6 +23,8 @@ import type {
   Persona,
   ConversationMessage,
   StartConversationResponse,
+  ApiKey,
+  ApiKeyCreated,
 } from '../types'
 
 const BASE = (import.meta.env.VITE_API_BASE_URL ?? '') + '/api'
@@ -166,6 +168,16 @@ export const sendConversationMessage = (tutorId: string, conversationId: string,
     `/tutors/${tutorId}/conversations/${conversationId}/messages`,
     { method: 'POST', body: JSON.stringify({ content }) }
   )
+
+// ── API Keys ──────────────────────────────────────────────────
+export const getApiKeys = () =>
+  request<ApiKey[]>('/api-keys')
+
+export const createApiKey = (name: string) =>
+  request<ApiKeyCreated>('/api-keys', { method: 'POST', body: JSON.stringify({ name }) })
+
+export const deleteApiKey = (id: string) =>
+  request<void>(`/api-keys/${id}`, { method: 'DELETE' })
 
 // ── Admin: Personas ────────────────────────────────────────────
 export const adminGetPersonas = () =>

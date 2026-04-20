@@ -97,6 +97,7 @@ export default function Layout() {
                   {isAdmin && (
                     <Link to="/admin/personas" onClick={() => setMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-600 hover:bg-filos-marble hover:text-filos-primary transition">Personas</Link>
                   )}
+                  <Link to="/profile" onClick={() => setMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-600 hover:bg-filos-marble hover:text-filos-primary transition">Profile &amp; API Keys</Link>
                   <div className="border-t border-gray-100 my-1" />
                   <button onClick={() => { setMenuOpen(false); signOut() }} className="w-full text-left flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-600 hover:bg-filos-marble hover:text-filos-primary transition">Sign out</button>
                 </div>
@@ -150,6 +151,7 @@ export default function Layout() {
               {isAdmin && (
                 <Link to="/admin/personas" onClick={() => setMobileNavOpen(false)} className="block px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-filos-marble hover:text-filos-primary transition">Personas</Link>
               )}
+              <Link to="/profile" onClick={() => setMobileNavOpen(false)} className="block px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-filos-marble hover:text-filos-primary transition">Profile &amp; API Keys</Link>
               <button onClick={() => { setMobileNavOpen(false); signOut() }} className="w-full text-left block px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-filos-marble hover:text-filos-primary transition">
                 Sign out — <span className="text-gray-400">{user?.email}</span>
               </button>

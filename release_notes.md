@@ -1,5 +1,9 @@
 # Release Notes
 
+### 2026-04-20
+- **Profile page** — A new Profile page (accessible from the user menu) lets you set your first and last name.
+- **API Keys** — Generate personal API keys to call the backend programmatically from your own scripts or integrations. Keys are shown once at creation and can be revoked at any time from the Profile page. Pass your key in the `X-API-Key` request header.
+
 ### 2026-04-19
 - **Redesigned login page** — The login page now opens with a full hero section explaining what Filos is and why it exists, making it clear this is a serious learning tool — not a gamified app. Includes a prominent "Try it for free" button.
 

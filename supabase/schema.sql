@@ -146,7 +146,22 @@ CREATE POLICY "Users can insert messages of own conversations"
 -- ALTER TABLE quiz_sessions DROP CONSTRAINT IF EXISTS quiz_sessions_quiz_type_check;
 -- ALTER TABLE quiz_sessions ADD CONSTRAINT quiz_sessions_quiz_type_check CHECK (quiz_type IN ('word','sentence','conversation'));
 -- ALTER TABLE conversations ADD COLUMN IF NOT EXISTS quiz_session_id UUID REFERENCES quiz_sessions(id);
+--
+-- Migration: add api_keys table (run on existing databases)
+-- (copy and run the CREATE TABLE api_keys block above, then the RLS + policies for api_keys)
 -- ============================================================
+
+-- API Keys (user-scoped, for programmatic access)
+CREATE TABLE IF NOT EXISTS api_keys (
+    id           UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id      UUID        NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    name         TEXT        NOT NULL,
+    key_hash     TEXT        NOT NULL UNIQUE,
+    key_prefix   TEXT        NOT NULL,
+    created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    last_used_at TIMESTAMPTZ,
+    is_active    BOOLEAN     NOT NULL DEFAULT true
+);
 
 -- ============================================================
 -- Row Level Security
@@ -184,6 +199,15 @@ CREATE POLICY "Users can update own packages"
     ON word_packages FOR UPDATE USING (auth.uid() = user_id);
 CREATE POLICY "Users can delete own packages"
     ON word_packages FOR DELETE USING (auth.uid() = user_id);
+
+-- api_keys policies
+ALTER TABLE api_keys ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view own api keys"
+    ON api_keys FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own api keys"
+    ON api_keys FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can delete own api keys"
+    ON api_keys FOR DELETE USING (auth.uid() = user_id);
 
 -- quiz_sessions policies
 CREATE POLICY "Users can view own sessions"

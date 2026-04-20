@@ -16,6 +16,7 @@ import ReleaseNotesPage from './pages/ReleaseNotesPage'
 import ConversationSetupPage from './pages/ConversationSetupPage'
 import ConversationChatPage from './pages/ConversationChatPage'
 import PersistentLayout from './components/PersistentLayout'
+import ProfilePage from './pages/ProfilePage'
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -47,6 +48,9 @@ function AppRoutes() {
       <Route path="/admin" element={<AuthGuard><PersistentLayout /></AuthGuard>}>
         <Route index element={<AdminPage />} />
         <Route path="personas" element={<AdminPersonasPage />} />
+      </Route>
+      <Route path="/profile" element={<AuthGuard><PersistentLayout /></AuthGuard>}>
+        <Route index element={<ProfilePage />} />
       </Route>
       <Route path="*" element={<Navigate to="/tutors" replace />} />
     </Routes>

@@ -222,3 +222,17 @@ export interface LanguageTutor {
   created_at: string
   preferences: TutorPreferences
 }
+
+export interface ApiKey {
+  id: string
+  name: string
+  key_prefix: string
+  created_at: string
+  last_used_at: string | null
+  is_active: boolean
+}
+
+export interface ApiKeyCreated {
+  key: string
+  api_key: ApiKey
+}
