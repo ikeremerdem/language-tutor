@@ -24,7 +24,11 @@ from starlette.responses import JSONResponse
 
 from models.vocabulary import WordCreate, WordType
 from services import tutor_service, vocabulary_service
-from services.sentence_service import lookup_word as svc_lookup_word
+from services.sentence_service import (
+    lookup_word as svc_lookup_word,
+    generate_sentence as svc_generate_sentence,
+    check_sentence_answer as svc_check_answer,
+)
 from services.supabase_client import supabase
 
 # ── User identity context ────────────────────────────────────────────────────
@@ -114,6 +118,38 @@ def add_word(
     )
     word = vocabulary_service.add_word(tutor_id, user_id, data)
     return word.model_dump()
+
+
+@mcp.tool()
+def generate_sentence(tutor_id: str, source_language: str = "english") -> dict:
+    """
+    Generate a practice sentence using the tutor's vocabulary.
+    source_language: "english" (translate TO target language) or "target_language" (translate TO english).
+    Returns: sentence (the text to translate), translation (expected answer), word_id (featured word).
+    Pass sentence and translation to check_sentence_answer when grading the user's attempt.
+    """
+    tutor = _verified_tutor(tutor_id, _current_user())
+    words = vocabulary_service.list_words(tutor_id)
+    if not words:
+        raise ValueError("No vocabulary words found. Add words first with add_word.")
+    return svc_generate_sentence(words, source_language, tutor.language)
+
+
+@mcp.tool()
+def check_sentence_answer(
+    tutor_id: str,
+    sentence: str,
+    correct_translation: str,
+    user_answer: str,
+) -> dict:
+    """
+    Grade a translation attempt using AI-powered semantic checking.
+    Pass the sentence and correct_translation exactly as returned by generate_sentence.
+    Returns: correct (bool), explanation (string).
+    Lenient with word order, synonyms, and minor spelling/accent differences.
+    """
+    tutor = _verified_tutor(tutor_id, _current_user())
+    return svc_check_answer(sentence, correct_translation, user_answer, tutor.language)
 
 
 @mcp.tool()
