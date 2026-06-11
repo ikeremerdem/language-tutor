@@ -14,6 +14,8 @@ export default function QuizResult({ result, question, onNext }: Props) {
   const isFullyCorrect = result.correct && !result.explanation
   const isWrong = !result.correct
 
+  const isNoIdea = isWrong && !result.your_answer
+
   const heading = isFullyCorrect ? 'Correct!' : isAlmostCorrect ? 'Almost Correct!' : 'Wrong!'
   const headingColor = isFullyCorrect ? 'text-green-600' : isAlmostCorrect ? 'text-amber-500' : 'text-red-600'
   const iconBg = isFullyCorrect ? 'bg-green-50 text-green-500' : isAlmostCorrect ? 'bg-amber-50 text-amber-500' : 'bg-red-50 text-red-500'
@@ -35,12 +37,14 @@ export default function QuizResult({ result, question, onNext }: Props) {
         </div>
       )}
 
-      <div className={`rounded-xl p-4 mb-4 ${isFullyCorrect ? 'bg-green-50' : isAlmostCorrect ? 'bg-amber-50' : 'bg-red-50'}`}>
-        <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">Your answer</p>
-        <p className={`text-lg font-medium ${isFullyCorrect ? 'text-green-700' : isAlmostCorrect ? 'text-amber-600 line-through decoration-amber-300' : 'text-red-600 line-through decoration-red-300'}`}>
-          {result.your_answer}
-        </p>
-      </div>
+      {!isNoIdea && (
+        <div className={`rounded-xl p-4 mb-4 ${isFullyCorrect ? 'bg-green-50' : isAlmostCorrect ? 'bg-amber-50' : 'bg-red-50'}`}>
+          <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">Your answer</p>
+          <p className={`text-lg font-medium ${isFullyCorrect ? 'text-green-700' : isAlmostCorrect ? 'text-amber-600 line-through decoration-amber-300' : 'text-red-600 line-through decoration-red-300'}`}>
+            {result.your_answer}
+          </p>
+        </div>
+      )}
 
       {(isWrong || isAlmostCorrect) && (
         <div className="bg-green-50 rounded-xl p-4 mb-4">

@@ -5,12 +5,13 @@ import { useTutor } from '../context/TutorContext'
 interface Props {
   question: QuizQuestion
   onAnswer: (answer: string) => void
+  onNoIdea: () => void
   loading: boolean
   correctCount: number
   wrongCount: number
 }
 
-export default function QuizCard({ question, onAnswer, loading, correctCount, wrongCount }: Props) {
+export default function QuizCard({ question, onAnswer, onNoIdea, loading, correctCount, wrongCount }: Props) {
   const { targetLanguage: target_language } = useTutor()
   const [answer, setAnswer] = useState('')
 
@@ -58,6 +59,14 @@ export default function QuizCard({ question, onAnswer, loading, correctCount, wr
           className="w-full bg-filos-primary text-white py-3.5 rounded-xl font-semibold hover:bg-filos-primary-dark disabled:opacity-40 transition shadow-sm"
         >
           Check Answer →
+        </button>
+        <button
+          type="button"
+          onClick={onNoIdea}
+          disabled={loading}
+          className="w-full mt-3 border-2 border-gray-200 text-gray-400 py-3 rounded-xl font-medium hover:border-red-300 hover:text-red-400 disabled:opacity-40 transition"
+        >
+          No Idea!
         </button>
       </form>
     </div>

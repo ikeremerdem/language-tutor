@@ -1,5 +1,11 @@
 # Release Notes
 
+### 2026-05-22
+- **"No Idea!" button in quizzes** — A new button on word and sentence quiz questions lets you instantly reveal the correct answer when you're stuck. The question is counted as wrong.
+
+### 2026-05-14
+- **Clickable language flag** — The language flag in the top bar is now a link that takes you directly to the tutor selection page to switch languages.
+
 ### 2026-04-20 (4)
 - **Language flag in top bar** — The flag of the currently active language now appears in the top bar to the left of the user icon (on both desktop and mobile).
 

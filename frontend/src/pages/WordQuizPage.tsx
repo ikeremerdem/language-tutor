@@ -12,7 +12,7 @@ export default function WordQuizPage() {
   }
 
   if (quiz.phase === 'question' && quiz.question) {
-    return <QuizCard question={quiz.question} onAnswer={quiz.answer} loading={quiz.loading} correctCount={quiz.correctCount} wrongCount={quiz.wrongCount} />
+    return <QuizCard question={quiz.question} onAnswer={quiz.answer} onNoIdea={quiz.giveUp} loading={quiz.loading} correctCount={quiz.correctCount} wrongCount={quiz.wrongCount} />
   }
 
   if (quiz.phase === 'result' && quiz.result) {

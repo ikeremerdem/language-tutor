@@ -87,6 +87,8 @@ export function useQuiz(quizType: QuizType) {
     }
   }, [state.sessionId, tutorId])
 
+  const giveUp = useCallback(() => answer(''), [answer])
+
   const reset = useCallback(() => {
     setState({
       phase: 'setup',
@@ -101,5 +103,5 @@ export function useQuiz(quizType: QuizType) {
     })
   }, [])
 
-  return { ...state, start, answer, next, reset }
+  return { ...state, start, answer, giveUp, next, reset }
 }

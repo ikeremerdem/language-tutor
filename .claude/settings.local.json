@@ -54,7 +54,13 @@
       "Bash(gh pr create --title 'Redesign login page with hero section and inspiring copy' --body ' *)",
       "Bash(.venv/bin/pip show *)",
       "Bash(/Users/keremerdem/Code/kaloma-ai/language-tutor/backend/.venv/bin/python -m pip install \"fastapi>=0.116.0\")",
-      "Bash(grep -E \"\\\\.md$|^d\")"
+      "Bash(grep -E \"\\\\.md$|^d\")",
+      "mcp__supabase__list_tables",
+      "mcp__supabase__apply_migration",
+      "Bash(zstd -d)",
+      "Bash(xxd)",
+      "Bash(echo \"KLUv/WA8AC0GAJJNKiEwbdsGaPdbWGpoGPORJYuWvDubW6E7qVGSWayu6UFBoWBoX+7LPMticQCqYYCuWjqoRPDaFBhYBPQf2kRfMZX4Kip995DmQchCGE9MW8+siWpNiTaqEGHLoW2y52rTjR+LafmuUG79rmi83jMVx03DIAzHm0E9iA9ae9C+gzgPKu8z+G1Yzj0lRbfwuxytGc/WsoYQrY8r7QYXGlhAgAwHi0ICAp5ZEJ8IAFblYWoBmcZ87w2UCsNiSMYJgzsBwUgB\" | base64 -d > /tmp/confluence_body.bin *)",
+      "Bash(pip3 install *)"
     ]
   }
 }

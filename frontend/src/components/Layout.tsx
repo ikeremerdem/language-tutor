@@ -78,9 +78,9 @@ export default function Layout() {
           <div className="flex items-center gap-2">
             {/* Language flag */}
             {targetLanguage && (
-              <span className="text-2xl hidden sm:block" title={targetLanguage}>
+              <Link to="/tutors" className="text-2xl hidden sm:block hover:opacity-70 transition cursor-pointer" title={`${targetLanguage} — click to switch language`}>
                 {LANGUAGE_FLAGS[targetLanguage] ?? '🌍'}
-              </span>
+              </Link>
             )}
 
             {/* User dropdown (desktop) */}
@@ -121,9 +121,9 @@ export default function Layout() {
 
             {/* Language flag (mobile only) */}
             {targetLanguage && (
-              <span className="text-2xl sm:hidden" title={targetLanguage}>
+              <Link to="/tutors" className="text-2xl sm:hidden hover:opacity-70 transition cursor-pointer" title={`${targetLanguage} — click to switch language`}>
                 {LANGUAGE_FLAGS[targetLanguage] ?? '🌍'}
-              </span>
+              </Link>
             )}
 
             {/* Hamburger (mobile only) */}
