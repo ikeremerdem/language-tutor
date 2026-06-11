@@ -1,5 +1,8 @@
 # Release Notes
 
+### 2026-06-11
+- **Reading** — A new "Reading" tab lets you paste a story, song lyrics or any text and turn it into interactive reading material. Enter the text in your target language or in English (it gets translated first), then click any word to see its English meaning plus grammar details — conjugation tables for verbs, declensions and gender for nouns, and more, tailored to your language. Word details appear in a side panel so they never cover the text, and a button reveals the full English translation whenever you want it. Give each text a title and it's saved automatically — the Reading screen lists all your saved texts by title and date, ready to reopen or delete any time.
+
 ### 2026-05-22
 - **"No Idea!" button in quizzes** — A new button on word and sentence quiz questions lets you instantly reveal the correct answer when you're stuck. The question is counted as wrong.
 

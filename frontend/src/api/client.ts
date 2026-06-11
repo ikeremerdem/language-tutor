@@ -25,6 +25,9 @@ import type {
   StartConversationResponse,
   ApiKey,
   ApiKeyCreated,
+  WordInfo,
+  ReadingText,
+  ReadingTextSummary,
 } from '../types'
 
 const BASE = (import.meta.env.VITE_API_BASE_URL ?? '') + '/api'
@@ -100,6 +103,25 @@ export const deleteWord = (tutorId: string, id: string) =>
 
 export const addWordCategories = (tutorId: string, id: string, categories: string[]) =>
   request<Word>(`/tutors/${tutorId}/vocabulary/${id}/categories`, { method: 'PATCH', body: JSON.stringify({ categories }) })
+
+// ── Reading ──────────────────────────────────────────────────
+export const getReadingTexts = (tutorId: string) =>
+  request<ReadingTextSummary[]>(`/tutors/${tutorId}/reading/texts`)
+
+export const createReadingText = (tutorId: string, title: string, text: string, source: 'english' | 'target') =>
+  request<ReadingText>(`/tutors/${tutorId}/reading/texts`, {
+    method: 'POST',
+    body: JSON.stringify({ title, text, source }),
+  })
+
+export const getReadingText = (tutorId: string, textId: string) =>
+  request<ReadingText>(`/tutors/${tutorId}/reading/texts/${textId}`)
+
+export const deleteReadingText = (tutorId: string, textId: string) =>
+  request<void>(`/tutors/${tutorId}/reading/texts/${textId}`, { method: 'DELETE' })
+
+export const getWordInfo = (tutorId: string, word: string, context: string) =>
+  request<WordInfo>(`/tutors/${tutorId}/reading/word-info?word=${encodeURIComponent(word)}&context=${encodeURIComponent(context)}`)
 
 // ── Quiz ─────────────────────────────────────────────────────
 export const startQuiz = (tutorId: string, data: QuizStartRequest) =>

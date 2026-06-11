@@ -149,6 +149,9 @@ CREATE POLICY "Users can insert messages of own conversations"
 --
 -- Migration: add api_keys table (run on existing databases)
 -- (copy and run the CREATE TABLE api_keys block above, then the RLS + policies for api_keys)
+--
+-- Migration: add reading_texts table (run on existing databases)
+-- (copy and run the CREATE TABLE reading_texts block above, then the RLS + policies for reading_texts)
 -- ============================================================
 
 -- API Keys (user-scoped, for programmatic access)
@@ -161,6 +164,18 @@ CREATE TABLE IF NOT EXISTS api_keys (
     created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     last_used_at TIMESTAMPTZ,
     is_active    BOOLEAN     NOT NULL DEFAULT true
+);
+
+-- Reading texts (saved interactive reading material, scoped to a tutor)
+CREATE TABLE IF NOT EXISTS reading_texts (
+    id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+    tutor_id        UUID        NOT NULL REFERENCES language_tutors(id) ON DELETE CASCADE,
+    user_id         UUID        NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    title           TEXT        NOT NULL DEFAULT '',
+    target_text     TEXT        NOT NULL DEFAULT '',
+    english_text    TEXT        NOT NULL DEFAULT '',
+    source          TEXT        NOT NULL DEFAULT 'target' CHECK (source IN ('english','target')),
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- ============================================================
@@ -208,6 +223,15 @@ CREATE POLICY "Users can insert own api keys"
     ON api_keys FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can delete own api keys"
     ON api_keys FOR DELETE USING (auth.uid() = user_id);
+
+-- reading_texts policies
+ALTER TABLE reading_texts ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view own reading texts"
+    ON reading_texts FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own reading texts"
+    ON reading_texts FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can delete own reading texts"
+    ON reading_texts FOR DELETE USING (auth.uid() = user_id);
 
 -- quiz_sessions policies
 CREATE POLICY "Users can view own sessions"

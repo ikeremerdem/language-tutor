@@ -42,6 +42,36 @@ export interface WordUpdate {
   categories?: string[]
 }
 
+export interface WordInfoTable {
+  title: string
+  headers: string[]
+  rows: string[][]
+}
+
+export interface WordInfo {
+  word: string
+  lemma: string
+  english: string
+  word_type: string
+  notes: string
+  tables: WordInfoTable[]
+}
+
+export interface ReadingTextSummary {
+  id: string
+  title: string
+  created_at: string
+}
+
+export interface ReadingText {
+  id: string
+  title: string
+  target_text: string
+  english_text: string
+  source: 'english' | 'target'
+  created_at: string
+}
+
 export type QuizType = 'word' | 'sentence' | 'conversation'
 export type SourceLanguage = 'english' | 'target_language'
 export type QuizFocus = 'balanced' | 'new_words' | 'struggling'

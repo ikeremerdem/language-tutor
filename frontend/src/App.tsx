@@ -15,6 +15,7 @@ import PreferencesPage from './pages/PreferencesPage'
 import ReleaseNotesPage from './pages/ReleaseNotesPage'
 import ConversationSetupPage from './pages/ConversationSetupPage'
 import ConversationChatPage from './pages/ConversationChatPage'
+import ReadingPage from './pages/ReadingPage'
 import PersistentLayout from './components/PersistentLayout'
 import ProfilePage from './pages/ProfilePage'
 
@@ -37,6 +38,7 @@ function AppRoutes() {
         <Route path="vocabulary" element={<VocabularyPage />} />
         <Route path="quiz/word" element={<WordQuizPage />} />
         <Route path="quiz/sentence" element={<SentenceQuizPage />} />
+        <Route path="reading" element={<ReadingPage />} />
         <Route path="preferences" element={<PreferencesPage />} />
         <Route path="release-notes" element={<ReleaseNotesPage />} />
         <Route path="conversation" element={<ConversationSetupPage />} />

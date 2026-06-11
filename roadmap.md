@@ -16,5 +16,4 @@
 - Advanced sentence generator: With the use of the LLMs, when a word is added, also add the other words it can appear in a sentence with. For this, we need to have an always running service.
 - The user should be able to click which language constructs she learned so far in the preferences page, so that the sentence builder can make use of these. These can be verb, adjective, past tense, questions, prepositions etc. So the sentence structures would be filtered with this knowledge.
 - Make sure that when the destination language word is entered and lookup is pressed while adding vocabulary, it is correcting the word itself as well, if there are some small typos.
-- BUG: Sometimes it complains about the dot at the end of the sentence, even if you have given one. 
-- Implement the feature specified in the easy_read_feature.md 
+- BUG: Sometimes it complains about the dot at the end of the sentence, even if you have given one.  

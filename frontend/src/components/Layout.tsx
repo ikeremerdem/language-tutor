@@ -43,6 +43,7 @@ export default function Layout() {
     { to: tutorLink('vocabulary'), label: 'Vocabulary' },
     { to: tutorLink('quiz/word'), label: 'Word Quiz' },
     { to: tutorLink('quiz/sentence'), label: 'Sentence Quiz' },
+    { to: tutorLink('reading'), label: 'Reading' },
     { to: tutorLink('conversation'), label: 'Conversation' },
   ]
 

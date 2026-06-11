@@ -106,6 +106,17 @@ The application helps users learn a target language from English. It is a multi-
 - At the end of the session, statistics are displayed.
 - Sentence structure templates are stored per language in `backend/data/<Language>/sentence_structures.csv`.
 
+## 8a. Reading
+
+- A "Reading" screen (in the tutor menu) lets the user paste arbitrary text (a story, song lyrics, etc.) and turn it into interactive reading material.
+- The first screen has a title field, a language toggle, a text input, and a list of all previously saved reading texts.
+- The user first chooses whether the entered text is in the target language or in English. English text is translated to the target language before display.
+- After pressing OK, the text is saved (storing both the target-language and English versions plus the title) and immediately opened, with every word made interactive.
+- The saved-texts list shows Title and Date saved columns; each row opens its text, and items can be deleted (like the vocabulary screen).
+- Words are highlighted as clickable links on hover; clicking a word shows its details in a fixed panel (a sticky sidebar on the right on desktop, a bottom sheet on mobile) so the text is never obscured. The panel shows the English translation, the word type, learner notes, and language- and word-type-specific tables (e.g. verb conjugations, noun declensions with gender/article). Word info is fetched lazily and cached per word.
+- A "Show/Hide English translation" button reveals the full English translation of the text below the target-language version.
+- The per-language, per-word-type info templates are stored in `backend/data/<Language>/word_info_template.md`, with a generic fallback when a language has no specific template.
+
 ## 9. Dashboard
 
 - Displays: total vocabulary count, total sessions, total questions answered, average score, best score.
