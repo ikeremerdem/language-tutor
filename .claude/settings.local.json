@@ -60,7 +60,13 @@
       "Bash(zstd -d)",
       "Bash(xxd)",
       "Bash(echo \"KLUv/WA8AC0GAJJNKiEwbdsGaPdbWGpoGPORJYuWvDubW6E7qVGSWayu6UFBoWBoX+7LPMticQCqYYCuWjqoRPDaFBhYBPQf2kRfMZX4Kip995DmQchCGE9MW8+siWpNiTaqEGHLoW2y52rTjR+LafmuUG79rmi83jMVx03DIAzHm0E9iA9ae9C+gzgPKu8z+G1Yzj0lRbfwuxytGc/WsoYQrY8r7QYXGlhAgAwHi0ICAp5ZEJ8IAFblYWoBmcZ87w2UCsNiSMYJgzsBwUgB\" | base64 -d > /tmp/confluence_body.bin *)",
-      "Bash(pip3 install *)"
+      "Bash(pip3 install *)",
+      "Bash(cd frontend *)",
+      "Bash(node_modules/.bin/tsc -b)",
+      "Bash(echo \"=== exit $? ===\")",
+      "Bash(node_modules/.bin/vite build *)",
+      "Bash(echo \"=== tsc exit $? ===\")",
+      "Bash(git -C /Users/keremerdem/Code/kaloma-ai/language-tutor ls-files --error-unmatch frontend/public/release_notes.md)"
     ]
   }
 }
